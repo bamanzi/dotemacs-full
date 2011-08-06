@@ -88,6 +88,25 @@ whitespaces of the next line. Otherwise it would kill current word."
     (deactivate-mark))
   (kill-whole-line))
 
+(defun go-to-char (arg char)
+  (interactive "p\ncGo to char: ")
+  (forward-char 1)
+  (if (if arg
+          (search-forward (char-to-string char) nil nil arg)
+        (search-forward (char-to-string char)))
+      (backward-char 1))
+  )
+
+(defun go-back-to-char (arg char)
+  (interactive "p\ncGo back to char: ")
+  (forward-char -1)
+  (if arg
+      (search-backward (char-to-string char) nil nil arg)
+    (search-backward (char-to-string char)))
+  )
+
+
+
 ;;---
 (defun init-vi-style-keys (prefix-key)
   (let ( (map (make-sparse-keymap "Vi-style operation")) )
@@ -111,10 +130,10 @@ whitespaces of the next line. Otherwise it would kill current word."
     (define-key map (kbd "y") 'kill-ring-save)
     (define-key map (kbd "p") 'cua-paste) ;;compared to `yank', `cua-paste' support register 1-9    
 
-    (define-key map (kbd "*") 'hkb-goto-symbol-next-occur)
-    (define-key map (kbd "#") 'hkb-goto-symbol-prev-occur)
+    (define-key map (kbd "*") 'bmz/goto-symbol-next-occur)
+    (define-key map (kbd "#") 'bmz/goto-symbol-prev-occur)
     (define-key map (kbd "%") 'goto-match-paren)
-    (define-key map (kbd "C-]") 'hkb-find-symbol-at-point)
+    (define-key map (kbd "C-]") 'bmz/find-symbol-definition-across-files)
     
     (define-key map (kbd "d w") 'kill-word-vi-style)
     (define-key map (kbd "d t") 'zap-up-to-char)
@@ -138,6 +157,9 @@ whitespaces of the next line. Otherwise it would kill current word."
 
     (define-key map (kbd "g g") 'beginning-of-buffer)
     (define-key map (kbd "G") 'end-of-buffer)
+
+    (define-key map (kbd "f")   'go-to-char)
+;;    (define-key map (kbd "B")   'go-back-to-char)
 ))
     
 

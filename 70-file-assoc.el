@@ -25,10 +25,11 @@
 
 ;;; javascript. (IDE-like by Steve Yegge. Features a js syntax parser)
 (autoload 'js2-mode "js2-20090723b" "IDE-like Javascript mode; features a on-the-fly syntax parser." t)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-
 (autoload 'espresso-mode "espresso" nil t)
 (autoload 'javascript-mode "javascript" nil t)
+
+(add-to-list 'auto-mode-alist '("\\.js\\'" . espresso-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . espresso-mode))
 
 
 ;;; mode for lua language

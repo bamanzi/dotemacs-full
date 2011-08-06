@@ -341,5 +341,5 @@ an error is signaled."
 (defvar my-win-fns-keymap (make-sparse-keymap "Window operations"))
 (init-win-fns-keys my-win-fns-keymap)
 
-(define-key global-map (kbd "<f11>") 'my-win-fns-keymap)
-(define-key global-map (kbd "<lwindow>") 'my-win-fns-keymap)
+(define-key global-map (kbd "<f11>") my-win-fns-keymap)
+(define-key global-map (kbd "<lwindow>") my-win-fns-keymap)

@@ -136,7 +136,7 @@
 
 (setq cua-enable-cua-keys nil)
 ;;(setq cua-rectangle-modifier-key 'hyper)  ;;leave C-RET
-(cua-mode)
+(cua-mode t)
 
 (global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
 
@@ -273,7 +273,7 @@
       (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
       
       (ac-config-default)
-      (add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
+      ;;(add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
 
       (if (load "auto-complete-scite-api" t)
           (add-to-list 'ac-sources 'ac-source-scite-api)
@@ -287,8 +287,6 @@
       (global-undo-tree-mode t)
       (global-set-key (kbd "C-c C-z") 'undo-tree-undo)
       (global-set-key (kbd "C-c C-y") 'undo-tree-redo)
-
-      (define-key undo-tree-map (kbd "C-/") nil) ;; leave it for completion
       )
   (message "%s: failed to load `undo-tree'."  load-file-name))
 
@@ -307,10 +305,10 @@
 
 (eval-after-load 'hideshowvis '(load "hideshow-fringe" t))
 
-(add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
+;;(add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
 
-(eval-after-load 'python
-  (add-hook 'python-mode-hook 'hideshowvis-enable))
+;;(eval-after-load 'python
+;;  (add-hook 'python-mode-hook 'hideshowvis-enable))
 
 ;(eval-after-load "hideshow"
 ;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
@@ -357,6 +355,9 @@
 ;;;_. bm
 (idle-require 'bm)
 
+(global-set-key (kbd "<C-f2>")    'bm-toggle)
+(global-set-key (kbd "<M-f2>")    'bm-next)
+(global-set-key (kbd "<S-f2>")    'bm-previous)
 
 (global-set-key (kbd "<left-fringe> <C-mouse-1>")     'bm-toggle-mouse)
 (global-set-key (kbd "<left-fringe> <C-wheel-up>")    'bm-previous-mouse)
@@ -364,21 +365,9 @@
 (global-set-key (kbd "<left-fringe> <C-mouse-2>")     'bm-show)
 
 
-;;;_. linkd: visualize section header & links (to file/man/info/url)
-(if (require 'linkd nil t)
-    (progn
-      (let ( (dir (concat (file-name-directory (locate-library "linkd")) "icons")) )
-        (when (file-exists-p dir)
-          (setq linkd-icons-directory dir)
-          (setq linkd-use-icons t)))
-      (add-hook 'emacs-lisp-mode-hook 'linkd-enable)
-      (add-hook 'python-mode-hook 'linkd-enable)
-      (add-hook 'espresso-mode-hook 'linkd-enable))
-  (message "%s: failed to load `linkd'." load-file-name))
-
 
 ;;;_ programming
-(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+;;(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 
 (which-func-mode t)
 

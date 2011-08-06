@@ -13,7 +13,7 @@
 
 
 (one-key-bind-keymap "ESC <C-f10>" "<C-f10>")
-(one-key-bind-keymap "ESC <f10>" "<f10")
+(one-key-bind-keymap "ESC <f10>" "<f10>")
 (one-key-bind-keymap "ESC <f11>" "<f11>")  ;; winndows-related
 (one-key-bind-keymap "ESC <f12>" "<f12>")
 
