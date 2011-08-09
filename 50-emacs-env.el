@@ -24,7 +24,7 @@
 
 
 (defun load-and-execute (library)
-  "load a library 'foobar' and execute the command with same name (foobar or foobar-mode"
+  "load a library 'foobar' and execute the command with same name (`foobar' or `foobar-mode')"
   (interactive
    (list (completing-read "Load library: "
                           (apply-partially 'locate-file-completion-table

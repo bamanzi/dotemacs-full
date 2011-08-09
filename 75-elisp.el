@@ -13,6 +13,16 @@
 (define-key emacs-lisp-mode-map (kbd "<C-f9>") 'bmz/byte-compile-file)
 
 
+(defun bmz/dired-do-byte-compile (&optional arg)
+  "Byte compile marked (or next ARG) Emacs Lisp files."
+  (interactive "P")
+  (let ( (emacs-lisp-mode-hook '()) )
+    (dired-map-over-marks-check (function dired-byte-compile) arg 'byte-compile t)))
+
+(define-key dired-mode-map "B" 'bmz/dired-do-byte-compile)
+
+
+
 
 (add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
 
