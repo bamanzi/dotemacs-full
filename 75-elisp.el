@@ -1,3 +1,19 @@
+
+(global-set-key (kbd "<f3> f") 'find-function-at-point)
+(global-set-key (kbd "<f3> F") 'find-function)
+(global-set-key (kbd "<f3> v") 'find-variable-at-point)
+(global-set-key (kbd "<f3> V") 'find-variable)
+(global-set-key (kbd "<f3> l") 'find-library)
+
+(global-set-key (kbd "<f12> k")   'find-function-on-key)
+
+(global-set-key (kbd "<f12> e b") 'eval-buffer)
+(global-set-key (kbd "<f12> e r") 'eval-region)
+(global-set-key (kbd "<f12> e f") 'eval-defun)
+(global-set-key (kbd "<f12> e s") 'eval-sexp)
+
+(global-set-key (kbd "<C-f10> d") 'toggle-debug-on-error)
+
 (defun bmz/check-parens ()
   (interactive)
   (check-parens)

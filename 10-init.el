@@ -90,19 +90,6 @@
   (setq w32-apps-modifier 'hyper)
   
   (setq w32-scroll-lock-modifier nil)
-
-  (defun toggle-w32-alt-is-meta ()
-    (interactive)
-    (setq w32-alt-is-meta (not w32-alt-is-meta))
-    (setq w32-lwindow-modifier (if w32-lwindow-modifier
-                                   nil
-                                 'hyper))
-    (message "Now ALT key %s META. LWin is %s."
-             (if w32-alt-is-meta "is" "is not")
-             w32-lwindow-modifier)
-    )
-
-  (global-set-key (kbd "<scroll>") 'toggle-w32-alt-is-meta)
   )
   
 ;;FIXME: not work
@@ -303,7 +290,7 @@
 (autoload 'hideshowvis-enable "hideshowvis" "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
 (autoload 'hideshowvis-minor-mode "hideshowvis" "Will indicate regions foldable with hideshow in the fringe." 'interactive)
 
-(eval-after-load 'hideshowvis '(load "hideshow-fringe" t))
+(eval-after-load "hideshowvis" '(load "hideshow-fringe" t))
 
 ;;(add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
 
