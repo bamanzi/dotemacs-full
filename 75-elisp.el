@@ -12,7 +12,6 @@
 (global-set-key (kbd "<f12> e f") 'eval-defun)
 (global-set-key (kbd "<f12> e s") 'eval-sexp)
 
-(global-set-key (kbd "<C-f10> d") 'toggle-debug-on-error)
 
 (defun bmz/check-parens ()
   (interactive)

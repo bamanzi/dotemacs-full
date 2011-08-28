@@ -235,16 +235,36 @@
   (let ( (ac-sources '(ac-source-filename ac-source-files-in-current-dir)) )
     (call-interactively 'ac-start)))
 
-;;(global-set-key (kbd "C-, /") 'ac-expand-filename)
-
 (if (boundp 'undo-tree-map)
     (define-key undo-tree-map (kbd "C-/") nil))
 (global-set-key (kbd "C-/") 'ac-expand-filename)
 
-;;;_. dabbrev 
-(autoload 'dabbrev-expand-multiple "dabbrev-expand-multiple" "dynamic abbrev expansion for multiple selection" t)
-(setq dabbrev-expand-multiple-select-keys '("a" "s" "d" "f" "g" "q" "w" "e" "r" "t"))
-(global-set-key (kbd "C-c /") 'dabbrev-expand-multiple)
+;; (defun ac-expand-dabbrev ()
+;;   (interactive)
+;;   (when (not (featurep 'ac-dabbrev)) (require 'ac-dabbrev))
+;;   (flet ( (ac-dabbrev-get-candidates (abbrev)
+;;                                      '(ac-dabbrev-get-limit-candidates abbrev t)) )
+;;     (let ( (ac-sources '(ac-source-abbrev ac-source-dabbrev))
+;;            (ac-candidate-max 50)
+;;            )
+;;       (call-interactively 'ac-start))))
+
+;;(global-set-key (kbd "C-M-/") 'ac-expand-dabbrev)
+(global-set-key (kbd "C-M-/") 'ac-complete-words-in-all-buffer)
+
+;; (defun ac-expand-english-words ()
+;;   "complete english words."
+;;   (interactive)
+;;   (find-file-noselect "/usr/share/dict/words")
+;;   (call-interactively 'ac-expand-dabbrev))
+
+(defun ac-expand-english-words ()
+  (interactive)
+  (find-file-noselect "/usr/share/dict/words")
+  (call-interactively 'ac-complete-words-in-all-buffer))
+
+(global-set-key (kbd "C-, w") 'ac-expand-english-words)
+
 
 ;;;_. completion-ui
 (idle-require 'completion-ui)
@@ -285,6 +305,13 @@
       )
   (message "%s: failed to load `linkd'." load-file-name))
 
-;;TODO: (@* "cygwin")
+;;;_. viper
+(defun viper-cua-region-fix()
+  (define-key viper-vi-global-user-map [backspace] 'backward-delete-char-untabify)
+  (define-key viper-vi-global-user-map "\C-d" 'delete-char)
+  (define-key viper-insert-global-user-map [backspace] 'backward-delete-char-untabify)
+  (define-key viper-insert-global-user-map "\C-d" 'delete-char))
+
+(eval-after-load 'viper '(viper-cua-region-fix))
 
 

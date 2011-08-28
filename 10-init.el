@@ -37,6 +37,7 @@
   (global-set-key (kbd "<C-S-tab>") 'tabbar-backward))
 
 ;;;_ files & buffers
+(global-set-key (kbd "C-c C-b") 'ibuffer)
 (global-set-key (kbd "<C-tab>") 'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
 
@@ -330,10 +331,10 @@
 ;;;_. highlight-symbol
 (idle-require 'highlight-symbol)
 
-(global-set-key (kbd "C-c j>")          'highlight-symbol-at-point)
+(global-set-key (kbd "C-c j")          'highlight-symbol-at-point)
 (define-key search-map (kbd "j")        'highlight-symbol-at-point)
 (define-key search-map (kbd "<up>")   'highlight-symbol-prev)
-(define-key search-map (kbd "<down") 'highlight-symbol-next)
+(define-key search-map (kbd "<down>") 'highlight-symbol-next)
 
 (global-set-key (kbd "<double-mouse-1>")  'highlight-symbol-at-point)
 (global-set-key (kbd "<S-wheel-up>")      'highlight-symbol-prev)
@@ -364,6 +365,9 @@
 (define-key goto-map "I" 'imenu)
 
 (define-key goto-map "e" 'find-tag)
+
+(setq compilation-error-regexp-alist '(gnu java))
+(global-set-key (kbd "<C-f9>") 'compile)
 
 (define-key goto-map "`" 'flymake-goto-next-error)
 (define-key goto-map "~" 'flymake-goto-prev-error)

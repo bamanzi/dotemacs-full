@@ -1,12 +1,11 @@
 (require 'windmove)
 
 
-(unless (require 'ide-skel nil t)  ;; `ide-skel' would load `tabbar' and  make its own tab group settings
-  (require 'tabbar nil t))
-
 (unless (require 'window-extension nil t)  ;; `window-extension' already contain the functions of `sticky-windows'
     (require 'sticky-windows nil t))
 ;;(require 'dedicated) ;;A very simple minor mode for dedicated buffers
+
+(autoload 'windresize "windresize" nil t)
 
 ;;(require 'transpose-frame nil t) ;; flip window layout within a frame
 (autoload 'transpose-frame "transpose-frame"  "Transpose windows arrangement at FRAME." t)
@@ -21,6 +20,9 @@
 
 ;;(require 'split-root) ;; roote window splitter
 (autoload 'split-root-window "split-root" "Split a window of SIZE lines/columns from the root window." t)
+
+(unless (require 'ide-skel nil t)  ;; `ide-skel' would load `tabbar' and  make its own tab group settings
+  (require 'tabbar nil t))
 
 
 ;; for some special buffer
@@ -254,6 +256,7 @@ an error is signaled."
     (define-key map (kbd "-") 'shrink-window-2d-more)
     ;;  (define-key map (kbd "") 'enlarge-window-
 				    
+    (define-key map (kbd "RET") 'windresize)
 
     ;; motion between windows
     ;;(windmove-default-keybindings 'super)
@@ -300,7 +303,6 @@ an error is signaled."
     ;; rotate-frame-anti-clockwise
 
 
-    (define-key map (kbd "C-m") 'toggle-one-window)
     (define-key map (kbd "<f11>") 'toggle-one-window)
     
     ;; override C-x 0 and C-x 1, to regard window-dedicated-p
