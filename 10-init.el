@@ -1,10 +1,5 @@
-(fset 'yes-or-no-p 'y-or-n-p)
 
-(unless (fboundp 'idle-require)
-  (defun idle-require (feature &optional file noerror)
-    (require feature)))
-
-;;;_ gui options
+;;;_ S(@* "gui options")
 
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
@@ -18,13 +13,13 @@
     (set-scroll-bar-mode 'right))
 
 
-;;;_ windows
+;;;_ S(@* "windows & frames")
 (setq winner-dont-bind-my-keys t)
 (winner-mode t)
 ;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
 ;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
 
-;;;_ tabbar
+;;;_. tabbar
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
 (require 'ide-skel nil t)
 
@@ -33,10 +28,13 @@
 (when (or (featurep 'tabbar)
           (load "tabbar" t))
   (tabbar-mode t)
-  (global-set-key (kbd "<C-tab>") 'tabbar-forward)
-  (global-set-key (kbd "<C-S-tab>") 'tabbar-backward))
+  (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward)
+  (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward)
+  (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
+  (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
+  )
 
-;;;_ files & buffers
+;;;_ S(@* "files & buffers")
 (global-set-key (kbd "C-c C-b") 'ibuffer)
 (global-set-key (kbd "<C-tab>") 'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
@@ -58,23 +56,9 @@
   (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
   (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
 
-;;;_ key bindings
+;;;_ S(@* "key bindings")
 
 ;;;_. key modifiers and prefix keys
-
-;; <f2>: 2-columns, diff, bookmarks
-;; <f3>: operations on current symbol
-;; <f4>: cua-like
-;; <f5>: selection and perform
-;; <f5> a: anything
-;; <f6>: vi style commands
-;; <f7>:
-;; <f8>:
-;; <f9>: M-f9: syntax check, C-f9: compile, f9: run
-;; <f10>: toggle minor modes
-;; <C-f10>:  some settings
-;; <f11>: window-related commands (`super' modifier)
-;; <f12>: misc stuff
 
 (when (eq window-system 'w32)
   ;;(setq w32-lwindow-modifier 'super)
@@ -98,11 +82,21 @@
   (define-key key-translation-map (kbd "<super>") (kbd "<f11>"))
   )
 
+;;;_. <f1> .. <f12> as prefix key
+;; <f2>: 2-columns, diff, bookmarks
+;; <f3>: operations on current symbol
+;; <f4>: cua-like
+;; <f5>: selection and perform
+;; <f5> a: anything
+;; <f6>: vi style commands
+;; <f7>:
+;; <f8>:
+;; <f9>: M-f9: syntax check, C-f9: compile, f9: run
+;; <f10>: toggle minor modes
+;; <C-f10>:  some settings
+;; <f11>: window-related commands (`super' modifier)
+;; <f12>: misc stuff
 
-(global-unset-key (kbd "<f2>"))
-(global-unset-key (kbd "<f3>"))
-(global-unset-key (kbd "<f4>"))
-(global-unset-key (kbd "<f10>"))
 
 (global-set-key (kbd "<f10> <f10>") 'menu-bar-open)
 
@@ -133,15 +127,12 @@
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "C-j") 'newline)
 
-;;;_ editing
+;;;_ S(@* "editing")
 (global-set-key (kbd "C-=") 'align-regexp)
-
+(transient-mark-mode t)
 
 ;;;_. tab key & indent
-(if (<= emacs-major-version 23) ;; emacs < 23.2
-     (setq tab-always-indent nil)
-   (setq tab-always-indent 'complete)) ;; emacs >= 23.2
-;;(setq tab-always-indent t)
+(setq tab-always-indent t)
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
@@ -196,7 +187,10 @@
 (global-set-key (kbd "C-c J") 'join-line)
 
 
-;;;_ completion
+;;;_ S(@* "completion")
+(if (string< "23.1.99" emacs-version) ;; emacs >= 23.2
+   (setq tab-always-indent 'complete))
+
 ;; Emacs default:
 ;;   M-TAB - lisp-complete-symbol(<24)/completion-at-point(v24)
 ;;   M-/ - dabbrev-expand
@@ -269,7 +263,7 @@
   (message "%s: failed to load `auto-complete'." load-file-name))
 
 
-;;;_ viper
+;;;_ undo
 (if (require 'undo-tree nil 'noerror)
     (progn
       (global-undo-tree-mode t)
@@ -278,14 +272,8 @@
       )
   (message "%s: failed to load `undo-tree'."  load-file-name))
 
-(eval-after-load "viper"
-  '(require 'vimpulse))
 
-(setq viper-expert-level '3)
-(setq viper-inhibit-startup-message 't)
-
-
-;;;_ code folding
+;;;_ S(@* "code folding")
 
 ;;;_. hideshow
 (autoload 'hideshowvis-enable "hideshowvis" "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
@@ -327,7 +315,7 @@
      ))
 
 
-;;;_ some visual effect
+;;;_ S(@* "some visual effect")
 ;;;_. highlight-symbol
 (idle-require 'highlight-symbol)
 
@@ -354,7 +342,7 @@
 
 
 
-;;;_ programming
+;;;_ S(@* "programming")
 ;;(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 
 (which-func-mode t)
@@ -373,17 +361,18 @@
 (define-key goto-map "~" 'flymake-goto-prev-error)
 
 
-;;;_ navigations
+;;;_ S(@* "misc")
+;;;_. navigations
 (setq rj-column-threshold 100)
 (if (load "recent-jump" t)
     (recent-jump-mode t)
-  (message "%s: failed to load `linkd'." load-file-name))
+  (message "Warning: failed to load `recent-jump' (%s)." load-file-name))
 
 (global-set-key (kbd "C-c <") 'recent-jump-backward)
 (global-set-key (kbd "C-c >") 'recent-jump-forward)
 
 
-;;;_ org-mode
+;;;_. org-mode
 (setq org-CUA-compatible t)
 
 (setq org-completion-use-ido t
@@ -397,8 +386,8 @@
       org-export-htmlize-output-type 'css ;; separate css
       )
 
-(global-set-key (kbd "C-c l") 'org-store-link)
-(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c o l") 'org-store-link)
+(global-set-key (kbd "C-c o c") 'org-capture)
 
 
 

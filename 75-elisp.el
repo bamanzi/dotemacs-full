@@ -37,12 +37,38 @@
 (define-key dired-mode-map "B" 'bmz/dired-do-byte-compile)
 
 
+;;;_. code folding
+(defun emacs-lisp-mode-init-fold ()
+  (if (fboundp 'hideshowvis-enable)
+      (hideshowvis-enable)
+    (hs-minor-mode t))
+  
+  (setq outline-regexp "[ \t]*(defun ")
+  )
+
+(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-init-fold)
 
 
-(add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
+;;;_. code complete
 
-(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
-
-;; auto-complete
 (if (fboundp 'ac-emacs-lisp-mode-setup)
     (add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup))
+
+
+;;;_. documentatin
+(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+
+
+(defun anything-info-elisp ()
+  (interactive)
+  (anything
+   :input (thing-at-point 'symbol)
+   :prompt "Info about: "
+   :candidate-number-limit 10
+   :sources
+   '( anything-c-source-info-elisp
+      ;;         anything-c-source-info-elib
+      anything-c-source-info-cl)))
+
+(define-key elisp-mode-map        (kbd "M-s f1")  'anything-info-elisp)
+(define-key lisp-interaction-mode (kbd "M-s f1")  'anything-info-elisp)
