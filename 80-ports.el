@@ -26,6 +26,33 @@
   (global-set-key (kbd "<scroll>") 'toggle-w32-alt-is-meta)
   )
 
+;;;_. cygwin
+(defun cygwin-init-paths (cygwin-root-path)
+  (if (file-directory-p cygwin-root-path)
+      (progn
+        ;;(add-to-list 'exec-path (expand-file-name "bin" cygwin-root-path)) ;;NOT recommended!!
+        
+        (add-to-list 'Info-default-directory-list (expand-file-name "usr/share/info" cygwin-root-path))
+        (add-to-list 'Info-default-directory-list (expand-file-name "usr/local/share/info"  cygwin-root-path))
+
+        (require 'woman)
+        (add-to-list 'woman-manpath (expand-file-name "usr/share/man" cygwin-root-path))
+        (add-to-list 'woman-manpath (expand-file-name "usr/local/share/man" cygwin-root-path))
+        (add-to-list 'woman-manpath (expand-file-name "usr/local/man" cygwin-root-path))
+
+        ;;  (if (not (locate-file ispell-program-name) ;;FIXME:
+        (setq ispell-program-name (expand-file-name "bin/aspell.exe" cygwin-root-path))
+        )
+    (message "Path not exist or not a directory: %s" cygwin-root-path)))
+
+(when (eq system-type 'windows-nt)
+  (require 'w32shell) ;;for msys-shell, cygwin-shell & cmd-shell
+
+  (defvar cygwin-root-path "e:/cygwin" "Root path of cygwin.")
+
+  (cygwin-init-paths cygwin-root-path)
+
+  )
 
 ;;;_ x window
 (when (eq window-system 'x)
