@@ -1,21 +1,21 @@
 
 ;;use pascal-mode instead of delphi-mode
 ;;(because you can't use either `highlight-symbol', `highlight-indentation' etc,
-;; nor `font-lock-add-keywords')
+;; nor `font-lock-add-keywords' with `delphi-mode')
 
 (add-to-list 'auto-mode-alist '("\\.dpr$" . pascal-mode))
 (add-to-list 'auto-mode-alist '("\\.pp$" . pascal-mode))
 
 (eval-after-load "pascal"
-  
-;;;_. imenu improvement
-  (load "delphi-imenu")
+  '(progn
+;;;_. imenu improvement / jump between declaration/impletion
+     (load "delphi-imenu")
 
-;;;_. highlight more keywords/types, jump between declaration/impletion
-  (load "delphi-misc")
+;;;_. highlight more keywords/types
+     (load "delphi-misc")
 
 ;;;_. compiler
-  (defun pascal-compile ()
+(defun pascal-compile ()
   "guest compile command for pascal/delphi"
   (interactive)
   (let* ( (filename (or (buffer-file-name) (buffer-name)))
@@ -65,15 +65,13 @@
 (add-hook 'delphi-mode-hook 'pascal-mode-init-compiler)
 (add-hook 'pascal-mode-hook 'pascal-mode-init-compiler)
 
-
-
   
 ;;;_. use pascal-mode for object pascal
-
+;;; as delphi-mode is implemented in a weired way, which prevent hightlight-symbol, highlight-indentation working
 (defun pascal-mode-for-objpas-init ()
   ;; make // starts the comment line
-  (modify-syntax-entry ?/ ”. 12b” pascal-mode-syntax-table)
-  (modify-syntax-entry ?\n ”> b” pascal-mode-syntax-table)
+  (modify-syntax-entry ?/   ". 12b" pascal-mode-syntax-table)
+  (modify-syntax-entry ?\n  "> b"   pascal-mode-syntax-table)
 
   (setq comment-start "// "
         comment-end "")
@@ -81,4 +79,7 @@
   )
 
 (add-hook 'pascal-mode-hook 'pascal-mode-for-objpas-init)
-)
+
+
+
+))
