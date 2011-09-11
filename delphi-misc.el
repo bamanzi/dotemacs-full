@@ -2,85 +2,6 @@
 (require 'delphi)
 (require 'pascal)
 
-;;{{{ imenu improvement
-;; Based on code http://www.emacswiki.org/emacs/DelphiMode  
-(defvar imenu--function-name-regexp-delphi  
-  (concat  
-   "^[ \t]*\\(function\\|procedure\\|constructor\\|destructor\\)[ \t]+"  
-   "\\([_a-zA-Z][_a-zA-Z0-9]*\\.\\)?"   ; class?  
-   "\\([_a-zA-Z][_a-zA-Z0-9]*\\)")  
-  "Re to get function/procedure names in Delphi.")  
-
-(defvar imenu--type-name-regexp-delphi  
-  (concat "^[ \t]*\\([a-zA-Z0-9]*\\)[ \t]*=[ \t]*\\(class\\|record\\|interface\\)"  
-	  "")  
-  "regexp to get class/record namesin Delphi.")  
-
-(defun imenu--create-delphi-index-enh (&optional regexp)  
-  (let ((index-alist '())  
-	(progress-prev-pos 0)  
-	(case-fold-search t))  
-    (goto-char (point-min))  
-    (imenu-progress-message progress-prev-pos 0)  
-    ;;first, scan interface part for types  
-    (if (eq nil (re-search-forward "interface" nil t))   
-	(goto-char (point-min))  
-      (progn    ;; if we have interface..implementaion  
-	(save-match-data  
-	  (while (re-search-forward  
-		  (or regexp imenu--type-name-regexp-delphi)  
-		  nil t)  
-	    (imenu-progress-message progress-prev-pos)  
-	    (let ((pos (save-excursion  
-			 (beginning-of-line)  
-			 (if imenu-use-markers (point-marker) (point))))  
-		  (sub-alist '())  
-		  (type-name (match-string-no-properties 1)))  
-	      (progn  
-		(push (cons "(declaration)" pos) sub-alist)  
-		(push (cons (format "%s." type-name) sub-alist) index-alist))))  
-	  )  
-	))  
-    ;;now, scan implementation part for methods (and other functions)  
-    (goto-char (point-min))  
-    (if (eq nil (re-search-forward "implementation" nil t)) ;;advance to the interface part  
-	(goto-char (point-min))      
-      (save-match-data  
-	(while (re-search-forward  
-		(or regexp imenu--function-name-regexp-delphi)  
-		nil t)  
-	  (imenu-progress-message progress-prev-pos)  
-	  (let* ((pos (save-excursion  
-			(beginning-of-line)  
-			(if imenu-use-markers (point-marker) (point))))  
-		 (class-name (match-string-no-properties 2))  
-		 (function-name (match-string-no-properties 3))  
-		 (sub-menu (assoc class-name index-alist)))  
-	    (if (eq nil sub-menu)  
-		(push (cons (format "%s%s()"  
-				    (if (eq nil class-name) "" class-name)  
-				    function-name)  
-			    pos)  
-		      index-alist)  
-	      (setcdr sub-menu (cons (cons function-name pos) (cdr sub-submenu)))  
-	      )  
-	    )))  
-      )  
-    (imenu-progress-message progress-prev-pos 100)  
-    (nreverse index-alist)))   
-
-(defun delphi-imenu-fix()
-  (require 'imenu)  
-  (setq imenu-sort-function 'imenu--sort-by-name)  
-  (setq imenu-create-index-function  
-	#'imenu--create-delphi-index-enh)  
-  (imenu-add-menubar-index))
-;;  
-(add-hook 'delphi-mode-hook 'delphi-imenu-fix)
-(add-hook 'pascal-mode-hook 'delphi-imenu-fix)
-
-;;}}}
-
 ;;{{{ jump to declaration/implementation
 (defun delphi-jump-to-declaration ()
   (interactive)
@@ -131,12 +52,39 @@
 (define-key pascal-mode-map (kbd "<C-S-down>") 'delphi-jump-to-implementaion)
 ;;}}}
 
-;;{{{ highlight more
-;;(font-lock-add-keywords 
-
+;;{{{ highlight more - pascal-mode
+;;; for better supporting Object Pascal 
+(font-lock-add-keywords 'pascal-mode              
+    '( ("\\<\\(class\\|uses\\|as\\|is\\|while\\|until\\|unit\\|private\\|public\\|protected\\|interface\\|implementation\\|resourcestring\\)\\>"  
+        1 font-lock-keyword-face)  
+       ("\\<\\(integer\\|string\\|char\\|shortint\\|smallint\\|longint\\|longword|\\|int64\\|byte\\|word\\|cardinal\\|dword\\|qword\\|null\\|variant\\|pointer\\|set\\|tdatetime\\)\\>"
+        1 font-lock-type-face)  
+       ("\\<\\(exit\\|break\\|continue\\|assert\\|inc\\|dec\\|copy\\setlength\\|sizeof\\|assigned\\|ord\\|pred\\|succ\\|new\\|dispose\\|allocmem\\|getmem\\|freemem\\|low\\|high\\|\\lo\\|hi\\|include\\|exclude\\)\\>"
+        1 font-lock-function-name-face)  
+       ("\\<\\(true\\|false\\|nil\\)\\>"
+        1 font-lock-constant-face)  
+       ("\\<\\(FIXME\\|TODO\\):"
+        1 font-lock-warning-face prepend))) 
 
 ;;}}}
+
 ;;{{{ highlight more - delphi-mode
+;;; font-lock-add-keywords won't work for delphi-mode,
+;;; thus I have to override `delphi-face-of' and `delphi-word-token-at'
+
+(defconst delphi-data-types  
+  '( integer shortint smallint longint longword int64 byte word cardinal dword qword  
+             boolean bytebool longbool real     
+             char string shortstring ansistring widestring pchar  
+             array record set file  pointer variant tdatetime  
+             )  
+  "Delphi/FreePascal built-in data types")  
+  
+(defconst delphi-system-funcs  
+  '( allocmem assert assigned break continue copy dec dispose exit exclude freemem  
+              getmem hi high inc include length lo low new  
+              ord pred reallocmem setlength sizeof str succ val)  
+  "Delphi/FreePascal functions in System unit")  
 
 (defcustom delphi-datatype-face 'font-lock-type-face
   "*Face used to color delphi data types."
@@ -175,10 +123,5 @@
         word))))
 ;;}}}
 
-(defun pascal-misc-init ()
-  ;; make // starts the comment line
-  (modify-syntax-entry ?/ ”. 12b” pascal-mode-syntax-table)
-  (modify-syntax-entry ?\n ”> b” pascal-mode-syntax-table))
 
-(add-hook 'pascal-mode-hook 'pascal-misc-init)
 

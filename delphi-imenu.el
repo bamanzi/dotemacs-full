@@ -1,6 +1,12 @@
-;; Based on code from http://www.emacswiki.org/emacs/DelphiMode
 
 ;; bamanzi <bamanzi@gmail.com>
+
+;;{{{ IMenu improvments for delphi/pascal: better support for Object Pascal
+;; - support 'record', 'class' and 'interface' as level 1 menu
+;; - methods show as submenu of class
+;; - correctly jump to the implementation part (i.e. rather than interface part)
+;; - works even if there's no `interface/implementation' (some freepascal code)
+;; Based on code from http://www.emacswiki.org/emacs/DelphiMode
 
 (defvar imenu--function-name-regexp-delphi
   (concat
@@ -60,17 +66,22 @@
                                     function-name)
                             pos)
                       index-alist)
-              (setcdr sub-menu (cons (cons function-name pos) (cdr sub-submenu)))
+              (setcdr sub-menu (cons (cons function-name pos) (cdr sub-menu)))
               )
             )))
       )
 	(imenu-progress-message progress-prev-pos 100)
 	(nreverse index-alist))) 
 
-(add-hook 'delphi-mode-hook
-		  #'(lambda ()
-			  (require 'imenu)
-			  (setq imenu-sort-function 'imenu--sort-by-name)
-			  (setq imenu-create-index-function
-					#'imenu--create-delphi-index-enh)
-			  (imenu-add-menubar-index)))
+(defun delphi-pascal-init-imenu ()
+  (require 'imenu)
+  (setq imenu-sort-function 'imenu--sort-by-name)
+  (setq imenu-create-index-function
+        #'imenu--create-delphi-index-enh)
+  (imenu-add-menubar-index))
+
+(add-hook 'delphi-mode-hook 'delphi-pascal-init-imenu)
+(add-hook 'pascal-mode-hook 'delphi-pascal-init-imenu)
+;;}}}
+
+
