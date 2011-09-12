@@ -62,4 +62,8 @@
 (eval-after-load "nxml"
   '(define-key nxml-mode-map (kbd "M-g %") 'xml-goto-match-tag))
 
+;;;Tips: `hl-tags-mode': Emacs minor mode for highlighting HTML start and end tags
+;;       https://github.com/deactivated/hl-tags-mode
+
+
 

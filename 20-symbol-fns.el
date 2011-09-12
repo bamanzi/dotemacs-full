@@ -124,8 +124,8 @@ Launches default browser and opens the doc's url."
 
     (define-key search-map "i" 'idomenu)
     (define-key search-map "I" 'imenu)
-    (define-key search-map "g" 'bmz/goto-symbol-definition-in-buffer)
-    
+
+    ;;(define-key search-map "g" 'bmz/goto-symbol-definition-in-buffer)
     (define-key search-map (kbd "M-.") 'bmz/find-symbol-definition-across-files) ;; Emacs style key
     (define-key search-map (kbd "C-]") 'bmz/find-symbol-definition-across-files) ;; Vi style key
     ;;(define-key search-map "G" 'bmz/find-symbol-definition-across-files)
@@ -138,7 +138,9 @@ Launches default browser and opens the doc's url."
 
     (define-key search-map (kbd "O")   'bmz/occur-at-point)
     (define-key search-map (kbd "M-o") 'bmz/multi-occur-at-point)
+    (define-key search-map (kbd "M-O") 'bmz/multi-occur-in-same-mode-buffers)
 
+    (define-key search-map (kbd "g")  'nil)
     (define-key search-map (kbd "gg") 'bmz/grep-symbol-at-point-same-ext)
     (define-key search-map (kbd "gG") 'bmz/grep-symbol-at-point)
     (define-key search-map (kbd "g SPC") 'grep)
@@ -160,7 +162,10 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "G") 'lookup-google)
     (define-key search-map (kbd "W") 'lookup-wikipedia)
 
-    search-map
+    (define-key search-map (kbd "C-f") 'ffap-other-window)
+    (define-key search-map (kbd "RET") 'browse-url-at-point)
+    
+    t
     )
 
 (init-word-ops-keys search-map)

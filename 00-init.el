@@ -1,3 +1,5 @@
+(server-start)
+
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (unless (fboundp 'idle-require)

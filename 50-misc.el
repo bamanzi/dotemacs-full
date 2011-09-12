@@ -1,5 +1,5 @@
 
-;;;_ emacs options
+;;;_ S(@* "emacs options")
 
 (global-set-key (kbd "<C-10> F") 'menu-set-font)
 
@@ -17,7 +17,7 @@
 (global-set-key (kbd "<C-f10> p") 'bmz/toggle-show-paren-style)
           
 
-;;;_ minor modes
+;;;_ S(@* "minor modes")
 
 ;;(global-unset-key (kbd "<f10>"))
 (global-set-key (kbd "<f10> <f10>") 'menu-bar-open)
@@ -55,7 +55,7 @@
 (global-set-key (kbd "<f10> N") 'setnu-mode)
 
      
-;;;_ keybindings
+;;;_ S(@* "keybindings")
 ;;;_. hyper keys
 (global-set-key (kbd "H-a") 'mark-whole-buffer)
 ;; H-s
@@ -90,7 +90,7 @@
 (global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
 
 ;;;_. misc keys
-(global-set-key (kbd "<f3> C-f") 'ffap-other-window)
+;(global-set-key (kbd "<f3> C-f") 'ffap-other-window)
 
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)
 
@@ -100,7 +100,8 @@
 
 (global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
 
-;;;_ editing
+
+;;;_ S(@* "editing")
 ;; make M-z behave more as zap-up-to-char
 (defun zap-up-to-char (arg char)
     "Kill up to the ARG'th occurence of CHAR, and leave CHAR.
@@ -120,7 +121,7 @@
 
 
 
-;;;_ buffer-local bookmarks
+;;;_ S(@* "buffer-local bookmarks")
 (ignore-errors
   (or (require 'bm nil t)
       (require 'linkmark nil t))
@@ -149,7 +150,7 @@
       )
 
 
-;;;_ folding
+;;;_ S(@* "folding")
 ;;;_. fold-dwim
 (autoload 'fold-dwim-toggle "fold-dwim" "Toggle folding at point." t)
 (autoload 'fold-dwim-show-all "fold-dwim")
@@ -186,7 +187,8 @@
 (global-set-key (kbd "C-c \\") 'toggle-selective-display)
 ;;(global-set-key (kbd "C-+") 'toggle-hiding)
 
-;;;_ hidesearch
+;;;_ S(@* "search")
+;;;_. hidesearch
 (autoload 'hidesearch "hidesearch" "Incrementally show only lines in file based on what user types." t)
 (autoload 'show-all-invisible "hide-lines" "Show all areas hidden by the filter-buffer command" t)
 (autoload 'hide-non-matching-lines "hide-lines" "Hide lines that don't match the specified regexp." t)
@@ -197,7 +199,7 @@
 ;;FIXME: anything-occur is better?
 
      
-;;;_ list & choose method
+;;;_. list & choose method
 (defun bmz/select-method()
   (interactive)
   (require 'idomenu "idomenu" t)  
@@ -220,14 +222,9 @@
 (global-set-key (kbd "C-c C-o") 'bmz/select-method)
 (global-set-key (kbd "<f5> I") 'bmz/select-method)
 
-;;;_ extend selection incrementally (ergoemacs-functions.el)
-;; http://xahlee.org/emacs/syntax_tree_walk.html
-(autoload 'extend-selection "ergoemacs-functions" nil t)
-(global-set-key (kbd "C-.") 'extend-selection)
-;; see also: mark-sexp (C-M-SPC), mark-word (M-@)
 
 
-;;;_ completion
+;;;_ S(@* "completion")
 
 ;;;_. auto-completion
 (defun ac-expand-filename ()  ;;FIXME: `ac-complete-filename'?
@@ -277,11 +274,18 @@
 ;;(global-set-key (kbd "C-, <") 'complete-nxml)
 (global-set-key (kbd "C-, $") 'complete-ispell)
 
-(idle-require 'complete-ui-more-source)
+(autoload 'complete-ispell-lookup "complete-ui-more-source")
 (global-set-key (kbd "C-, $") 'complete-ispell-lookup)
 
 
-;;;_ misc
+;;;_ S(@* "misc")
+;;;_. extend selection incrementally (ergoemacs-functions.el)
+;; http://xahlee.org/emacs/syntax_tree_walk.html
+(autoload 'extend-selection "ergoemacs-functions" nil t)
+(global-set-key (kbd "C-.") 'extend-selection)
+;; see also: mark-sexp (C-M-SPC), mark-word (M-@)
+
+
 ;;;_. opening server files always in a new frame
 ;;http://www.emacswiki.org/emacs/EmacsClient#toc21
 
@@ -293,25 +297,24 @@
 
 
 ;;;_. linkd: visualize section header & links (to file/man/info/url)
-(if (require 'linkd nil t)
-    (progn
+(autoload 'linkd-mode "linkd" "Create or follow hypertext links." t)
+(eval-after-load "linkd"
+    '(progn
+       ;;;_.. linkd icons path
       (let ( (dir (concat (file-name-directory (locate-library "linkd")) "icons")) )
         (when (file-exists-p dir)
           (setq linkd-icons-directory dir)
           (setq linkd-use-icons t)))
+
+      ;;;_.. restore [mouse-4] (for mwheel-scroll, linkd bind it to `linkd-back')
+      (when (eq window-system 'x)
+        (define-key linkd-map [mouse-4] nil)
+        (define-key linkd-overlay-map [mouse-4] nil))
+        
 ;;      (add-hook 'emacs-lisp-mode-hook 'linkd-enable)
 ;;      (add-hook 'python-mode-hook 'linkd-enable)
 ;;      (add-hook 'espresso-mode-hook 'linkd-enable)
-      )
-  (message "%s: failed to load `linkd'." load-file-name))
+      
+      ))
 
-;;;_. viper
-(defun viper-cua-region-fix()
-  (define-key viper-vi-global-user-map [backspace] 'backward-delete-char-untabify)
-  (define-key viper-vi-global-user-map "\C-d" 'delete-char)
-  (define-key viper-insert-global-user-map [backspace] 'backward-delete-char-untabify)
-  (define-key viper-insert-global-user-map "\C-d" 'delete-char))
-
-(eval-after-load 'viper '(viper-cua-region-fix))
-
-
+;;;_. TODO: fuzzy.el

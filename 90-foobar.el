@@ -1,4 +1,4 @@
-;;--- go to scratch buffer
+;;;_. go to scratch buffer
 (defun goto-scratch-buffer-on-botton-window ()
   (interactive)
   (require 'windmove)
@@ -12,8 +12,8 @@
 (global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
 
 
+;;;_. anything-show-kill-ring を聞うように俐屎した
 ;; http://dev.ariel-networks.com/articles/emacs/part4/
-;; anything-show-kill-ring を聞うように俐屎した
 (defadvice yank-pop (around anything-kill-ring-maybe activate)
   (if (not (eq last-command 'yank))
       (anything-show-kill-ring)
@@ -25,7 +25,7 @@
     ad-do-it))
 
 
-;;-- block movement
+;;;_. block movement
 ;;stolen from http://xahlee.org/emacs/xah_emacs_cursor_movement.el
 ;;(modified: now it move to next occurrence of 3rd newline char)
 (defun forward-block ()
@@ -73,25 +73,31 @@ See: `forward-block'"
       )))
 
 
-;;---
-;; use `pos-tip' to fix the popup window position issue
+;;;_. use `pos-tip' to fix the popup window position issue
 ;; `auto-complete' 1.4 already use `pos-tip'
-(when (require 'popup-pos-tip)
+(when (require 'popup-pos-tip nil t)
   (defadvice popup-tip
     (around popup-pos-tip-wrapper (string &rest args) activate)
-    (if (eq window-system 'x)
+    (if (memq window-system '(x windows-nt))
         (apply 'popup-pos-tip string args)
       ad-do-it)))
 
 
-;;_ misc
+;;;_. misc enhancement libraries
 (idle-require 'menu-bar+)
 (idle-require 'info+)
 (idle-require 'help-fns+)
 (idle-require 'dired+)
-
+(idle-require 'buff-menu+)
 ;;(idle-require 'facemenu+)
 
 ;;(idle-require 'mouse3)
-
 ;;(idle-require 'second-sel)
+
+(if (not (featurep 'ide-skel))
+    (idle-require 'tabbar-ruler)) 
+         
+
+(load "copy-without-sel" 'noerror)
+(if (eq window-system 'windows-nt)
+    (load "keyword-help" 'noerror))

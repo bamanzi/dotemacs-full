@@ -27,6 +27,7 @@
       (call-interactively command))))
 
 
+;;; message
   (defadvice message (before who-said-that activate)
     "Find out who said that thing. and say so."
     (let ((trace nil) (n 1) (frame nil))
@@ -73,6 +74,7 @@ Otherwise, call the original `dired-jump'."
 (define-key goto-map "d" 'bmz/dired-jump)
 
 ;;;_ S(@* "ediff")
+(setq ediff-window-setup-function 'ediff-setup-windows-plain) ;;I don't like multiframe
 
 
 

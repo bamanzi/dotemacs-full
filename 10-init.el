@@ -1,10 +1,14 @@
 ;;;_ S(@* "gui options")
+(setq use-dialog-box nil)
 
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
 
-(setq frame-title-format '("%b (%m) - Emacs "
-			   (:eval emacs-version)))
+(setq frame-title-format '("%b%* (%m) - Emacs "
+                           (:eval emacs-version)
+                           (:eval (if buffer-file-name
+                                      (format " - [%s]" buffer-file-name)
+                                    ""))))
 
 (when (eq window-system 'x)
     (setq x-select-enable-clipboard t)
@@ -35,10 +39,21 @@
   )
 
 ;;;_ S(@* "files & buffers")
->>>>>>> .r340
 (global-set-key (kbd "C-c C-b") 'ibuffer)
 (global-set-key (kbd "<C-tab>") 'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
+
+;;;_. backup rules
+;;(setq make-backup-files t) ;;to disable backup, set it to nil
+
+;;(setq backup-directory-alist `(("." . "~/.saves")))
+
+(setq backup-by-copying t)
+
+;; (setq version-control t
+;;   delete-old-versions t
+;;   kept-new-versions 6
+;;   kept-old-versions 2)
 
 ;;;_. recentf
 (require 'recentf)
@@ -54,7 +69,7 @@
   (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
   (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
   (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
-
+;;;See also: midnight-mode
 
 ;;;_ S(@* "windows")
 ;;;_. winner-mode
@@ -65,9 +80,11 @@
 
 ;;;_ tabbar
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
-;;(require 'ide-skel nil t)
+;;(if (and window-system
+;;         (> emacs-major-version 23))
+;;  (require 'ide-skel nil t))
 
-;; if you use `ide-ske', don't directly load `tabbar' after `ide-ske'
+;; if you use `ide-skel', don't directly load `tabbar' after `ide-ske'
 ;; as this would mess up the tab group definition of `ide-skel'
 (when (or (featurep 'tabbar)
           (load "tabbar" t))
@@ -119,6 +136,7 @@
 (global-set-key (kbd "<f10> l") 'linum-mode)
 (global-set-key (kbd "<f10> v") 'toggle-viper-mode)
 
+
 ;;;_ S(@* "editing")
 (transient-mark-mode t)
 (setq shift-select-mode t)
@@ -131,18 +149,19 @@
 
 (global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
 
-
 ;;;_. tab key & indent
 (setq tab-always-indent t)
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
-
 ;;;_. parens
+(setq show-paren-style 'mixed)
 (setq show-paren-mode t)
+(show-paren-mode t)
 
 ;;;_. newline & line-wrap
+(setq require-final-newline 'ask)
 (setq-default truncate-lines t)
 (setq-default fill-column 100)
 ;;(auto-fill-mode t)
@@ -373,6 +392,7 @@
 (global-set-key (kbd "C-`") 'set-mark-command)
 (global-set-key (kbd "M-`") 'pop-to-mark-command)
 
+
 ;;;_. imenu
 (autoload 'idomenu "idomenu" "Switch to a buffer-local tag from Imenu via Ido." t)
 (define-key goto-map "i" 'idomenu)
@@ -410,11 +430,6 @@
 
 ;;;_. utils
 (define-key goto-map "d" 'dired-jump) ;;C-x C-j
-
-
-
-
-
 
 	 
   

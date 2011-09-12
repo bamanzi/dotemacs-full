@@ -1,4 +1,7 @@
 
+(eval-after-load "python"
+  '(progn
+     
 ;;;_ epy
 (require 'epy-setup)
 (require 'epy-python)
@@ -30,6 +33,7 @@
    (setq outline-regexp "[[:space:]]*\\(?:\\(?:class\\|def\\)\\)\\_>")
    
    )
+)
 
 )
 

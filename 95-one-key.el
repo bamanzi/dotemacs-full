@@ -2,7 +2,7 @@
 
 (require 'one-key-bind)
 
-(one-key-bind-keymap "ESC <f1>" "<f1>")
+;;(one-key-bind-keymap "ESC <f1>" "<f1>")
 (one-key-bind-keymap "ESC <f2>" "<f2>") ;;bookmark, folding
 (one-key-bind-keymap "ESC <f3>" "<f3>") ;;operations on current symbol
 (one-key-bind-keymap "ESC <f4>" "<f4>") ;;CUA like

@@ -64,11 +64,11 @@
   (anything
    :input (thing-at-point 'symbol)
    :prompt "Info about: "
-   :candidate-number-limit 10
+   :candidate-number-limit 20
    :sources
    '( anything-c-source-info-elisp
       ;;         anything-c-source-info-elib
       anything-c-source-info-cl)))
 
-(define-key elisp-mode-map        (kbd "M-s f1")  'anything-info-elisp)
-(define-key lisp-interaction-mode (kbd "M-s f1")  'anything-info-elisp)
+(define-key emacs-lisp-mode-map       (kbd "M-s <f1>")  'anything-info-elisp)
+(define-key lisp-interaction-mode-map (kbd "M-s <f1>")  'anything-info-elisp)
