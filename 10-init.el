@@ -1,4 +1,3 @@
-
 ;;;_ S(@* "gui options")
 
 (if (fboundp 'tool-bar-mode)
@@ -36,11 +35,10 @@
   )
 
 ;;;_ S(@* "files & buffers")
+>>>>>>> .r340
 (global-set-key (kbd "C-c C-b") 'ibuffer)
 (global-set-key (kbd "<C-tab>") 'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
-
-(define-key goto-map "d" 'dired-jump) ;;C-x C-j
 
 ;;;_. recentf
 (require 'recentf)
@@ -56,6 +54,27 @@
   (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
   (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
   (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
+
+
+;;;_ S(@* "windows")
+;;;_. winner-mode
+(setq winner-dont-bind-my-keys t)
+(winner-mode t)
+;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
+;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
+
+;;;_ tabbar
+;; ide-skel would group buffers into two: editing buffer, emacs buffer
+;;(require 'ide-skel nil t)
+
+;; if you use `ide-ske', don't directly load `tabbar' after `ide-ske'
+;; as this would mess up the tab group definition of `ide-skel'
+(when (or (featurep 'tabbar)
+          (load "tabbar" t))
+  (tabbar-mode t)
+  (global-set-key (kbd "<C-tab>") 'tabbar-forward)
+  (global-set-key (kbd "<C-S-tab>") 'tabbar-backward))
+
 
 ;;;_ S(@* "key bindings")
 
@@ -84,20 +103,6 @@
   )
 
 ;;;_. <f1> .. <f12> as prefix key
-;; <f2>: 2-columns, diff, bookmarks
-;; <f3>: operations on current symbol
-;; <f4>: cua-like
-;; <f5>: selection and perform
-;; <f5> a: anything
-;; <f6>: vi style commands
-;; <f7>:
-;; <f8>:
-;; <f9>: M-f9: syntax check, C-f9: compile, f9: run
-;; <f10>: toggle minor modes
-;; <C-f10>:  some settings
-;; <f11>: window-related commands (`super' modifier)
-;; <f12>: misc stuff
-
 
 (global-set-key (kbd "<f10> <f10>") 'menu-bar-open)
 
@@ -108,29 +113,24 @@
 (global-set-key (kbd "<f10> w") 'whitespace-mode)
 (global-set-key (kbd "<f10> h") 'hs-minor-mode)
 (global-set-key (kbd "<f10> o") 'outline-minor-mode)
-(global-set-key (kbd "<f10> v") 'toggle-viper-mode)
-(global-set-key (kbd "<f10> C-w") 'visual-line-mode)
+(global-set-key (kbd "<f10> r") 'ruler-mode)
 (global-set-key (kbd "<f10> t") 'toggle-truncate-lines)
+(global-set-key (kbd "<f10> C-w") 'visual-line-mode)
 (global-set-key (kbd "<f10> l") 'linum-mode)
+(global-set-key (kbd "<f10> v") 'toggle-viper-mode)
 
-;;;_. common keys
+;;;_ S(@* "editing")
+(transient-mark-mode t)
 (setq shift-select-mode t)
 (delete-selection-mode t)
 
+;;;_. CUA
 (setq cua-enable-cua-keys nil)
 ;;(setq cua-rectangle-modifier-key 'hyper)  ;;leave C-RET
 (cua-mode t)
 
 (global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
 
-;;;_. misc keys
-
-(global-set-key (kbd "RET") 'newline-and-indent)
-(global-set-key (kbd "C-j") 'newline)
-
-;;;_ S(@* "editing")
-(global-set-key (kbd "C-=") 'align-regexp)
-(transient-mark-mode t)
 
 ;;;_. tab key & indent
 (setq tab-always-indent t)
@@ -138,17 +138,29 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
+
 ;;;_. parens
 (setq show-paren-mode t)
 
-;;;_. wrap
+;;;_. newline & line-wrap
 (setq-default truncate-lines t)
 (setq-default fill-column 100)
 ;;(auto-fill-mode t)
 
 (global-set-key (kbd "C-c C-w") 'toggle-truncate-lines)
 
+(global-set-key (kbd "RET") 'newline-and-indent)
+(global-set-key (kbd "C-j") 'newline)
+
 ;;;_. changes
+(if (require 'undo-tree nil 'noerror)
+    (progn
+      (global-undo-tree-mode t)
+      (global-set-key (kbd "C-c C-z") 'undo-tree-undo)
+      (global-set-key (kbd "C-c C-y") 'undo-tree-redo)
+      )
+  (message "%s: failed to load `undo-tree'."  load-file-name))
+
 (setq highlight-changes-visibility-initial-state nil)
 (global-highlight-changes-mode t)
 
@@ -179,6 +191,7 @@
       (global-set-key (kbd "<M-down>") 'swap-line-down)
       ))
 
+
 ;;;_. vi-style join-line
 (defun join-line ()
   "Join the following line with current line"
@@ -187,10 +200,15 @@
 
 (global-set-key (kbd "C-c J") 'join-line)
 
+;;;_. misc
+
+(global-set-key (kbd "C-=") 'align-regexp)
+
 
 ;;;_ S(@* "completion")
 (if (string< "23.1.99" emacs-version) ;; emacs >= 23.2
    (setq tab-always-indent 'complete))
+
 
 ;; Emacs default:
 ;;   M-TAB - lisp-complete-symbol(<24)/completion-at-point(v24)
@@ -208,12 +226,11 @@
   )
 (setq ido-everywhere t)
 (setq ido-enable-flex-matching t)
-(ido-mode t)
-
 (setq ido-use-filename-at-point 'guess)
 (setq ido-use-url-at-point 'guess)
+(ido-mode t)
 
-(autoload 'idomenu "idomenu" "Switch to a buffer-local tag from Imenu via Ido." t)
+
 
 ;;;_. smex : ido for M-x
 (if (require 'smex nil t)
@@ -228,7 +245,6 @@
     (message "%s: failed to load `smex'." load-file-name)
     ;;fall back to Emacs' icomplete-mode
     (icomplete-mode t)))
-
 
 ;;;_. anything
 (if (and (load "anything" t)
@@ -249,13 +265,14 @@
   (message "%s: failed to load `anything'." load-file-name))
 
 
-;;-- auto-compelte
+;;;_. auto-compelte
 (if (and (load "auto-complete" t)
          (load "auto-complete-config" t))
     (progn
-      (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
       
       (ac-config-default)
+      (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
+      
       ;;(add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
 
       (if (load "auto-complete-scite-api" t)
@@ -263,15 +280,6 @@
         (message "%s: failed to load `auto-complete-scite-api'." load-file-name)))
   (message "%s: failed to load `auto-complete'." load-file-name))
 
-
-;;;_ undo
-(if (require 'undo-tree nil 'noerror)
-    (progn
-      (global-undo-tree-mode t)
-      (global-set-key (kbd "C-c C-z") 'undo-tree-undo)
-      (global-set-key (kbd "C-c C-y") 'undo-tree-redo)
-      )
-  (message "%s: failed to load `undo-tree'."  load-file-name))
 
 
 ;;;_ S(@* "code folding")
@@ -300,8 +308,8 @@
 
 (global-set-key (kbd "<C-wheel-up>") 'outline-previous-visible-heading)
 (global-set-key (kbd "<C-wheel-down>") 'outline-next-visible-heading)
-(global-set-key (kbd "<C-mouse-1>") 'outline-toggle-children)
-(global-set-key (kbd "<C-mouse-2>")   'hide-sublevels)
+(global-set-key (kbd "<C-mouse-1>")  'outline-toggle-children)
+(global-set-key (kbd "<C-mouse-2>")  'hide-sublevels)
 
 ;;;_. allout
 (eval-after-load "allout"
@@ -342,19 +350,18 @@
 (global-set-key (kbd "<left-fringe> <C-mouse-2>")     'bm-show)
 
 
-
 ;;;_ S(@* "programming")
+
 ;;(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 
 (which-func-mode t)
 
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
 
-(define-key goto-map "i" 'idomenu)
-(define-key goto-map "I" 'imenu)
 
 (define-key goto-map "e" 'find-tag)
 
+;;;_. compilation
 (setq compilation-error-regexp-alist '(gnu java))
 (global-set-key (kbd "<C-f9>") 'compile)
 
@@ -362,8 +369,16 @@
 (define-key goto-map "~" 'flymake-goto-prev-error)
 
 
-;;;_ S(@* "misc")
-;;;_. navigations
+;;;_ S(@* "buffer navigations")
+(global-set-key (kbd "C-`") 'set-mark-command)
+(global-set-key (kbd "M-`") 'pop-to-mark-command)
+
+;;;_. imenu
+(autoload 'idomenu "idomenu" "Switch to a buffer-local tag from Imenu via Ido." t)
+(define-key goto-map "i" 'idomenu)
+(define-key goto-map "I" 'imenu)
+
+;;;_. recent-jump
 (setq rj-column-threshold 100)
 (if (load "recent-jump" t)
     (recent-jump-mode t)
@@ -372,8 +387,10 @@
 (global-set-key (kbd "C-c <") 'recent-jump-backward)
 (global-set-key (kbd "C-c >") 'recent-jump-forward)
 
+;;;_ S(@* "misc")
 
 ;;;_. org-mode
+
 (setq org-CUA-compatible t)
 
 (setq org-completion-use-ido t
@@ -391,6 +408,8 @@
 (global-set-key (kbd "C-c o c") 'org-capture)
 
 
+;;;_. utils
+(define-key goto-map "d" 'dired-jump) ;;C-x C-j
 
 
 

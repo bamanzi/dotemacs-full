@@ -1,14 +1,16 @@
+
+;;;_. options
 (global-set-key (kbd "<C-f10> g") 'customize-group)
 (global-set-key (kbd "<C-f10> v") 'customize-variable)
 (global-set-key (kbd "<C-f10> f") 'customize-face)
 (global-set-key (kbd "<C-f10> t") 'customize-themes)
 
 
+;;;_. emacs-lisp
 (global-set-key (kbd "<f12> l l") 'load-library)
 (global-set-key (kbd "<f12> l t") 'load-theme)
 
 (global-set-key (kbd "<C-f10> d") 'toggle-debug-on-error)
-
 
 (defun load-and-execute (library)
   "load a library 'foobar' and execute the command with same name (foobar or foobar-mode"
@@ -25,7 +27,21 @@
       (call-interactively command))))
 
 
-;;;_ S(@* "utils")
+  (defadvice message (before who-said-that activate)
+    "Find out who said that thing. and say so."
+    (let ((trace nil) (n 1) (frame nil))
+      (while (setq frame (backtrace-frame n))
+        (setq n     (1+ n) 
+              trace (cons (cadr frame) trace)) )
+      (ad-set-arg 0 (concat "<<%S>>:\n" (ad-get-arg 0)))
+      (ad-set-args 1 (cons trace (ad-get-args 1))) ))
+
+
+   (ad-disable-advice 'message 'before 'who-said-that)
+   (ad-update 'message)
+
+
+;;;_. "utils"
 (global-set-key (kbd "<f12> a") 'apropos)  ;;sys-apropos ?
 (global-set-key (kbd "<f12> c") 'quick-calc)
 (global-set-key (kbd "<f12> C") 'calc-dispatch)

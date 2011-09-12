@@ -11,6 +11,21 @@
 
 ;; unset predefined function key bindings
 ;; I'll use them as prefix keys
+
+;; <f2>: 2-columns, diff, bookmarks
+;; <f3>: operations on current symbol
+;; <f4>: cua-like
+;; <f5>: selection and perform
+;; <f5> a: anything
+;; <f6>: vi style commands
+;; <f7>:
+;; <f8>:
+;; <f9>: M-f9: syntax check, C-f9: compile, f9: run
+;; <f10>: toggle minor modes
+;; <C-f10>:  some settings
+;; <f11>: window-related commands (`super' modifier)
+;; <f12>: misc stuff
+
 (global-unset-key [f2])
 (global-unset-key [f3])
 (global-unset-key [f4])

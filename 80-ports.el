@@ -71,6 +71,6 @@
   (xterm-mouse-mode t)
   ;;(gpm-mouse-mode t) ;;for Linux console
 
-  
+  (load-library "help-mode")  ;; to avoid the error message "Symbol's value as variable is void: help-xref-following"
   )
                
