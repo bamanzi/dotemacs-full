@@ -45,7 +45,7 @@
      (t
       (call-interactively 'find-tag))))
 
-;; occur
+;;;_. occur
 (defun bmz/occur-at-point ()
   (interactive)
   (occur (format "%s" (bmz/get-symbol-selected-or-current))))
@@ -55,6 +55,22 @@
   ;;FIXME: use multi-occur?
   (multi-occur (format "%s" (bmz/get-symbol-selected-or-current))))
 
+;; stolen from http://www.masteringemacs.org/articles/2011/07/20/searching-buffers-occur-mode/
+(defun get-buffers-matching-mode (mode)
+  "Returns a list of buffers where their major-mode is equal to MODE"
+  (let ((buffer-mode-matches '()))
+   (dolist (buf (buffer-list))
+     (with-current-buffer buf
+       (if (eq mode major-mode)
+           (add-to-list 'buffer-mode-matches buf))))
+   buffer-mode-matches))
+ 
+(defun multi-occur-in-this-mode ()
+  "Show all lines matching REGEXP in buffers with this major mode."
+  (interactive)
+  (multi-occur
+   (get-buffers-matching-mode major-mode)
+   (car (occur-read-primary-args))))
 
 ;;;_. grep
 (defun bmz/grep-symbol-at-point-same-ext()
@@ -86,10 +102,8 @@ If a there is a text selection (a phrase), lookup that phrase.
 Launches default browser and opens the doc's url."
   (interactive)
   (let ( inputstr myurl)
-    (setq inputstr (elt (get-selection-or-unit 'word) 0) )
-
-    (setq inputstr (dehtmlize-in-string inputstr) )
-    
+    (setq inputstr (bmz/get-symbol-selected-or-current))
+;;    (setq inputstr (dehtmlize-in-string inputstr) )
     (setq myurl (concat "http://www.google.com/search?q=%22" inputstr "%22"))
 
     (cond
@@ -110,12 +124,11 @@ If there is a text selection (e.g. a phrase), lookup that phrase.
 Launches default browser and opens the doc's url."
  (interactive)
  (let (inputstr myurl)
-    (setq inputstr (elt (get-selection-or-unit 'word) 0) )
-   
-  (setq inputstr (replace-regexp-in-string " " "_" inputstr))
-  (setq myurl (concat "http://en.wikipedia.org/wiki/" inputstr))
-  ;; (browse-url-default-windows-browser myurl)
-  (browse-url myurl)
+    (setq inputstr (bmz/get-symbol-selected-or-current))
+    (setq inputstr (replace-regexp-in-string " " "_" inputstr))
+    (setq myurl (concat "http://en.wikipedia.org/wiki/" inputstr))
+    ;; (browse-url-default-windows-browser myurl)
+    (browse-url myurl)
    ))
 
 
@@ -130,15 +143,16 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "C-]") 'bmz/find-symbol-definition-across-files) ;; Vi style key
     ;;(define-key search-map "G" 'bmz/find-symbol-definition-across-files)
     
-    (define-key search-map (kbd "SPC") 'highlight-symbol-at-point)
-    (define-key search-map (kbd "*") 'bmz/goto-symbol-next-occur)
-    (define-key search-map (kbd "#") 'bmz/goto-symbol-prev-occur)
-;;    (define-key search-map (kbd "<up>" 'bmz/goto-symbol-prev-occur)
-;;    (define-key search-map (kbd "<down>") 'bmz/goto-symbol-next-occur)
+    (define-key search-map (kbd "SPC")    'highlight-symbol-at-point)
+    (define-key search-map (kbd "*")      'bmz/goto-symbol-next-occur)
+    (define-key search-map (kbd "#")      'bmz/goto-symbol-prev-occur)
+    (define-key search-map (kbd "<up>"    'bmz/goto-symbol-prev-occur)
+    (define-key search-map (kbd "<down>") 'bmz/goto-symbol-next-occur)
+    (define-key search-map (kbd "M-%")    'highlight-symbol-query-replace)
 
     (define-key search-map (kbd "O")   'bmz/occur-at-point)
-    (define-key search-map (kbd "M-o") 'bmz/multi-occur-at-point)
-    (define-key search-map (kbd "M-O") 'bmz/multi-occur-in-same-mode-buffers)
+    (define-key search-map (kbd "M-o") 'multi-occur-in-this-mode)
+    (define-key search-map (kbd "M-O") 'bmz/multi-occur-at-point)
 
     (define-key search-map (kbd "g")  'nil)
     (define-key search-map (kbd "gg") 'bmz/grep-symbol-at-point-same-ext)
@@ -179,6 +193,5 @@ Launches default browser and opens the doc's url."
 
 (define-key goto-map (kbd "i") 'bmz/goto-symbol-definition-in-buffer)
 (define-key goto-map (kbd "I") 'bmz/find-symbol-definition-across-files)
-
 
 

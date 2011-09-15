@@ -17,12 +17,12 @@
                      t)       
                  (error nil))
           (setq path (cons (xmltok-start-tag-local-name) path)))
-        (mapconcat 'identity path "/")))))
+        (concat "/" (mapconcat 'identity path "/"))))))
 
 (defun nxml-where ()
   "Display the hierarchy of XML elements the point is on as a path."
   (interactive)
-  (message "/%s" (nxml-get-where)))  
+  (message (nxml-get-where)))
 
 (defun which-func-for-xml ()
   (if (memq major-mode '(nxml-mode))
@@ -33,6 +33,7 @@
 
 
 ;;;_. goto match tag
+;;;FIXME: use hl-xml-tag.el
 (defun xml-goto-match-tag ()
   (interactive)
   (require 'sgml-mode)

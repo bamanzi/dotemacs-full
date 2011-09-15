@@ -1,5 +1,6 @@
 
 ;;;_. options
+;;(setq custom-unlispify-tag-names nil)
 (global-set-key (kbd "<C-f10> g") 'customize-group)
 (global-set-key (kbd "<C-f10> v") 'customize-variable)
 (global-set-key (kbd "<C-f10> f") 'customize-face)
@@ -13,7 +14,7 @@
 (global-set-key (kbd "<C-f10> d") 'toggle-debug-on-error)
 
 (defun load-and-execute (library)
-  "load a library 'foobar' and execute the command with same name (foobar or foobar-mode"
+  "load a library 'foobar' and execute the command with same name (`foobar' or `foobar-mode')"
   (interactive
    (list (completing-read "Load library: "
                           (apply-partially 'locate-file-completion-table

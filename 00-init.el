@@ -34,7 +34,7 @@
 (global-unset-key [f10])
 
 ;; SuSE would bind these by default, cancel them too
-(global-unset-key [f1]) ;;
+;;(global-unset-key [f1]) 
 (global-unset-key [f5]) 
 (global-unset-key [f6]) 
 (global-unset-key [f7]) 

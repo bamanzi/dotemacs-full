@@ -20,10 +20,12 @@
 
 (define-key emacs-lisp-mode-map (kbd "<M-f9>") 'bmz/check-parens)
 
-(defun bmz/byte-compile-file ()
-   (interactive)
+(defun bmz/byte-compile-file (arg)
+   (interactive "P")
    (let ( (emacs-lisp-mode-hook '()) )
-     (byte-compile-file (buffer-file-name))))
+     (if arg
+         (call-interactively 'byte-compile-file)
+       (byte-compile-file (buffer-file-name)))))
 
 (define-key emacs-lisp-mode-map (kbd "<C-f9>") 'bmz/byte-compile-file)
 
@@ -72,3 +74,13 @@
 
 (define-key emacs-lisp-mode-map       (kbd "M-s <f1>")  'anything-info-elisp)
 (define-key lisp-interaction-mode-map (kbd "M-s <f1>")  'anything-info-elisp)
+
+(defun anything-help-on-elisp-symbol ()
+  (interactive)
+  (anything
+   :input (thing-at-point 'symbol)
+   :prompt "Help on: :"
+   :sources '( anything-c-source-emacs-functions
+               anything-c-source-emacs-variables)))
+
+  

@@ -24,8 +24,8 @@
 
 ;;;_. tabbar
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
-(if window-system
-    (require 'ide-skel nil t))
+;;(if window-system
+;;    (require 'ide-skel nil t))
 
 ;; if you use `ide-ske', don't directly load `tabbar' after `ide-ske'
 ;; as this would mess up the tab group definition of `ide-skel'
@@ -390,7 +390,8 @@
 
 ;;;_ S(@* "buffer navigations")
 (global-set-key (kbd "C-`") 'set-mark-command)
-(global-set-key (kbd "M-`") 'pop-to-mark-command)
+(global-set-key (kbd "M-`") 'cua-exchange-point-and-mark)
+(global-set-key (kbd "C-M-`") 'pop-to-mark-command)
 
 
 ;;;_. imenu
