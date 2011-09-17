@@ -94,10 +94,20 @@ See: `forward-block'"
 ;;(idle-require 'mouse3)
 ;;(idle-require 'second-sel)
 
+;;;_. color-theme
+(if (< emacs-major-version 24)
+    ;; if we not loaded color-theme yet (load your faviourite theme in customize.el)
+    (if (not (featurep 'color-theme))
+        (and (require 'color-theme nil t)
+             (require 'color-theme-tangotango nil t)
+             (color-theme-tangotango))))=======
 (if (not (featurep 'ide-skel))
     (idle-require 'tabbar-ruler)) 
          
-
+;;;_. copy without sel
 (load "copy-without-sel" 'noerror)
+
+;;;_. language help
 (if (eq window-system 'windows-nt)
     (load "keyword-help" 'noerror))
+

@@ -317,4 +317,13 @@
       
       ))
 
+;;;_. maximize frame
+(when (and window-system
+       (require 'maxframe nil t))
+  ;; (setq mf-max-width 1600)  ;; Pixel width of main monitor.
+  (maximize-frame)
+  ;; maximize any new frame
+  (add-hook 'window-setup-hook 'maximize-frame t))
+
 ;;;_. TODO: fuzzy.el
+

@@ -87,7 +87,9 @@
   (interactive)
   (shrink-window win-resize-big-steps-vertical)
   (shrink-window-horizontally win-resize-big-steps-horizontal))
-  
+
+(autoload 'maximize-frame "maxframe" "Maximizes the frame to fit the display." t)
+
 ;;}}}
 ;;{{{ move buffer across windows
 ;; https://github.com/banister/window-rotate-for-emacs
@@ -257,6 +259,8 @@ an error is signaled."
     ;;  (define-key map (kbd "") 'enlarge-window-
 				    
     (define-key map (kbd "RET") 'windresize)
+
+    (define-key map (kbd "x") 'maximize-frame)
 
     ;; motion between windows
     ;;(windmove-default-keybindings 'super)
