@@ -2,6 +2,7 @@
 
 (require 'highlight-symbol)
 
+;;;_. symbol occurence
 (defun bmz/goto-symbol-occurrence (forward)
   (let ( (symbol (highlight-symbol-get-symbol)) )
     (unless symbol (error "No symbol at point"))  
@@ -21,13 +22,14 @@
   (bmz/goto-symbol-occurrence nil))
 
 
+;;;_. internal functions
 (defun bmz/get-symbol-selected-or-current ()
   "Get the selected text or (if nothing selected) current symbol."
   (if (and transient-mark-mode mark-active)
       (buffer-substring-no-properties (region-beginning) (region-end))
     (thing-at-point 'symbol)))
 
-
+;;;_. symbol definition
 (defun bmz/goto-symbol-definition-in-buffer ()
   (interactive)
   (if (fboundp 'idomenu)
@@ -55,6 +57,8 @@
   ;;FIXME: use multi-occur?
   (multi-occur (format "%s" (bmz/get-symbol-selected-or-current))))
 
+
+;;;_.. multi-occur in same mode buffers
 ;; stolen from http://www.masteringemacs.org/articles/2011/07/20/searching-buffers-occur-mode/
 (defun get-buffers-matching-mode (mode)
   "Returns a list of buffers where their major-mode is equal to MODE"
@@ -65,12 +69,13 @@
            (add-to-list 'buffer-mode-matches buf))))
    buffer-mode-matches))
  
-(defun multi-occur-in-this-mode ()
+(defun bmz/multi-occur-in-this-mode ()
   "Show all lines matching REGEXP in buffers with this major mode."
   (interactive)
   (multi-occur
    (get-buffers-matching-mode major-mode)
-   (car (occur-read-primary-args))))
+   (format "%s" (bmz/get-symbol-selected-or-current))))
+  
 
 ;;;_. grep
 (defun bmz/grep-symbol-at-point-same-ext()
@@ -132,7 +137,7 @@ Launches default browser and opens the doc's url."
    ))
 
 
-;;--- overall
+;;;_. overall
 (defun init-word-ops-keys (search-map)
 
     (define-key search-map "i" 'idomenu)
@@ -146,20 +151,21 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "SPC")    'highlight-symbol-at-point)
     (define-key search-map (kbd "*")      'bmz/goto-symbol-next-occur)
     (define-key search-map (kbd "#")      'bmz/goto-symbol-prev-occur)
-    (define-key search-map (kbd "<up>"    'bmz/goto-symbol-prev-occur)
+    (define-key search-map (kbd "<up>")    'bmz/goto-symbol-prev-occur)
     (define-key search-map (kbd "<down>") 'bmz/goto-symbol-next-occur)
     (define-key search-map (kbd "M-%")    'highlight-symbol-query-replace)
 
-    (define-key search-map (kbd "O")   'bmz/occur-at-point)
-    (define-key search-map (kbd "M-o") 'multi-occur-in-this-mode)
-    (define-key search-map (kbd "M-O") 'bmz/multi-occur-at-point)
+    (define-key search-map (kbd "O")     'bmz/occur-at-point)
 
-    (define-key search-map (kbd "g")  'nil)
-    (define-key search-map (kbd "gg") 'bmz/grep-symbol-at-point-same-ext)
-    (define-key search-map (kbd "gG") 'bmz/grep-symbol-at-point)
+    (define-key search-map (kbd "M-o")   'bmz/multi-occur-in-this-mode)
+    (define-key search-map (kbd "M-O")   'bmz/multi-occur-at-point)
+
+    (define-key search-map (kbd "g")     'nil)
+    (define-key search-map (kbd "gg")    'bmz/grep-symbol-at-point-same-ext)
+    (define-key search-map (kbd "gG")    'bmz/grep-symbol-at-point)
     (define-key search-map (kbd "g SPC") 'grep)
-    (define-key search-map (kbd "gr") 'rgrep)
-    (define-key search-map (kbd "gl") 'lgrep)
+    (define-key search-map (kbd "gr")    'rgrep)
+    (define-key search-map (kbd "gl")    'lgrep)
 
     ;; (define-key search-map (kbd "f") 'find-function-at-point)
     ;; (define-key search-map (kbd "v") 'find-variable-at-point)
@@ -170,11 +176,11 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "<S-f3>") 'isearch-repeat-backward)
 
     (autoload 'sdcv-search "sdcv-mode" nil t)
-    (define-key search-map (kbd "d") 'sdcv-search) ;;sdcv-mode.el needed
+    (define-key search-map (kbd "d")   'sdcv-search) ;;sdcv-mode.el needed
 
-    (define-key search-map (kbd "D") 'dict-org-at-point)
-    (define-key search-map (kbd "G") 'lookup-google)
-    (define-key search-map (kbd "W") 'lookup-wikipedia)
+    (define-key search-map (kbd "D")   'dict-org-at-point)
+    (define-key search-map (kbd "G")   'lookup-google)
+    (define-key search-map (kbd "W")   'lookup-wikipedia)
 
     (define-key search-map (kbd "C-f") 'ffap-other-window)
     (define-key search-map (kbd "RET") 'browse-url-at-point)
