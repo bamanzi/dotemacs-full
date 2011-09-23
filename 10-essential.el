@@ -3,6 +3,8 @@
 
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
 
 (setq frame-title-format '("%b%* (%m) - Emacs "
                            (:eval emacs-version)
@@ -16,27 +18,6 @@
     (set-scroll-bar-mode 'right))
 
 
-;;;_ S(@* "windows & frames")
-(setq winner-dont-bind-my-keys t)
-(winner-mode t)
-;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
-;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
-
-;;;_. tabbar
-;; ide-skel would group buffers into two: editing buffer, emacs buffer
-;;(if window-system
-;;    (require 'ide-skel nil t))
-
-;; if you use `ide-ske', don't directly load `tabbar' after `ide-ske'
-;; as this would mess up the tab group definition of `ide-skel'
-(when (or (featurep 'tabbar)
-          (load "tabbar" t))
-  (tabbar-mode t)
-  (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward)
-  (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward)
-  (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
-  (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
-  )
 
 ;;;_ S(@* "files & buffers")
 (global-set-key (kbd "C-c C-b") 'ibuffer)
@@ -71,6 +52,7 @@
   (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
 ;;;See also: midnight-mode
 
+
 ;;;_ S(@* "windows")
 ;;;_. winner-mode
 (setq winner-dont-bind-my-keys t)
@@ -78,19 +60,21 @@
 ;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
 ;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
 
-;;;_ tabbar
+;;;_. tabbar
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
-;;(if (and window-system
-;;         (> emacs-major-version 23))
-;;  (require 'ide-skel nil t))
+;;(if window-system
+;;    (require 'ide-skel nil t))
 
 ;; if you use `ide-skel', don't directly load `tabbar' after `ide-ske'
 ;; as this would mess up the tab group definition of `ide-skel'
 (when (or (featurep 'tabbar)
           (load "tabbar" t))
   (tabbar-mode t)
-  (global-set-key (kbd "<C-tab>") 'tabbar-forward)
-  (global-set-key (kbd "<C-S-tab>") 'tabbar-backward))
+  (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward)
+  (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward)
+  (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
+  (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
+  )
 
 
 ;;;_ S(@* "key bindings")
@@ -141,6 +125,7 @@
 (transient-mark-mode t)
 (setq shift-select-mode t)
 (delete-selection-mode t)
+
 
 ;;;_. CUA
 (setq cua-enable-cua-keys nil)
@@ -235,6 +220,10 @@
 
 (global-set-key (kbd "M-/") 'hippie-expand)
 
+;;;_. icomplete
+(icomplete-mode t)  ;; completion for minibuffer (commands (M-x)
+                    ;; variables (C-h v, customize-variable), functions (C-h f))
+
 ;;;_. ido
 (require 'ido)
 (unless (fboundp 'ido-common-initialization)   ;;workaround for emacs 23.1's bug(?)
@@ -249,8 +238,6 @@
 (setq ido-use-url-at-point 'guess)
 (ido-mode t)
 
-
-
 ;;;_. smex : ido for M-x
 (if (require 'smex nil t)
     (progn
@@ -261,9 +248,7 @@
       ;; This is your old M-x.
       (global-set-key (kbd "ESC M-x") 'execute-extended-command))
   (progn
-    (message "%s: failed to load `smex'." load-file-name)
-    ;;fall back to Emacs' icomplete-mode
-    (icomplete-mode t)))
+    (message "%s: failed to load `smex'." load-file-name)))
 
 ;;;_. anything
 (if (and (load "anything" t)
@@ -344,6 +329,8 @@
 
 
 ;;;_ S(@* "some visual effect")
+(column-number-mode t)
+
 ;;;_. highlight-symbol
 (idle-require 'highlight-symbol)
 
@@ -362,6 +349,7 @@
 (global-set-key (kbd "<C-f2>")    'bm-toggle)
 (global-set-key (kbd "<M-f2>")    'bm-next)
 (global-set-key (kbd "<S-f2>")    'bm-previous)
+(global-set-key (kbd "<H-f2>")    'bm-show)
 
 (global-set-key (kbd "<left-fringe> <C-mouse-1>")     'bm-toggle-mouse)
 (global-set-key (kbd "<left-fringe> <C-wheel-up>")    'bm-previous-mouse)
@@ -389,10 +377,9 @@
 
 
 ;;;_ S(@* "buffer navigations")
-(global-set-key (kbd "C-`") 'set-mark-command)
-(global-set-key (kbd "M-`") 'cua-exchange-point-and-mark)
+(global-set-key (kbd "C-`")   'set-mark-command)
+(global-set-key (kbd "M-`")   'cua-exchange-point-and-mark)
 (global-set-key (kbd "C-M-`") 'pop-to-mark-command)
-
 
 ;;;_. imenu
 (autoload 'idomenu "idomenu" "Switch to a buffer-local tag from Imenu via Ido." t)
@@ -407,6 +394,7 @@
 
 (global-set-key (kbd "C-c <") 'recent-jump-backward)
 (global-set-key (kbd "C-c >") 'recent-jump-forward)
+
 
 ;;;_ S(@* "misc")
 
