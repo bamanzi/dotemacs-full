@@ -24,6 +24,10 @@
 (global-set-key (kbd "<C-tab>") 'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
 
+;;;_. buffer name uniquify
+;;(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+
 ;;;_. backup rules
 ;;(setq make-backup-files t) ;;to disable backup, set it to nil
 
@@ -146,7 +150,7 @@
 (show-paren-mode t)
 
 ;;;_. newline & line-wrap
-(setq require-final-newline 'ask)
+(setq require-final-newline 't)
 (setq-default truncate-lines t)
 (setq-default fill-column 100)
 ;;(auto-fill-mode t)

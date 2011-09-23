@@ -264,7 +264,9 @@
 
 
 ;;;_. completion-ui
-(idle-require 'completion-ui)
+(autoload 'complete-dabbrev "complete-ui" nil t)
+(autoload 'complete-etags   "complete-ui" nil t)
+(autoload 'complete-files   "complete-ui" nil t)
 (global-set-key (kbd "C-, d") 'complete-dabbrev)
 (global-set-key (kbd "C-, t") 'complete-etags)
 (global-set-key (kbd "C-, f") 'complete-files)
@@ -284,16 +286,6 @@
 (autoload 'extend-selection "ergoemacs-functions" nil t)
 (global-set-key (kbd "C-.") 'extend-selection)
 ;; see also: mark-sexp (C-M-SPC), mark-word (M-@)
-
-
-;;;_. opening server files always in a new frame
-;;http://www.emacswiki.org/emacs/EmacsClient#toc21
-
-(add-hook 'server-switch-hook
-          (lambda nil
-            (let ((server-buf (current-buffer)))
-              (bury-buffer)
-              (switch-to-buffer-other-frame server-buf))))
 
 
 ;;;_. linkd: visualize section header & links (to file/man/info/url)
@@ -317,13 +309,7 @@
       
       ))
 
-;;;_. maximize frame
-(when (and window-system
-       (require 'maxframe nil t))
-  ;; (setq mf-max-width 1600)  ;; Pixel width of main monitor.
-  (maximize-frame)
-  ;; maximize any new frame
-  (add-hook 'window-setup-hook 'maximize-frame t))
+
 
 ;;;_. TODO: fuzzy.el
 

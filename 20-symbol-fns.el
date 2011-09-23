@@ -1,6 +1,8 @@
 ;; some commands for the symbol/word at point
 
-(require 'highlight-symbol)
+(autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
+(autoload 'highlight-symbol-next       "highlight-symbol" nil t)
+(autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
 
 ;;;_. symbol occurence
 (defun bmz/goto-symbol-occurrence (forward)

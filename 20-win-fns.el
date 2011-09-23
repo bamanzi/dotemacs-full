@@ -14,15 +14,15 @@
 (autoload 'rotate-frame "transpose-frame" "Rotate windows arrangement 180 degrees at FRAME." t)
 
 ;;(require 'window-numbering nil t) ;; each window has a number in mode-line
-(autoload 'window-numbering-mode "window-numbering" "A minor mode that assigns a number to each window" t)
+;;(autoload 'window-numbering-mode "window-numbering" "A minor mode that assigns a number to each window" t)
 
 ;;(require 'pack-windows) ;; Resize all windows to display as much info as possible.
 
 ;;(require 'split-root) ;; roote window splitter
 (autoload 'split-root-window "split-root" "Split a window of SIZE lines/columns from the root window." t)
 
-(unless (require 'ide-skel nil t)  ;; `ide-skel' would load `tabbar' and  make its own tab group settings
-  (require 'tabbar nil t))
+(autoload 'tabbar-forward-tab     "tabbar" nil t)
+(autoload 'tabbar-backward-tab    "tabbar" nil t)
 
 
 ;; for some special buffer
@@ -207,6 +207,7 @@ an error is signaled."
   (interactive)
   (if (< emacs-major-version 24)
       (ido-common-initialization))
+  (require 'tabbar)
   (let* ( ;; Swaps the current buffer name with the next one along.
          (visible-buffers (mapcar '(lambda (tab) (buffer-name (tabbar-tab-value tab)))
 					  (tabbar-tabs (tabbar-current-tabset t))))
@@ -244,43 +245,49 @@ an error is signaled."
 
 (defun init-win-fns-keys (map)
     ;; resizing
-    ;(define-key map (kbd "}") 'enlarge-window)
-    (define-key map (kbd "}") 'enlarge-window-more)
-    ;;(define-key map (kbd "{") 'shrink-window)
-    (define-key map (kbd "{") 'shrink-window-more)
+    ;(define-key map (kbd "}")   'enlarge-window)
+    (define-key map (kbd "}")    'enlarge-window-more)
+    ;;(define-key map (kbd "{")  'shrink-window)
+    (define-key map (kbd "{")    'shrink-window-more)
     
-    ;;(define-key map (kbd "^") 'enlarge-window-horizontally)
-    (define-key map (kbd "^") 'enlarge-window--more)
-    ;;(define-key map (kbd "v") 'shrink-window-horizontally)
-    (define-key map (kbd "v") 'shrink-window-horizontally)
+    ;;(define-key map (kbd "^")  'enlarge-window-horizontally)
+    (define-key map (kbd "^")    'enlarge-window-more)
+    ;;(define-key map (kbd "v")  'shrink-window-horizontally)
+    (define-key map (kbd "v")    'shrink-window-horizontally)
     
-    (define-key map (kbd "+") 'enlarge-window-2d-more)
-    (define-key map (kbd "-") 'shrink-window-2d-more)
+    (define-key map (kbd "+")    'enlarge-window-2d-more)
+    (define-key map (kbd "-")    'shrink-window-2d-more)
     ;;  (define-key map (kbd "") 'enlarge-window-
 				    
-    (define-key map (kbd "RET") 'windresize)
+    (define-key map (kbd "RET")   'windresize)
 
-    (define-key map (kbd "x") 'maximize-frame)
+    (define-key map (kbd "m")     'minimize-window) ;; Emacs 24?
+    (define-key map (kbd "x")     'maximize-window)
+    
+    (define-key map (kbd "M-RET")     'maximize-frame)
+    (define-key map (kbd "ESC M-RET") 'restore-frame)
+
+    (define-key map (kbd "<f11>")     'toggle-one-window)
 
     ;; motion between windows
     ;;(windmove-default-keybindings 'super)
-    (define-key map (kbd "<up>") 'windmove-up)
-    (define-key map (kbd "<down>") 'windmove-down)
-    (define-key map (kbd "<left>") 'windmove-right)
-    (define-key map (kbd "<right>") 'windmove-right)   
+    (define-key map (kbd "<up>")      'windmove-up)
+    (define-key map (kbd "<down>")    'windmove-down)
+    (define-key map (kbd "<left>")    'windmove-right)
+    (define-key map (kbd "<right>")   'windmove-right)   
     
-    (define-key map (kbd "<C-up>") 'swap-buffer-up)
-    (define-key map (kbd "<C-down>") 'swap-buffer-down)
-    (define-key map (kbd "<C-left>") 'swap-buffer-left)
-    (define-key map (kbd "<C-right>") 'swap-buffer-right)
+    (define-key map (kbd "<C-up>")    'move-buffer-up)
+    (define-key map (kbd "<C-down>")  'move-buffer-down)
+    (define-key map (kbd "<C-left>")  'move-buffer-left)
+    (define-key map (kbd "<C-right>") 'move-buffer-right)
 
-    (define-key map (kbd "<M-up>") 'swap-buffer-up)
-    (define-key map (kbd "<M-down>") 'swap-buffer-down)
-    (define-key map (kbd "<M-left>") 'swap-buffer-left)
+    (define-key map (kbd "<M-up>")    'swap-buffer-up)
+    (define-key map (kbd "<M-down>")  'swap-buffer-down)
+    (define-key map (kbd "<M-left>")  'swap-buffer-left)
     (define-key map (kbd "<M-right>") 'swap-buffer-right)
     
-    (define-key map (kbd "<tab>") 'other-window)
-    (define-key map (kbd "<S-tab>") 'other-window-backward)
+    (define-key map (kbd "<tab>")     'other-window)
+    (define-key map (kbd "<S-tab>")   'other-window-backward)
 
 ;;    (define-key map (kbd "D")   'dired-jump-other-window)
     
@@ -306,8 +313,6 @@ an error is signaled."
     ;; rotate-frame-clockwise
     ;; rotate-frame-anti-clockwise
 
-
-    (define-key map (kbd "<f11>") 'toggle-one-window)
     
     ;; override C-x 0 and C-x 1, to regard window-dedicated-p
     ;;(when (or (featurep 'window-extensions)
@@ -337,7 +342,7 @@ an error is signaled."
     (define-key map (kbd "R") 'ide-skel-toggle-right-view-window)
     (define-key map (kbd "L") 'ide-skel-toggle-left-view-window)
 
-    (define-key map (kbd "s") 'speedbar)
+;;    (define-key map (kbd "s") 'speedbar)
     ;;(if (featurep 'sr-speedbar)
     (define-key map (kbd "S") 'sr-speedbar-toggle)
 
