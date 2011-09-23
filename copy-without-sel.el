@@ -44,7 +44,34 @@
   (interactive "P")
   (copy-word arg)
   (paste-to-mark arg))
+
+;;;_. big word (i.e. identifier in most languages)
+;;; (but in Emacs, nearly any char is valid in symbol. thus we can't use sexp)
+(defun beginning-of-big-word (&optional arg)
+  (interactive "P")
+  (re-search-backward "[^a-z0-9_-]" nil 'noerror 1)
+  (if (looking-at "[^a-z0-9_-]")  (goto-char (+ (point) 1)))
+  )
+
+(defun end-of-big-word (&optional arg)
+  (interactive "P")
+  (re-search-forward "[^a-z0-9-_]" nil 'noerror arg)
+  (if (looking-at "[^a-z0-9-_]") (goto-char (- (point) 1)))
+  )
   
+(defun copy-big-word (&optional arg)
+  "Copy big word at point"
+  (interactive "p")
+  (copy-thing 'beginning-of-big-word 'end-of-big-word arg)
+  )
+
+(defun copy-big-word-to-mark (&optional arg)
+  "Copy big word at point"
+  (interactive "p")
+  (copy-big-word arg)
+  (paste-to-mark arg)
+  )
+
 ;;;_. copy line
 (defun copy-line (&optional arg)
   "Save current line into Kill-Ring without mark the line "
@@ -77,22 +104,21 @@ When used in shell-mode, it will paste string on shell prompt by default "
 (defun beginning-of-string(&optional arg)
   "  "
   (re-search-backward "\\s\"" nil 'noerror 1)
-  (if (looking-at "\\s\"")  (goto-char (+ (point) 1)) )
+  (if (looking-at "\\s\"")  (goto-char (point)))
   )
 
-(defun end-of-string(&optional arg)
-  " "
-  (re-search-forward "\\s\"" nil t arg)
-  (if (looking-back "\\s\"") (goto-char (- (point) 1)) )
-  )
+;; (defun end-of-string(&optional arg)
+;;   " "
+;;   (re-search-forward "\\s\"" nil t arg)
+;;   (if (looking-back "\\s\"") (goto-char (- (point) 1)) )
+;;   )
 
 (defun copy-string (&optional arg)
   "Try to copy a string and put it into kill-ring & clipboard."
   (interactive "P")
-  (if (not (eq (face-at-point) 'font-lock-string-face))
+  (if (not (memq (face-at-point) '(font-lock-string-face font-lock-doc-face)))
       (message "Current point is not on a STRING.")
-    (copy-thing 'beginning-of-string 'end-of-string arg)
-    ;;(paste-to-mark arg)
+    (copy-thing 'beginning-of-string 'forward-sexp arg) ;;use sexp to go to the matching quote mark
     )
   )
 
@@ -100,9 +126,9 @@ When used in shell-mode, it will paste string on shell prompt by default "
   "Try to copy a string and paste it to the mark.
 When used in shell-mode, it will paste string on shell prompt by default "
   (interactive "P")
-  (if (not (eq (face-at-point) 'font-lock-string-face))
+  (if (not (memq (face-at-point) '(font-lock-string-face font-lock-doc-face)))
       (message "Current point is not on a STRING.")
-    (copy-thing 'beginning-of-string 'end-of-string arg)
+    (copy-string arg)
     (paste-to-mark arg)
     )
   )
@@ -111,22 +137,21 @@ When used in shell-mode, it will paste string on shell prompt by default "
 ;;;_. copy parenthesis
 (defun beginning-of-parenthesis(&optional arg)
   "  "
-  (re-search-backward "\[<({" nil 'noerror 1)
-  (if (looking-at "\[<({")  (goto-char (+ (point) 1)) )
+  (re-search-backward "[\\[<({]" nil 'noerror 1)
+  (if (looking-at "[\\[<({]")  (goto-char (point)))
   )
 
-;;FIXME: should search for a matching bracket
-(defun end-of-parenthesis(&optional arg)
-  " "
-  (re-search-forward "]>)}" nil 'noerror arg)
-  (if (looking-back "]>)}") (goto-char (- (point) 1)) )
-  )
+;; (defun end-of-parenthesis(&optional arg)
+;;   " "
+;;   (re-search-forward "]>)}" nil 'noerror arg)
+;;   (if (looking-back "]>)}") (goto-char (- (point) 1)) )
+;;   )
 
 (defun copy-parenthesis (&optional arg)
   " Try to copy a parenthesis and paste it to the mark
      When used in shell-mode, it will paste parenthesis on shell prompt by default "
   (interactive "P")
-  (copy-thing 'beginning-of-parenthesis 'end-of-parenthesis arg)
+  (copy-thing 'beginning-of-parenthesis 'forward-list arg) ;;use list to find the matching bracket
   )
 
 (defun copy-parenthesis-to-mark (&optional arg)
@@ -155,10 +180,12 @@ When used in shell-mode, it will paste parenthesis on shell prompt by default "
 (global-set-key (kbd "C-c c") copy-map)
 
 (define-key copy-map "w" 'copy-word)
+(define-key copy-map "W" 'copy-big-word)
 (define-key copy-map "l" 'copy-line)
 (define-key copy-map "p" 'copy-paragraph)
 (define-key copy-map "s" 'copy-string)
 (define-key copy-map "(" 'copy-parenthesis)
+(define-key copy-map "{" 'copy-parenthesis)  ;;FIXME: copy between {}
 (define-key copy-map "e" 'copy-sexp)
 
 (defvar copy-to-mark-map (make-sparse-keymap "Copy to mark without selection"))
@@ -166,10 +193,12 @@ When used in shell-mode, it will paste parenthesis on shell prompt by default "
 
 ;;Hint: press C-SPC twice to set a mark without activate the region 
 (define-key copy-to-mark-map "w" 'copy-word-to-mark)
+(define-key copy-to-mark-map "W" 'copy-big-word-to-mark)
 (define-key copy-to-mark-map "l" 'copy-line-to-mark)
 (define-key copy-to-mark-map "p" 'copy-paragraph-to-mark)
 (define-key copy-to-mark-map "s" 'copy-string-to-mark)
 (define-key copy-to-mark-map "(" 'copy-parenthesis-to-mark)
+(define-key copy-to-mark-map "{" 'copy-parenthesis-to-mark)
 (define-key copy-to-mark-map "e" 'copy-sexp-to-mark)
   
 
