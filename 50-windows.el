@@ -1,3 +1,10 @@
+
+;;;_ M-1, M-2 to different window
+(if (require 'window-numbering nil t)
+    (window-numbering-mode t)
+  (if (require 'window-number nil t)
+      (window-number-meta-mode t)))
+
 ;;;_ winner-mode
 (setq winner-dont-bind-my-keys t)
 (winner-mode t)

@@ -319,17 +319,17 @@
 ;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
 
 ;;;_. outline
+(global-set-key (kbd "C-c <up>")     'outline-previous-visible-heading)
+(global-set-key (kbd "C-c <down>")   'outline-next-visible-heading)
 
 (global-set-key (kbd "<C-M-up>")     'outline-previous-visible-heading)
 (global-set-key (kbd "<C-M-down>")   'outline-next-visible-heading)
 
-(global-set-key (kbd "C-c <up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "C-c <down>")   'outline-next-visible-heading)
-
 (global-set-key (kbd "<C-wheel-up>") 'outline-previous-visible-heading)
 (global-set-key (kbd "<C-wheel-down>") 'outline-next-visible-heading)
 (global-set-key (kbd "<C-mouse-1>")  'outline-toggle-children)
-(global-set-key (kbd "<C-mouse-2>")  'hide-sublevels)
+(global-set-key (kbd "<C-mouse-3>")  'hide-sublevels)
+(global-set-key (kbd "<C-mouse-2>")  'show-all)
 
 ;;;_. allout
 (eval-after-load "allout"
@@ -341,6 +341,7 @@
      (define-key allout-mode-map (kbd "<C-wheel-down>") 'allout-next-visible-heading)
      (define-key allout-mode-map (kbd "<C-mouse-1>")    'allout-hide-current-subtree)
      (define-key allout-mode-map (kbd "<C-mouse-3>")    'allout-show-current-subtree)
+     (define-key allout-mode-map (kbd "<C-mouse-2>")    'allout-show-all)
      ))
 
 
@@ -388,6 +389,8 @@
 (setq compilation-error-regexp-alist '(gnu java))
 (global-set-key (kbd "<C-f9>") 'compile)
 
+(eval-after-load "flymake"
+  '(require 'flymake-cursor nil t))
 (define-key goto-map "`" 'flymake-goto-next-error)
 (define-key goto-map "~" 'flymake-goto-prev-error)
 

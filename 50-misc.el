@@ -1,12 +1,6 @@
 
 ;;;_ S(@* "emacs options")
 
-(global-set-key (kbd "<C-10> F") 'menu-set-font)
-
-(global-set-key (kbd "<mode-line> <C-wheel-up>") 'text-scale-increase)
-(global-set-key (kbd "<mode-line> <C-wheel-down>") 'text-scale-decrease)
-
-
 (defun bmz/toggle-show-paren-style ()
   (interactive)
   (if (eq show-paren-style 'parenthesis)
@@ -18,9 +12,6 @@
           
 
 ;;;_ S(@* "minor modes")
-
-;;(global-unset-key (kbd "<f10>"))
-(global-set-key (kbd "<f10> <f10>") 'menu-bar-open)
 
 ;; (global-set-key (kbd "<f10> c") 'highlight-changes-visible-mode)
 ;; (global-set-key (kbd "<f10> f") 'auto-fill-mode)
@@ -86,8 +77,7 @@
 
 (global-set-key (kbd "H-g") 'keyboard-quit)
 
-(global-set-key (kbd "<H-up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
+
 
 ;;;_. misc keys
 ;(global-set-key (kbd "<f3> C-f") 'ffap-other-window)
@@ -96,9 +86,9 @@
 
 (define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
 
-(global-set-key (kbd "C-c d") 'diff-buffer-with-file)
+;;(global-set-key (kbd "C-c d") 'diff-buffer-with-file)
 
-(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
+;;(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
 
 
 ;;;_ S(@* "editing")
@@ -120,73 +110,6 @@
 (global-set-key (kbd "ESC M-z") 'zap-back-to-char)
 
 
-
-;;;_ S(@* "buffer-local bookmarks")
-(ignore-errors
-  (or (require 'bm nil t)
-      (require 'linkmark nil t))
-  )
-(if (featurep 'bm)
-    (progn
-      (global-set-key (kbd "<f2> t") 'bm-toggle)
-      (global-set-key (kbd "<f2> n") 'bm-next)
-      (global-set-key (kbd "<f2> p") 'bm-previous)
-      (global-set-key (kbd "<f2> l") 'bm-show)
-
-      (global-set-key (kbd "<f2> <f2>") 'bm-next)
-
-      (if (fboundp 'anything-bm-list)
-          (global-set-key (kbd "<f2> l") 'anything-bm-list))
-      )
-  (if (featurep 'linemark)              ;; linemark.el from CEDET
-      (progn        
-        (define-key global-map (kbd "<f2> t") 'viss-bookmark-toggle)
-        (define-key global-map (kbd "<f2> n") 'viss-bookmark-prev-buffer)
-        (define-key global-map (kbd "<f2> p") 'viss-bookmark-next-buffer)
-        (define-key global-map (kbd "<f2> c") 'viss-bookmark-clear-all-buffer)
-
-        (define-key global-map (kbd "<f2> <f2>") 'viss-bookmark-next-buffer)
-        ))
-      )
-
-
-;;;_ S(@* "folding")
-;;;_. fold-dwim
-(autoload 'fold-dwim-toggle "fold-dwim" "Toggle folding at point." t)
-(autoload 'fold-dwim-show-all "fold-dwim")
-(autoload 'fold-dwm-hide-all   "fold-dwim")
-
-(global-set-key (kbd "C-c +") 'fold-dwim-toggle)
-(global-set-key (kbd "C-c C-+") 'fold-dwim-show-all)
-(global-set-key (kbd "C-c C--") 'fold-dwim-hide-all)
-
-;;(when (locate-library "fold-dwim")
-;;      ;; FIXME: fold-dwim-toggle would fold/unfold on cursor, not the mouse point
-;;      (global-set-key (kbd "<left-fringe><mouse-1>") 'fold-dwim-toggle)
-;;      )
-
-;;;_. selective display (quick & dirty code folding)
-;; http://www.emacswiki.org/emacs/HideShow#toc5
-;; hide lines whose indentation is bigger than x column
-(defun toggle-selective-display (column)
-  (interactive "P")
-  (set-selective-display
-   (or column
-       (unless selective-display
-         (1+ (current-column))))))
-
-(defun toggle-hiding (column)
-  (interactive "P")
-  (if hs-minor-mode
-      (if (condition-case nil
-              (hs-toggle-hiding)
-            (error t))
-          (hs-show-all))
-    (toggle-selective-display column)))
-
-(global-set-key (kbd "C-c \\") 'toggle-selective-display)
-;;(global-set-key (kbd "C-+") 'toggle-hiding)
-
 ;;;_ S(@* "search")
 ;;;_. hidesearch
 (autoload 'hidesearch "hidesearch" "Incrementally show only lines in file based on what user types." t)
@@ -198,35 +121,21 @@
 
 ;;FIXME: anything-occur is better?
 
-     
-;;;_. list & choose method
-(defun bmz/select-method()
-  (interactive)
-  (require 'idomenu "idomenu" t)  
-  (require 'eassist "eassist" t)  ;; for `eassist-list-methods'
-  (cond
-   ( (and (fboundp 'anything-browse-code)
-	  (memq major-mode '(emacs-lisp-mode lisp-interaction-mode python-mode)))
-     (call-interactively 'anything-browse-code))
-   ( (fboundp 'anything-imenu)
-     (call-interactively 'anything-imenu) )
-   ( (and (fboundp 'eassist-list-methods)
-	  (memq major-mode '(emacs-lisp-mode c-mode java-mode python-mode))
-	  (memq 'semantic-mode minor-mode-alist))
-     (call-interactively 'eassist-list-methods) )
-   ( (fboundp 'idomenu)
-     (call-interactively 'idomenu) )
-   (t
-    (call-interactively 'imenu))))
-
-(global-set-key (kbd "C-c C-o") 'bmz/select-method)
-(global-set-key (kbd "<f5> I") 'bmz/select-method)
-
-
 
 ;;;_ S(@* "completion")
 
 ;;;_. auto-completion
+
+;;;_.. use `pos-tip' to fix the popup window position issue
+;; `auto-complete' 1.4 already use `pos-tip'
+(when (require 'popup-pos-tip nil t)
+  (defadvice popup-tip
+    (around popup-pos-tip-wrapper (string &rest args) activate)
+    (if (memq window-system '(x windows-nt))
+        (apply 'popup-pos-tip string args)
+      ad-do-it)))
+
+;;;_.. complete file name
 (defun ac-expand-filename ()  ;;FIXME: `ac-complete-filename'?
   (interactive)
   (let ( (ac-sources '(ac-source-filename ac-source-files-in-current-dir)) )
@@ -236,6 +145,7 @@
     (define-key undo-tree-map (kbd "C-/") nil))
 (global-set-key (kbd "C-/") 'ac-expand-filename)
 
+;;;_.. complete english words
 ;; (defun ac-expand-dabbrev ()
 ;;   (interactive)
 ;;   (when (not (featurep 'ac-dabbrev)) (require 'ac-dabbrev))
@@ -257,7 +167,10 @@
 
 (defun ac-expand-english-words ()
   (interactive)
-  (find-file-noselect "/usr/share/dict/words")
+  (if (file-exists-p "/usr/share/dict/words")
+      (find-file-noselect "/usr/share/dict/words")
+    (if (file-exists-p "~/.emacs.d/etc/words")
+        (find-file-noselect "~/.emacs.d/etc/words")))
   (call-interactively 'ac-complete-words-in-all-buffer))
 
 (global-set-key (kbd "C-, w") 'ac-expand-english-words)
@@ -287,28 +200,4 @@
 ;; see also: mark-sexp (C-M-SPC), mark-word (M-@)
 
 
-;;;_. linkd: visualize section header & links (to file/man/info/url)
-(autoload 'linkd-mode "linkd" "Create or follow hypertext links." t)
-(eval-after-load "linkd"
-    '(progn
-       ;;;_.. linkd icons path
-      (let ( (dir (concat (file-name-directory (locate-library "linkd")) "icons")) )
-        (when (file-exists-p dir)
-          (setq linkd-icons-directory dir)
-          (setq linkd-use-icons t)))
-
-      ;;;_.. restore [mouse-4] (for mwheel-scroll, linkd bind it to `linkd-back')
-      (when (eq window-system 'x)
-        (define-key linkd-map [mouse-4] nil)
-        (define-key linkd-overlay-map [mouse-4] nil))
-        
-;;      (add-hook 'emacs-lisp-mode-hook 'linkd-enable)
-;;      (add-hook 'python-mode-hook 'linkd-enable)
-;;      (add-hook 'espresso-mode-hook 'linkd-enable)
-      
-      ))
-
-
-
-;;;_. TODO: fuzzy.el
 

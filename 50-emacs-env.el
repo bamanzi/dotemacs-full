@@ -6,6 +6,11 @@
 (global-set-key (kbd "<C-f10> f") 'customize-face)
 (global-set-key (kbd "<C-f10> t") 'customize-themes)
 
+(global-set-key (kbd "<C-f10> F") 'menu-set-font)
+
+(global-set-key (kbd "<mode-line> <C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<mode-line> <C-wheel-down>") 'text-scale-decrease)
+
 
 ;;;_. emacs-lisp
 (global-set-key (kbd "<f12> l l") 'load-library)

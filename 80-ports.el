@@ -48,7 +48,8 @@
 (when (eq system-type 'windows-nt)
   (require 'w32shell) ;;for msys-shell, cygwin-shell & cmd-shell
 
-  (defvar cygwin-root-path "e:/cygwin" "Root path of cygwin.")
+  (defcustom cygwin-root-path "e:/cygwin" "Root path of cygwin."
+    :type '(directory))
 
   (cygwin-init-paths cygwin-root-path)
 

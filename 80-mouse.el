@@ -12,6 +12,8 @@
 (define-key key-translation-map (kbd "<M-mouse-5>") (kbd "<M-wheel-down>"))
 (define-key key-translation-map (kbd "<S-mouse-4>") (kbd "<S-wheel-up>"))
 (define-key key-translation-map (kbd "<S-mouse-5>") (kbd "<S-wheel-down>"))
+(define-key key-translation-map (kbd "<s-mouse-4>") (kbd "<s-wheel-up>"))
+(define-key key-translation-map (kbd "<s-mouse-5>") (kbd "<s-wheel-down>"))
 (define-key key-translation-map (kbd "<H-mouse-4>") (kbd "<H-wheel-up>"))
 (define-key key-translation-map (kbd "<H-mouse-5>") (kbd "<H-wheel-down>"))
 
@@ -114,8 +116,8 @@
 
 
 ;;;_ S(@* "other modifiers: super/hyper/alt")
-(global-set-key (kbd "<A-wheel-up>") 'highlight-symbol-prev)
-(global-set-key (kbd "<A-wheel-down>")  'highlight-symbol-next)
+;;(global-set-key (kbd "<A-wheel-up>") 'highlight-symbol-prev)
+;;(global-set-key (kbd "<A-wheel-down>")  'highlight-symbol-next)
 
 
 ;;; select rectangle using H-mouse-1 (FIXME: could it work?)
