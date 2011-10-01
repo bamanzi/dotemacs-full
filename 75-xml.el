@@ -37,9 +37,9 @@
 (defun xml-goto-match-tag ()
   (interactive)
   (require 'sgml-mode)
-  (let ( (symbol (thing-at-point 'symbol)) )
-    (if (not (and symbol (string= "<" (substring symbol 0 1))))
-        (message "Cursor should be place on an opening or closing tag")
+  ;; (let ( (symbol (thing-at-point 'symbol)) )
+  ;;   (if (not (and symbol (string= "<" (substring symbol 0 1))))
+  ;;       (message "Cursor should be place on an opening or closing tag")
       (progn
        (unless (string= "<" (thing-at-point 'char))
          (re-search-backward "<"))
@@ -58,7 +58,8 @@
 
              (if (looking-at (concat "</" tagname))
                  (forward-char 2)
-               (message "This tag has no ending part.")))))))))
+               (message "This tag has no ending part.")))))))
+;;    ))
 
 (eval-after-load "nxml"
   '(define-key nxml-mode-map (kbd "M-g %") 'xml-goto-match-tag))
