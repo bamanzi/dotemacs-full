@@ -78,6 +78,11 @@ Otherwise, call the original `dired-jump'."
 (setq ediff-window-setup-function 'ediff-setup-windows-plain) ;;I don't like multiframe
 
 
+(setq ediff-split-window-function 'split-window-horizontally)
+;; split the window depending on the frame width:
+(setq ediff-split-window-function (if (> (frame-width) 150)
+                                      'split-window-horizontally
+                                    'split-window-vertically))
 
 
 
