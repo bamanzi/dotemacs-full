@@ -273,7 +273,7 @@ an error is signaled."
     ;;(windmove-default-keybindings 'super)
     (define-key map (kbd "<up>")      'windmove-up)
     (define-key map (kbd "<down>")    'windmove-down)
-    (define-key map (kbd "<left>")    'windmove-right)
+    (define-key map (kbd "<left>")    'windmove-left)
     (define-key map (kbd "<right>")   'windmove-right)   
     
     (define-key map (kbd "<C-up>")    'move-buffer-up)
@@ -301,7 +301,7 @@ an error is signaled."
     (define-key map (kbd "C-z") 'winner-undo)
     (define-key map (kbd "C-y") 'winner-redo)
 
-    (define-key map (kbd "<s-backspace>") 'rotate-windows)
+    (define-key map (kbd "<M-backspace>") 'rotate-windows)
     
     ;; the following need some 3rd-party library
     
