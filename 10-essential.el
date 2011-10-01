@@ -1,5 +1,6 @@
 ;;;_ S(@* "gui options")
-(setq use-dialog-box nil)
+(setq use-dialog-box nil
+      menu-prompting nil)
 
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
@@ -15,8 +16,10 @@
 (when (eq window-system 'x)
     (setq x-select-enable-clipboard t)
 ;;  (setq x-select-enable-primary t)
-    (set-scroll-bar-mode 'right))
+;;    (set-scroll-bar-mode 'right)
+    )
 
+(setq mouse-yank-at-point t) ;;rather than the click point
 
 
 ;;;_ S(@* "files & buffers")
@@ -126,10 +129,13 @@
 
 
 ;;;_ S(@* "editing")
+(global-set-key (kbd "C-`")   'set-mark)
+;;(global-set-key (kbd "M-`") 'exchange-point-and-mark)
+(global-set-key (kbd "M-`")   'pop-mark)
+
 (transient-mark-mode t)
 (setq shift-select-mode t)
 (delete-selection-mode t)
-
 
 ;;;_. CUA
 (setq cua-enable-cua-keys nil)
@@ -172,6 +178,7 @@
 (setq highlight-changes-visibility-initial-state nil)
 (global-highlight-changes-mode t)
 
+(setq diff-switches "-u")    ;;I prefer the unified format
 (global-set-key (kbd "C-c d") 'diff-buffer-with-file)
 
 ;;;_. quickly swap lines
@@ -235,6 +242,9 @@
     (ido-init-completion-maps)
     (add-hook 'minibuffer-setup-hook 'ido-minibuffer-setup)
     (add-hook 'choose-completion-string-functions 'ido-choose-completion-string))
+
+  (defadvice ido-completing-read (before ido-completing-read-fix)
+    (ido-common-initialization))
   )
 (setq ido-everywhere t)
 (setq ido-enable-flex-matching t)
@@ -269,6 +279,8 @@
       (global-set-key (kbd "<f5> c") 'anything-browse-code)
       (global-set-key (kbd "<f5> i") 'anything-imenu)
       (global-set-key (kbd "<f5> o") 'anything-occur)
+
+      (define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
       )
   (message "%s: failed to load `anything'." load-file-name))
 
