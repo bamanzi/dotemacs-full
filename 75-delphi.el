@@ -14,6 +14,8 @@
 ;;;_. highlight more keywords/types
      (load "delphi-misc")
 
+     (load "pascal-mode+")
+
 ;;;_. compiler
 (defun pascal-compile ()
   "guest compile command for pascal/delphi"
@@ -66,20 +68,5 @@
 (add-hook 'pascal-mode-hook 'pascal-mode-init-compiler)
 
   
-;;;_. use pascal-mode for object pascal
-;;; as delphi-mode is implemented in a weired way, which prevent hightlight-symbol, highlight-indentation working
-(defun pascal-mode-for-objpas-init ()
-  ;; make // starts the comment line
-  (modify-syntax-entry ?/   ". 12b" pascal-mode-syntax-table)
-  (modify-syntax-entry ?\n  "> b"   pascal-mode-syntax-table)
-
-  (setq comment-start "// "
-        comment-end "")
-
-  )
-
-(add-hook 'pascal-mode-hook 'pascal-mode-for-objpas-init)
-
-
 
 ))
