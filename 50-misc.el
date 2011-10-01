@@ -264,19 +264,18 @@
 
 
 ;;;_. completion-ui
-(autoload 'complete-dabbrev "complete-ui" nil t)
-(autoload 'complete-etags   "complete-ui" nil t)
-(autoload 'complete-files   "complete-ui" nil t)
+(autoload 'complete-dabbrev "completion-ui" nil t)
+(autoload 'complete-etags   "completion-ui" nil t)
+(autoload 'complete-files   "completion-ui" nil t)
 (global-set-key (kbd "C-, d") 'complete-dabbrev)
 (global-set-key (kbd "C-, t") 'complete-etags)
 (global-set-key (kbd "C-, f") 'complete-files)
-  
 ;;(global-set-key (kbd "C-, s") 'complete-symbol) ;;elisp
 ;;(global-set-key (kbd "C-, >") 'complete-nxml)
 ;;(global-set-key (kbd "C-, <") 'complete-nxml)
 (global-set-key (kbd "C-, $") 'complete-ispell)
 
-(autoload 'complete-ispell-lookup "complete-ui-more-source")
+(autoload 'complete-ispell-lookup "completion-ui-more-source")
 (global-set-key (kbd "C-, $") 'complete-ispell-lookup)
 
 
