@@ -3,25 +3,7 @@
 (autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
 (autoload 'highlight-symbol-next       "highlight-symbol" nil t)
 (autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
-
-;;;_. symbol occurence
-(defun bmz/goto-symbol-occurrence (forward)
-  (let ( (symbol (highlight-symbol-get-symbol)) )
-    (unless symbol (error "No symbol at point"))  
-    (unless hi-lock-mode (hi-lock-mode 1))  
-    (if (not (member symbol highlight-symbol-list))  
-	(highlight-symbol-at-point)))  
-  (if forward
-      (highlight-symbol-next)
-    (highlight-symbol-prev)))
-
-(defun bmz/goto-symbol-next-occur ()
-  (interactive)
-  (bmz/goto-symbol-occurrence t))
-
-(defun bmz/goto-symbol-prev-occur ()
-  (interactive)
-  (bmz/goto-symbol-occurrence nil))
+(autoload 'highlight-symbol-at-point   "highlight-symbol" nil t)
 
 
 ;;;_. internal functions
@@ -31,12 +13,35 @@
       (buffer-substring-no-properties (region-beginning) (region-end))
     (thing-at-point 'symbol)))
 
-;;;_. symbol definition
-(defun bmz/goto-symbol-definition-in-buffer ()
+;;;_. search selection
+(defun bmz/search-selection-forward ()
   (interactive)
-  (if (fboundp 'idomenu)
-      (call-interactively 'idomenu)
-    (call-interactively 'imenu)))
+  (let ( (symbol (bmz/get-symbol-selected-or-current)) )
+    (deactivate-mark)
+    (setq isearch-string symbol)
+    (call-interactively 'isearch-repeat-forward)
+  ))
+
+(defun bmz/search-selection-backward ()
+  (interactive)
+  (let ( (symbol (bmz/get-symbol-selected-or-current)) )
+    (deactivate-mark)
+    (setq isearch-string symbol)
+    (call-interactively 'isearch-repeat-backward)
+  ))
+
+
+;;;_. symbol definition
+(defun bmz/imenu-at-point ()
+  (interactive)
+  (imenu (bmz/get-symbol-selected-or-current)))
+
+(defun bmz/anything-imenu-at-point ()
+  (interactive)
+  (anything
+   :input (bmz/get-symbol-selected-or-current)
+   :sources '(anything-c-source-browse-code
+              anything-c-source-imenu)))
 
 (defun bmz/find-symbol-definition-across-files ()
   (interactive)
@@ -142,21 +147,24 @@ Launches default browser and opens the doc's url."
 ;;;_. overall
 (defun init-word-ops-keys (search-map)
 
-    (define-key search-map "i" 'idomenu)
-    (define-key search-map "I" 'imenu)
+    (define-key search-map "i" 'bmz/anything-imenu-at-point)
+    (define-key search-map "I" 'bmz/imenu-at-point)
 
-    ;;(define-key search-map "g" 'bmz/goto-symbol-definition-in-buffer)
-    (define-key search-map (kbd "M-.") 'bmz/find-symbol-definition-across-files) ;; Emacs style key
-    (define-key search-map (kbd "C-]") 'bmz/find-symbol-definition-across-files) ;; Vi style key
-    ;;(define-key search-map "G" 'bmz/find-symbol-definition-across-files)
+    ;;(define-key search-map "g"          'bmz/goto-symbol-definition-in-buffer)
+    (define-key search-map (kbd "M-.")    'bmz/find-symbol-definition-across-files) ;; Emacs style key
+    (define-key search-map (kbd "C-]")    'bmz/find-symbol-definition-across-files) ;; Vi style key
+    ;;(define-key search-map "G"          'bmz/find-symbol-definition-across-files)
+
+    (define-key search-map (kbd "<f3>")   'bmz/search-selection-forward)
+    (define-key search-map (kbd "<f4>")   'bmz/search-selection-backward
     
-    (define-key search-map (kbd "SPC")    'highlight-symbol-at-point)
-    (define-key search-map (kbd "*")      'bmz/goto-symbol-next-occur)
-    (define-key search-map (kbd "#")      'bmz/goto-symbol-prev-occur)
-    (define-key search-map (kbd "<up>")    'bmz/goto-symbol-prev-occur)
-    (define-key search-map (kbd "<down>") 'bmz/goto-symbol-next-occur)
+    (define-key search-map (kbd "j")      'highlight-symbol-at-point)
+    (define-key search-map (kbd "*")      'highlight-symbol-next)
+    (define-key search-map (kbd "#")      'highlight-symbol-prev)
+    (define-key search-map (kbd "<up>")   'highlight-symbol-prev)
+    (define-key search-map (kbd "<down>") 'highlight-symbol-next)
     (define-key search-map (kbd "M-%")    'highlight-symbol-query-replace)
-
+    
     (define-key search-map (kbd "O")     'bmz/occur-at-point)
 
     (define-key search-map (kbd "M-o")   'bmz/multi-occur-in-this-mode)
@@ -168,6 +176,8 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "g SPC") 'grep)
     (define-key search-map (kbd "gr")    'rgrep)
     (define-key search-map (kbd "gl")    'lgrep)
+
+    ;;TODO: ack
 
     ;; (define-key search-map (kbd "f") 'find-function-at-point)
     ;; (define-key search-map (kbd "v") 'find-variable-at-point)
@@ -199,7 +209,5 @@ Launches default browser and opens the doc's url."
 (define-key global-map (kbd "<C-f3>") 'isearch-repeat-forward)
 (define-key global-map (kbd "<S-f3>") 'isearch-repeat-backward)
 
-(define-key goto-map (kbd "i") 'bmz/goto-symbol-definition-in-buffer)
-(define-key goto-map (kbd "I") 'bmz/find-symbol-definition-across-files)
 
 
