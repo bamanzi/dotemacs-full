@@ -219,6 +219,14 @@ an error is signaled."
 
 (defun bmz/imenu-tree (arg)
   (interactive "P")
+   ;; delete other-buffers' tree
+  (let ( (buffer (get-buffer "*imenu-tree*")) )
+    (if buffer
+        (with-current-buffer buffer
+          (beginning-of-buffer)
+          (ignore-errors
+            (tree-mode-delete (tree-mode-tree-ap))))))
+  ;; build current buffer's tree
   (imenu-tree arg)
   (if (featurep 'ide-skel)
       (add-to-list 'ide-skel-tabbar-hidden-buffer-names-regexp-list "^\\*imenu-tree\\*$"))
@@ -228,8 +236,10 @@ an error is signaled."
                                          nil))
                                   (window-list))))
           (window (car windows)) )
-    (if window
-        (set-window-dedicated-p window t))))
+    (when window
+        (set-window-dedicated-p window t)
+        (with-selected-window window
+          (tree-mode-expand-level 2)))))
     
 
 (defun split-root-window-vertially ()
@@ -261,6 +271,7 @@ an error is signaled."
 				    
     (define-key map (kbd "RET")   'windresize)
 
+    (define-key map (kbd "b")     'balance-windows)
     (define-key map (kbd "m")     'minimize-window) ;; Emacs 24?
     (define-key map (kbd "x")     'maximize-window)
     

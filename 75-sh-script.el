@@ -7,11 +7,12 @@
    :candidate-number-limit 10
    :sources
    '( anything-c-source-info-bash
+      anything-c-source-info-zsh
       anything-c-source-info-coreutils
       anything-c-source-info-sh-utils
       anything-c-source-info-fileutils
       anything-c-source-info-textutils
-      anything-c-source-info-zsh
+      anything-c-source-man-pages
       )))
 
 (eval-after-load "sh-script"
