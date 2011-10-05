@@ -11,7 +11,7 @@
   "Get the selected text or (if nothing selected) current symbol."
   (if (and transient-mark-mode mark-active)
       (buffer-substring-no-properties (region-beginning) (region-end))
-    (thing-at-point 'symbol)))
+    (regexp-quote (thing-at-point 'symbol))))
 
 ;;;_. search selection
 (defun bmz/search-selection-forward ()
@@ -100,13 +100,62 @@
 		"--exclude \"#*.*\" --exclude \"*.*~\""
 		)))
 
+;;;_. ack: a better grep  http://betterthangrep.com/
+;;;  - it would ignore .svn, CVS etc by default
+;;;  - it would ignore binary files, core dumps, backup files by default
+;;;  - to limit search in some file types, you can easily use `--type=perl'
+;;;    rather than combining grep with `find'
+;;;
+(autoload 'ack "ack" "Use ack where you might usually use grep." t)
+(autoload 'ack-mode "ack" "Use ack where you might usually use grep." nil)
+(defun bmz/ack-at-point (typep recursively)
+  (require 'ack)
+  (let ( (command (concat (if typep (ack-build-command)
+                            ack-command)
+                          (if recursively " -r "
+                              " ")
+                          (bmz/get-symbol-selected-or-current))) )
+    (compilation-start command 'ack-mode)))
+
+(defun bmz/ack-at-point-in-same-type-files (arg)  
+  "Use `ack' to search current symbol in same type files. if ARG given, search recursively."
+  (interactive "P")
+  (bmz/ack-at-point 'same-type arg))
+
+(defun bmz/ack-at-point-in-all-files (arg)
+    "Use `ack' to search current symbol in all files. if ARG given, search recursively."
+  (interactive "P")
+  (bmz/ack-at-point nil arg))
+
+;;;_. local dictionary
+(autoload 'sdcv-search "sdcv-mode" nil t)
+
 ;;;_. "network lookup"
+;;;_.. DICT protocol with dictionary.el
+;;    (setq dictionary-server "localhost")
+(autoload 'dictionary-search "dictionary" "Ask for a word and search it in all dictionaries" t)
+(autoload 'dictionary-match-words "dictionary" "Ask for a word and search all matching words in the dictionaries" t)
+
+;;;_.. DICT protocol with dictem.el (external program `dict' needed)
+;;(require 'dictem)
+(setq dictem-server "localhost")
+;;(require 'dictem)
+;;(dictem-initialize)
+(autoload 'dictem-run-search "dictem" nil t)
+(autoload 'dictem-run-match  "dictem" nil t) 
+
+;;;_.. DICT protocol with dict.el (external program `dict' needed)
+;;;  (NOTE: it's hard to use it on windows)
+(setq dict-servers '("localhost" "dict.org"))
+;;(setq dict-enable-key-bindings t)
+;;(setq dict-databases '("gcide" "pydict"))
 (autoload 'dict "dict" "Lookup a WORD on dict.org." t)
-(defun dict-org-at-point  ()
+(defun bmz/dict-org-at-point  ()
   (interactive)
   (let ( (word (bmz/get-symbol-selected-or-current)) )
     (dict word)))
 
+;;;_.. lookup on google
 ;;stolen from Xah Lee's http://xahlee.org/emacs/xah_emacs_generic.el
 (defun lookup-google ()
   "Look up current word in Google Search.
@@ -130,6 +179,7 @@ Launches default browser and opens the doc's url."
       )
      )))
 
+;;;_.. lookup on wikipedia
 (defun lookup-wikipedia ()
   "Look up current word in Wikipedia.
 If there is a text selection (e.g. a phrase), lookup that phrase.
@@ -155,8 +205,8 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "C-]")    'bmz/find-symbol-definition-across-files) ;; Vi style key
     ;;(define-key search-map "G"          'bmz/find-symbol-definition-across-files)
 
-    (define-key search-map (kbd "<f3>")   'bmz/search-selection-forward)
-    (define-key search-map (kbd "<f4>")   'bmz/search-selection-backward
+    (define-key search-map (kbd "<f3>")   'isearch-repeat-forward)
+    (define-key search-map (kbd "<S-f3>") 'isearch-repeat-backward)
     
     (define-key search-map (kbd "j")      'highlight-symbol-at-point)
     (define-key search-map (kbd "*")      'highlight-symbol-next)
@@ -171,6 +221,7 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "M-O")   'bmz/multi-occur-at-point)
 
     (define-key search-map (kbd "g")     'nil)
+    (define-key search-map (kbd "G")     'bmz/grep-symbol-at-point-same-ext)
     (define-key search-map (kbd "gg")    'bmz/grep-symbol-at-point-same-ext)
     (define-key search-map (kbd "gG")    'bmz/grep-symbol-at-point)
     (define-key search-map (kbd "g SPC") 'grep)
@@ -178,19 +229,24 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "gl")    'lgrep)
 
     ;;TODO: ack
-
+    (define-key search-map (kbd "aa")    'bmz/ack-at-point-in-same-type-files)
+    (define-key search-map (kbd "aA")    'bmz/ack-at-point-in-all-files)
+    (define-key search-map (kbd "a SPC") 'ack)
+    (define-key search-map (kbd "A")    'bmz/ack-at-point-in-same-type-files)
+    
     ;; (define-key search-map (kbd "f") 'find-function-at-point)
     ;; (define-key search-map (kbd "v") 'find-variable-at-point)
     ;; (define-key search-map (kbd "l") 'find-library)
     ;; (define-key search-map (kbd "C-f") 'ffap-other-window)
 
-    (define-key search-map (kbd "<f3>") 'isearch-repeat-forward)
-    (define-key search-map (kbd "<S-f3>") 'isearch-repeat-backward)
 
-    (autoload 'sdcv-search "sdcv-mode" nil t)
-    (define-key search-map (kbd "d")   'sdcv-search) ;;sdcv-mode.el needed
+    (define-key search-map (kbd "D")   'sdcv-search) ;;sdcv-mode.el needed
 
-    (define-key search-map (kbd "D")   'dict-org-at-point)
+    (define-key search-map (kbd "d")    'nil)
+    (define-key search-map (kbd "do")   'dict-org-at-point)       ;;dict.el needed
+    (define-key search-map (kbd "ds")   'dictionary-search)       ;;dictionary.el needed
+    (define-key search-map (kbd "dm")   'dictionary-match-words)  ;;dictionary.el needed
+    
     (define-key search-map (kbd "G")   'lookup-google)
     (define-key search-map (kbd "W")   'lookup-wikipedia)
 
@@ -206,8 +262,10 @@ Launches default browser and opens the doc's url."
 
 
 ;; other keys
-(define-key global-map (kbd "<C-f3>") 'isearch-repeat-forward)
-(define-key global-map (kbd "<S-f3>") 'isearch-repeat-backward)
+;;(define-key global-map (kbd "<C-f3>") 'isearch-repeat-forward)
+;;(define-key global-map (kbd "<S-f3>") 'isearch-repeat-backward)
+(define-key global-map (kbd "<C-f3>")   'bmz/search-selection-forward)
+(define-key global-map (kbd "<S-f3>")   'bmz/search-selection-backward)
 
 
 
