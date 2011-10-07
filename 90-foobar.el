@@ -100,7 +100,8 @@ See: `forward-block'"
     (if (not (featurep 'color-theme))
         (and (require 'color-theme nil t)
              (require 'color-theme-tangotango nil t)
-             (color-theme-tangotango))))=======
+             (color-theme-tangotango))))
+
 (if (not (featurep 'ide-skel))
     (idle-require 'tabbar-ruler)) 
          
@@ -111,3 +112,4 @@ See: `forward-block'"
 (if (eq window-system 'windows-nt)
     (load "keyword-help" 'noerror))
 
+(idle-require 'scratch-log)
