@@ -46,7 +46,7 @@
   (paste-to-mark arg))
 
 ;;;_. big word (i.e. identifier in most languages)
-;;; (but in Emacs, nearly any char is valid in symbol. thus we can't use sexp)
+;;; (but in Emacs, nearly any char is valid in symbol. thus we can't use \s_)
 (defun beginning-of-big-word (&optional arg)
   (interactive "P")
   (re-search-backward "[^a-z0-9_-]" nil 'noerror 1)
@@ -54,9 +54,12 @@
   )
 
 (defun end-of-big-word (&optional arg)
-  (interactive "P")
-  (re-search-forward "[^a-z0-9-_]" nil 'noerror arg)
-  (if (looking-at "[^a-z0-9-_]") (goto-char (- (point) 1)))
+  (interactive "p")
+  (dotimes (i arg)
+    (re-search-forward "[a-z0-9-_]" nil 'noerror arg)
+    (if (< i (- arg 1))
+        ;; skip punctations
+        (re-search-forward "[^a-z0-9-_]" nil 'noerror 1)))
   )
   
 (defun copy-big-word (&optional arg)
@@ -200,5 +203,6 @@ When used in shell-mode, it will paste parenthesis on shell prompt by default "
 (define-key copy-to-mark-map "(" 'copy-parenthesis-to-mark)
 (define-key copy-to-mark-map "{" 'copy-parenthesis-to-mark)
 (define-key copy-to-mark-map "e" 'copy-sexp-to-mark)
-  
+
+
 
