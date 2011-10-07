@@ -2,6 +2,10 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(add-to-list 'exec-path "~/.emacs.d/bin")
+(add-to-list 'exec-path "~/bin")
+(setenv "PATH" (concat "~/.emacs.d/bin" path-separator "~/bin" path-separator (getenv "PATH")))
+
 (unless (fboundp 'idle-require)
   (defun idle-require (feature)
     (require feature nil t)))

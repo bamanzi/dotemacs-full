@@ -82,6 +82,13 @@
 ;;;_. misc keys
 ;(global-set-key (kbd "<f3> C-f") 'ffap-other-window)
 
+(defun describe-major-mode ()
+  (interactive)
+  (let ( (mode major-mode) )
+    (with-help-window
+        (format "%s" mode)
+      (describe-function mode))))
+
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)
 
 (define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
@@ -191,6 +198,15 @@
 (autoload 'complete-ispell-lookup "completion-ui-more-source")
 (global-set-key (kbd "C-, $") 'complete-ispell-lookup)
 
+;;;_ S(@* "secondary selection")
+(autoload 'secondary-to-primary "second-sel" nil t)
+(autoload 'primary-to-secondary "second-sel" nil t)
+(autoload 'secondary-swap-region "second-sel" nil t)
+(define-key search-map (kbd "2") 'primary-to-secondary)
+(define-key search-map (kbd "1") 'secondary-to-primary)
+(define-key search-map (kbd "`") 'secondary-swap-region)
+
+;;(define-key search-map (kbd "~") 'transpose-selections)
 
 ;;;_ S(@* "misc")
 ;;;_. extend selection incrementally (ergoemacs-functions.el)
