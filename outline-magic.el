@@ -237,7 +237,7 @@ them set by set, separated by a nil element.  See the example for
   (cond
 
    ((equal arg '(4))
-    ; Run `outline-cycle' as if at the top of the buffer.
+    ;; Run `outline-cycle' as if at the top of the buffer.
     (save-excursion
       (goto-char (point-min))
       (outline-cycle nil)))
@@ -256,63 +256,58 @@ them set by set, separated by a nil element.  See the example for
 
       (cond
        ((eq last-command 'outline-cycle-overview)
-	;; We just created the overview - now do table of contents
-	;; This can be slow in very large buffers, so indicate action
-	(message "CONTENTS...")
-	(save-excursion
-	  ;; Visit all headings and show their offspring
-	  (goto-char (point-max))
-	  (catch 'exit
-	    (while (and (progn (condition-case nil
-				   (outline-previous-visible-heading 1)
-				 (error (goto-char (point-min))))
-			       t)
-			(looking-at outline-regexp))
-	      (show-branches)
-	      (if (bobp) (throw 'exit nil))))
-	  (message "CONTENTS...done"))
-	(setq this-command 'outline-cycle-toc))
+        ;; We just created the overview - now do table of contents
+        ;; This can be slow in very large buffers, so indicate action
+        (message "CONTENTS...")
+        (save-excursion
+          ;; Visit all headings and show their offspring
+          (show-all)
+          (hide-body)
+          (message "CONTENTS...done"))
+        (setq this-command 'outline-cycle-toc))
        ((eq last-command 'outline-cycle-toc)
-	;; We just showed the table of contents - now show everything
-	(show-all)
-	(message "SHOW ALL")
-	(setq this-command 'outline-cycle-showall))
+        ;; We just showed the table of contents - now show everything
+        (show-all)
+        (message "SHOW ALL")
+        (setq this-command 'outline-cycle-showall))
        (t
-	;; Default action: go to overview
+        ;; Default action: go to overview
         ;; FIX-ME: variable sublevel here (for wikipedia for example):
-	(hide-sublevels 2)
-	(message "OVERVIEW")
-	(setq this-command 'outline-cycle-overview))))
+        (save-excursion
+          (outline-next-visible-heading 1)
+          (call-interactively 'hide-sublevels))
+        (message "OVERVIEW")
+        (setq this-command 'outline-cycle-overview))))
 
      ((save-excursion (beginning-of-line 1) (looking-at outline-regexp))
       ;; At a heading: rotate between three different views
       (outline-back-to-heading)
       (let ((goal-column 0) beg eoh eol eos)
-	;; First, some boundaries
-	(save-excursion
-	  (outline-back-to-heading)           (setq beg (point))
-	  (save-excursion (outline-next-line) (setq eol (point)))
-	  (outline-end-of-heading)            (setq eoh (point))
-	  (outline-end-of-subtree)            (setq eos (point)))
-	;; Find out what to do next and set `this-command'
-	(cond
-	 ((= eos eoh)
-	  ;; Nothing is hidden behind this heading
-	  (message "EMPTY ENTRY"))
-	 ((>= eol eos)
-	  ;; Entire subtree is hidden in one line: open it
-	  (show-entry)
-	  (show-children)
-	  (message "CHILDREN")
-	  (setq this-command 'outline-cycle-children))
-	 ((eq last-command 'outline-cycle-children)
-	  ;; We just showed the children, now show everything.
-	  (show-subtree)
-	  (message "SUBTREE"))
-	 (t
-	  ;; Default action: hide the subtree.
-	  (hide-subtree)
-	  (message "FOLDED")))))
+        ;; First, some boundaries
+        (save-excursion
+          (outline-back-to-heading)           (setq beg (point))
+          (save-excursion (outline-next-line) (setq eol (point)))
+          (outline-end-of-heading)            (setq eoh (point))
+          (outline-end-of-subtree)            (setq eos (point)))
+        ;; Find out what to do next and set `this-command'
+        (cond
+         ((= eos eoh)
+          ;; Nothing is hidden behind this heading
+          (message "EMPTY ENTRY"))
+         ((>= eol eos)
+          ;; Entire subtree is hidden in one line: open it
+          (show-entry)
+          (show-children)
+          (message "CHILDREN")
+          (setq this-command 'outline-cycle-children))
+         ((eq last-command 'outline-cycle-children)
+          ;; We just showed the children, now show everything.
+          (show-subtree)
+          (message "SUBTREE"))
+         (t
+          ;; Default action: hide the subtree.
+          (hide-subtree)
+          (message "FOLDED")))))
 
      ;; TAB emulation
      ((outline-cycle-emulate-tab)
