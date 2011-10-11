@@ -22,52 +22,13 @@
 (setq mouse-yank-at-point t) ;;rather than the click point
 
 
-;;;_ S(@* "files & buffers")
-(global-set-key (kbd "C-c C-b") 'ibuffer)
-(global-set-key (kbd "<C-tab>") 'previous-buffer)
-(global-set-key (kbd "<C-S-tab>") 'next-buffer)
 
-;;;_. buffer name uniquify
-;;(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
-;;;_. backup rules
-;;(setq make-backup-files t) ;;to disable backup, set it to nil
-
-;;(setq backup-directory-alist `(("." . "~/.saves")))
-
-(setq backup-by-copying t)
-
-;; (setq version-control t
-;;   delete-old-versions t
-;;   kept-new-versions 6
-;;   kept-old-versions 2)
 
 
 
 
 ;;;_ S(@* "windows")
-;;;_. winner-mode
-(setq winner-dont-bind-my-keys t)
-(winner-mode t)
-;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
-;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
-
-;;;_. tabbar
-;; ide-skel would group buffers into two: editing buffer, emacs buffer
-;;(if window-system
-;;    (require 'ide-skel nil t))
-
-;; if you use `ide-skel', don't directly load `tabbar' after `ide-ske'
-;; as this would mess up the tab group definition of `ide-skel'
-(when (or (featurep 'tabbar)
-          (load "tabbar" t))
-  (tabbar-mode t)
-  (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward)
-  (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward)
-  (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
-  (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
-  )
 
 
 ;;;_ S(@* "key bindings")
@@ -207,48 +168,6 @@
 
 
 ;;;_ S(@* "completion")
-(if (string< "23.1.99" emacs-version) ;; emacs >= 23.2
-   (setq tab-always-indent 'complete))
-
-
-;; Emacs default:
-;;   M-TAB - lisp-complete-symbol(<24)/completion-at-point(v24)
-;;   M-/ - dabbrev-expand
-
-(global-set-key (kbd "M-/") 'hippie-expand)
-
-;;;_. icomplete
-(icomplete-mode t)  ;; completion for minibuffer (commands (M-x)
-                    ;; variables (C-h v, customize-variable), functions (C-h f))
-
-;;;_. ido
-(require 'ido)
-(unless (fboundp 'ido-common-initialization)   ;;workaround for emacs 23.1's bug(?)
-  (defun ido-common-initialization ()
-    (ido-init-completion-maps)
-    (add-hook 'minibuffer-setup-hook 'ido-minibuffer-setup)
-    (add-hook 'choose-completion-string-functions 'ido-choose-completion-string))
-
-  (defadvice ido-completing-read (before ido-completing-read-fix)
-    (ido-common-initialization))
-  )
-(setq ido-everywhere t)
-(setq ido-enable-flex-matching t)
-(setq ido-use-filename-at-point 'guess)
-(setq ido-use-url-at-point 'guess)
-(ido-mode t)
-
-;;;_. smex : ido for M-x
-(if (require 'smex nil t)
-    (progn
-      (smex-initialize)
-  
-      (global-set-key (kbd "M-x") 'smex)
-      (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-      ;; This is your old M-x.
-      (global-set-key (kbd "ESC M-x") 'execute-extended-command))
-  (progn
-    (message "%s: failed to load `smex'." load-file-name)))
 
 ;;;_. anything
 (if (and (load "anything" t)
@@ -271,93 +190,13 @@
   (message "%s: failed to load `anything'." load-file-name))
 
 
-;;;_. auto-compelte
-(if (and (load "auto-complete" t)
-         (load "auto-complete-config" t))
-    (progn
-      
-      (ac-config-default)
-      (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
-      
-      ;;(add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
-
-      (if (load "auto-complete-scite-api" t)
-          (add-to-list 'ac-sources 'ac-source-scite-api)
-        (message "%s: failed to load `auto-complete-scite-api'." load-file-name)))
-  (message "%s: failed to load `auto-complete'." load-file-name))
 
 
 
 ;;;_ S(@* "code folding")
 
-;;;_. hideshow
-(autoload 'hideshowvis-enable "hideshowvis" "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
-(autoload 'hideshowvis-minor-mode "hideshowvis" "Will indicate regions foldable with hideshow in the fringe." 'interactive)
-
-(eval-after-load "hideshowvis" '(load "hideshow-fringe" t))
-
-;;(add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
-
-;;(eval-after-load 'python
-;;  (add-hook 'python-mode-hook 'hideshowvis-enable))
-
-;(eval-after-load "hideshow"
-;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
-
-;;;_. outline
-(global-set-key (kbd "C-c <up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "C-c <down>")   'outline-next-visible-heading)
-
-(global-set-key (kbd "<C-M-up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "<C-M-down>")   'outline-next-visible-heading)
-
-(global-set-key (kbd "<C-wheel-up>") 'outline-previous-visible-heading)
-(global-set-key (kbd "<C-wheel-down>") 'outline-next-visible-heading)
-(global-set-key (kbd "<C-mouse-1>")  'outline-toggle-children)
-(global-set-key (kbd "<C-mouse-3>")  'hide-sublevels)
-(global-set-key (kbd "<C-mouse-2>")  'show-all)
-
-;;;_. allout
-(eval-after-load "allout"
-  '(progn
-     (define-key allout-mode-map (kbd "<C-M-up>")     'allout-previous-visible-heading)
-     (define-key allout-mode-map (kbd "<C-M-down>")   'allout-next-visible-heading)
-
-     (define-key allout-mode-map (kbd "<C-wheel-up>")   'allout-previous-visible-heading)
-     (define-key allout-mode-map (kbd "<C-wheel-down>") 'allout-next-visible-heading)
-     (define-key allout-mode-map (kbd "<C-mouse-1>")    'allout-hide-current-subtree)
-     (define-key allout-mode-map (kbd "<C-mouse-3>")    'allout-show-current-subtree)
-     (define-key allout-mode-map (kbd "<C-mouse-2>")    'allout-show-all)
-     ))
 
 
-;;;_ S(@* "some visual effect")
-(column-number-mode t)
-
-;;;_. highlight-symbol
-(idle-require 'highlight-symbol)
-
-(global-set-key (kbd "C-c j")          'highlight-symbol-at-point)
-(define-key search-map (kbd "j")        'highlight-symbol-at-point)
-(define-key search-map (kbd "<up>")   'highlight-symbol-prev)
-(define-key search-map (kbd "<down>") 'highlight-symbol-next)
-
-(global-set-key (kbd "<double-mouse-1>")  'highlight-symbol-at-point)
-(global-set-key (kbd "<S-wheel-up>")      'highlight-symbol-prev)
-(global-set-key (kbd "<S-wheel-down>")    'highlight-symbol-next)
-
-;;;_. bm
-(idle-require 'bm)
-
-(global-set-key (kbd "<C-f2>")    'bm-toggle)
-(global-set-key (kbd "<M-f2>")    'bm-next)
-(global-set-key (kbd "<S-f2>")    'bm-previous)
-(global-set-key (kbd "<H-f2>")    'bm-show)
-
-(global-set-key (kbd "<left-fringe> <C-mouse-1>")     'bm-toggle-mouse)
-(global-set-key (kbd "<left-fringe> <C-wheel-up>")    'bm-previous-mouse)
-(global-set-key (kbd "<left-fringe> <C-wheel-down>")  'bm-next-mouse)
-(global-set-key (kbd "<left-fringe> <C-mouse-2>")     'bm-show)
 
 
 ;;;_ S(@* "programming")
