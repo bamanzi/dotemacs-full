@@ -1,3 +1,25 @@
+;;;_ S(@* "files & buffers")
+(global-set-key (kbd "C-c C-b") 'ibuffer)
+(global-set-key (kbd "<C-tab>") 'previous-buffer)
+(global-set-key (kbd "<C-S-tab>") 'next-buffer)
+
+;;;_. recentf
+(require 'recentf)
+(setq recentf-max-saved-items 100)
+(setq recentf-menu-path '("File"))
+(recentf-mode t)
+
+;;;_. tempbuf
+;;(autoload 'turn-on-tempbuf-mode "tempbuf")
+(when (load "tempbuf" t)
+  (add-hook 'dired-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'custom-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
+;;;See also: midnight-mode
+
+
 ;;;_. uniquify buffer name
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)

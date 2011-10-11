@@ -43,21 +43,7 @@
 ;;   kept-new-versions 6
 ;;   kept-old-versions 2)
 
-;;;_. recentf
-(require 'recentf)
-(setq recentf-max-saved-items 100)
-(setq recentf-menu-path '("File"))
-(recentf-mode t)
 
-;;;_. tempbuf
-;;(autoload 'turn-on-tempbuf-mode "tempbuf")
-(when (load "tempbuf" t)
-  (add-hook 'dired-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'custom-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
-;;;See also: midnight-mode
 
 
 ;;;_ S(@* "windows")

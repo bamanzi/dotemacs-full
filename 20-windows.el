@@ -1,3 +1,25 @@
+;;;_. winner-mode
+(setq winner-dont-bind-my-keys t)
+(winner-mode t)
+;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
+;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
+
+;;;_. tabbar
+;; ide-skel would group buffers into two: editing buffer, emacs buffer
+;;(if window-system
+;;    (require 'ide-skel nil t))
+
+;; if you use `ide-skel', don't directly load `tabbar' after `ide-ske'
+;; as this would mess up the tab group definition of `ide-skel'
+(when (or (featurep 'tabbar)
+          (load "tabbar" t))
+  (tabbar-mode t)
+  (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward)
+  (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward)
+  (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
+  (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
+  )
+
 
 ;;;_ M-1, M-2 to different window
 (if (require 'window-numbering nil t)
