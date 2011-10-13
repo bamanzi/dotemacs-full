@@ -60,7 +60,7 @@
 ;;;_. documentatin
 (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 ;;; this would make eldoc-mode to show symbol description
-(require 'eldoc-extension nil t)
+(idle-require 'eldoc-extension)
 
 (defun anything-info-elisp ()
   (interactive)

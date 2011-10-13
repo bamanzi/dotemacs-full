@@ -1,6 +1,8 @@
 
 ;;;_. options
 ;;(setq custom-unlispify-tag-names nil)
+(global-unset-key (kbd "<f10>"))
+(global-set-key (kbd "<f10> <f10>") 'menu-bar-open)
 
 (global-set-key (kbd "<C-f10> g") 'customize-group)
 (global-set-key (kbd "<C-f10> v") 'customize-variable)
@@ -81,6 +83,7 @@
 
 
 ;;;_. "utils"
+
 (global-set-key (kbd "<f12> a") 'apropos)  ;;sys-apropos ?
 (global-set-key (kbd "<f12> c") 'quick-calc)
 (global-set-key (kbd "<f12> C") 'calc-dispatch)
@@ -95,8 +98,6 @@
 
 
 
-
-
 (defun describe-major-mode ()
   (interactive)
   (let ( (mode major-mode) )
@@ -105,9 +106,23 @@
       (describe-function mode))))
 
 
+(defun insert-function-brief-description (function)
+  "Insert the first line of documentation of a function.
 
-
-
-
-
+Useful when writing autoload spec."
+  (interactive
+   (let ((fn (function-called-at-point))
+	 (enable-recursive-minibuffers t)
+	 val)
+     (setq val (completing-read (if fn
+				    (format "Describe function (default %s): " fn)
+				  "Describe function: ")
+				obarray 'fboundp t nil nil
+				(and fn (symbol-name fn))))
+     (list (if (equal val "")
+	       fn (intern val)))))
+  (if (null function)
+      (message "You didn't specify a function")
+    (insert-string (or (eldoc-docstring-first-line (documentation function t))
+                       "Undocumented.")    )))
 

@@ -11,7 +11,10 @@
 ;;   kept-old-versions 2)
 
 
+
 ;;;_ S(@* "dired")
+;;(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
+
 (defun bmz/dired-jump ()
   "If current buffer is in an archive(zip/tar), jump to it.
 Otherwise, call the original `dired-jump'."
@@ -25,6 +28,7 @@ Otherwise, call the original `dired-jump'."
       (call-interactively 'dired-jump))))
 
 (define-key goto-map "d" 'bmz/dired-jump)
+
 
 ;;;_ S(@* "ediff")
 

@@ -21,64 +21,35 @@
 
 (setq mouse-yank-at-point t) ;;rather than the click point
 
-
-
-
-
-
-
-
-;;;_ S(@* "windows")
-
-
-;;;_ S(@* "key bindings")
-
 ;;;_. key modifiers and prefix keys
 
 (when (eq window-system 'w32)
   ;;(setq w32-lwindow-modifier 'super)
   
-  (setq w32-lwindow-modifier 'nil)  ;;<lwindow> used as a prefix key
-  (setq w32-pass-lwindow-to-system t) ;;if set to nil, a single press <lwindow> would prevent Start Menu
-  (define-key key-translation-map (kbd "<lwindow>") (kbd "<f11>"))
+  (setq w32-lwindow-modifier 'super) 
+  (setq w32-pass-lwindow-to-system nil) ;;if set to nil, a single press <lwindow> would prevent Start Menu
 
-  ;; (setq w32-rwindow-modifier 'alt)      
-  (setq w32-rwindow-modifier 'hyper)
+  (setq w32-rwindow-modifier 'alt)      
   (setq w32-pass-rwindow-to-system nil)
-  ;;(define-key key-translation-map (kbd "<rwindow>") (kbd "C-c"))
   
   (setq w32-apps-modifier 'hyper)
+  (setq w32-pass-apps-to-system nil)
   
   (setq w32-scroll-lock-modifier nil)
   )
   
 ;;FIXME: not work
 (when (eq window-system 'x)
-  (define-key key-translation-map (kbd "<super>") (kbd "<f11>"))
+  (global-unset-key (kbd "<menu>"))
+  (define-key key-translation-map (kbd "<menu>") 'event-apply-hyper-modifier)  
   )
-
-;;;_. <f1> .. <f12> as prefix key
-
-(global-set-key (kbd "<f10> <f10>") 'menu-bar-open)
-
-;; toggle minor modes
-(global-set-key (kbd "<f10> c") 'highlight-changes-visible-mode)
-(global-set-key (kbd "<f10> f") 'auto-fill-mode)
-(global-set-key (kbd "<f10> p") 'show-paren-mode)
-(global-set-key (kbd "<f10> w") 'whitespace-mode)
-(global-set-key (kbd "<f10> h") 'hs-minor-mode)
-(global-set-key (kbd "<f10> o") 'outline-minor-mode)
-(global-set-key (kbd "<f10> r") 'ruler-mode)
-(global-set-key (kbd "<f10> t") 'toggle-truncate-lines)
-(global-set-key (kbd "<f10> C-w") 'visual-line-mode)
-(global-set-key (kbd "<f10> l") 'linum-mode)
-(global-set-key (kbd "<f10> v") 'toggle-viper-mode)
 
 
 ;;;_ S(@* "editing")
 (global-set-key (kbd "C-`")   'set-mark)
 ;;(global-set-key (kbd "M-`") 'exchange-point-and-mark)
-(global-set-key (kbd "M-`")   'pop-mark)
+(global-set-key (kbd "M-`")   'pop-to-mark-command)
+(global-set-key (kbd "C-M-`") 'pop-mark)
 
 (transient-mark-mode t)
 (setq shift-select-mode t)
@@ -128,33 +99,15 @@
 (setq diff-switches "-u")    ;;I prefer the unified format
 (global-set-key (kbd "C-c d") 'diff-buffer-with-file)
 
-;;;_. quickly swap lines
-;; Move line up/down. Stolen from org-mode's M-up/down
-;; TODO: support region (move region line up/down)
-;; see also:  (@file :file-name "drag-stuff.el" :to "define-minor-mode drag-stuff-mode")
-(defun swap-line-up ()
-  "Swap the current line with the line above."
-  (interactive)
-  (transpose-lines 1)
-  (beginning-of-line -1))
 
-(defun swap-line-down ()
-  "Swap current line with the line below."
-  (interactive)
-  (beginning-of-line 2) (transpose-lines 1) (beginning-of-line 0))
-
-(if (load "drag-stuff" t)
-    (progn
+(idle-require 'drag-stuff)
+(eval-after-load "drag-stuff"
+  '(progn
 ;;    (setq drag-stuff-modifier 'hyper)
       (add-to-list 'drag-stuff-except-modes 'org-mode)
-      (drag-stuff-global-mode t))
-  (progn
-      (global-set-key (kbd "<M-up>") 'swap-line-up)
-      (global-set-key (kbd "<M-down>") 'swap-line-down)
-      ))
+      (drag-stuff-global-mode t)))
 
-
-;;;_. vi-style join-line
+;;;_. misc
 (defun join-line ()
   "Join the following line with current line"
   (interactive)
@@ -162,12 +115,10 @@
 
 (global-set-key (kbd "C-c J") 'join-line)
 
-;;;_. misc
-
 (global-set-key (kbd "C-=") 'align-regexp)
 
 
-;;;_ S(@* "completion")
+;;;_ S(@* "anything")
 
 ;;;_. anything
 (if (and (load "anything" t)
@@ -189,16 +140,6 @@
       )
   (message "%s: failed to load `anything'." load-file-name))
 
-
-
-
-
-;;;_ S(@* "code folding")
-
-
-
-
-
 ;;;_ S(@* "programming")
 
 ;;(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
@@ -206,7 +147,6 @@
 (which-func-mode t)
 
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
-
 
 (define-key goto-map "e" 'find-tag)
 
@@ -221,14 +161,16 @@
 
 
 ;;;_ S(@* "buffer navigations")
-(global-set-key (kbd "C-`")   'set-mark-command)
-(global-set-key (kbd "M-`")   'cua-exchange-point-and-mark)
-(global-set-key (kbd "C-M-`") 'pop-to-mark-command)
-
 ;;;_. imenu
 (autoload 'idomenu "idomenu" "Switch to a buffer-local tag from Imenu via Ido." t)
 (define-key goto-map "i" 'idomenu)
 (define-key goto-map "I" 'imenu)
+
+(autoload 'bm-toggle "bm" "Toggle bookmark at point." t)
+(global-set-key (kbd "<C-f2>") 'bm-toggle)
+(global-set-key (kbd "<S-f2>") 'bm-next)
+(global-set-key (kbd "<M-f2>") 'bm-previous)
+
 
 ;;;_. recent-jump
 (setq rj-column-threshold 100)
@@ -241,6 +183,12 @@
 
 
 ;;;_ S(@* "misc")
+
+;;;_. highlight-symbol
+(autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
+(autoload 'highlight-symbol-next       "highlight-symbol" nil t)
+(autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
+(autoload 'highlight-symbol-at-point   "highlight-symbol" nil t)
 
 ;;;_. org-mode
 
@@ -257,8 +205,8 @@
       org-export-htmlize-output-type 'css ;; separate css
       )
 
-(global-set-key (kbd "C-c o l") 'org-store-link)
-(global-set-key (kbd "C-c o c") 'org-capture)
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c q") 'org-capture)
 
 
 ;;;_. utils

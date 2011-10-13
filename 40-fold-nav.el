@@ -1,4 +1,9 @@
-;;;_. hideshow
+;;* code folding & section-based navigation
+;; (for minibuffer completion, see 25-minibuffer.el)
+
+;;** hideshow
+
+;;*** hideshowvis add +/- symbol in left fringe
 (autoload 'hideshowvis-enable "hideshowvis" "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
 (autoload 'hideshowvis-minor-mode "hideshowvis" "Will indicate regions foldable with hideshow in the fringe." 'interactive)
 
@@ -12,9 +17,11 @@
 ;(eval-after-load "hideshow"
 ;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
 
-;;;_. outline
-(global-set-key (kbd "C-c <up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "C-c <down>")   'outline-next-visible-heading)
+;;** outline
+(global-set-key (kbd "C-z")        outline-mode-prefix-map)
+
+(global-set-key (kbd "<H-up>")     'outline-previous-visible-heading)
+(global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
 
 (global-set-key (kbd "<C-M-up>")     'outline-previous-visible-heading)
 (global-set-key (kbd "<C-M-down>")   'outline-next-visible-heading)
@@ -25,7 +32,27 @@
 (global-set-key (kbd "<C-mouse-3>")  'hide-sublevels)
 (global-set-key (kbd "<C-mouse-2>")  'show-all)
 
-;;;_. allout
+;;*** outline-cycle: org-mode like operation
+(autoload 'outline-cycle   "outline-magic" "Visibility cycling for outline(-minor)-mode." t)
+(autoload 'outline-promote "outline-magic" "Decrease the level of an outline-structure by ARG levels." t)
+(autoload 'outline-demote  "outline-magic" "Increase the level of an outline-structure by ARG levels." t)
+(autoload 'outline-move-subtree-up   "outline-magic" "Move the currrent subtree up past ARG headlines of the same level." t)
+(autoload 'outline-move-subtree-down "outline-magic" "Move the currrent subtree down past ARG headlines of the same level. " t)
+
+(define-key outline-mode-prefix-map "<S-tab>"  'outline-cycle)
+(define-key outline-mode-prefix-map "<M-up>"    'outline-move-subtree-up)
+(define-key outline-mdoe-prefix-map "<M-down>"  'outline-move-subtree-down)
+(define-key outline-mode-prefix-map "<M-left>"  'outline-promote)
+(define-key outline-mdoe-prefix-map "<M-right>" 'outline-demote)
+
+;;*** org-mode style headings in 
+(autoload 'outorg/outline-cycle               "outline-org" nil t)
+(autoload 'outorg/outline-command-dispatcher  "outline-org" nil t)
+
+(global-set-key (kbd "<H-tab>") 'outorg/outline-cycle)
+(global-set-key (kbd "C-z C-z") 'outorg/outline-command-dispatcher)
+
+;;** allout
 (eval-after-load "allout"
   '(progn
      (define-key allout-mode-map (kbd "<C-M-up>")     'allout-previous-visible-heading)
@@ -38,29 +65,36 @@
      (define-key allout-mode-map (kbd "<C-mouse-2>")    'allout-show-all)
      ))
 
+;;** fold-dwim: one front-end for hideshow/outline/folding
+(autoload 'fold-dwim-toggle "fold-dwim" "Toggle folding at point." t)
+(autoload 'fold-dwim-show-all "fold-dwim")
+(autoload 'fold-dwm-hide-all   "fold-dwim")
 
-;; in-buffer navigation & code folding
+(global-set-key (kbd "C-c +") 'fold-dwim-toggle)
+(global-set-key (kbd "C-c C-+") 'fold-dwim-show-all)
+(global-set-key (kbd "C-c C--") 'fold-dwim-hide-all)
+
+;;(when (locate-library "fold-dwim")
+;;      ;; FIXME: fold-dwim-toggle would fold/unfold on cursor, not the mouse point
+;;      (global-set-key (kbd "<left-fringe><mouse-1>") 'fold-dwim-toggle)
+;;      )
 
 
-(global-set-key (kbd "<H-up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
-
-
-;;;_. list & choose method
+;;** list & choose method
 (defun bmz/select-method()
   (interactive)
   (require 'idomenu "idomenu" t)  
-  (require 'eassist "eassist" t)  ;; for `eassist-list-methods'
   (cond
    ( (and (fboundp 'anything-browse-code)
 	  (memq major-mode '(emacs-lisp-mode lisp-interaction-mode python-mode)))
      (call-interactively 'anything-browse-code))
    ( (fboundp 'anything-imenu)
      (call-interactively 'anything-imenu) )
-   ( (and (fboundp 'eassist-list-methods)
-	  (memq major-mode '(emacs-lisp-mode c-mode java-mode python-mode))
-	  (memq 'semantic-mode minor-mode-alist))
-     (call-interactively 'eassist-list-methods) )
+   ( (and (fboundp 'semantic-mode)
+          (memq major-mode '(emacs-lisp-mode c-mode java-mode python-mode))
+          (memq 'semantic-mode minor-mode-alist))
+     (when (require 'eassist "eassist" t)  ;; for `eassist-list-methods'
+       (call-interactively 'eassist-list-methods)))
    ( (fboundp 'idomenu)
      (call-interactively 'idomenu) )
    (t
@@ -70,7 +104,7 @@
 (global-set-key (kbd "<f5> I") 'bmz/select-method)
 
 
-;;;_ S(@* "buffer-local bookmarks")
+;;** bm: buffer-local bookmarks
 (ignore-errors
   (or (require 'bm nil t)
       (require 'linkmark nil t))
@@ -81,6 +115,7 @@
       (global-set-key (kbd "<f2> n") 'bm-next)
       (global-set-key (kbd "<f2> p") 'bm-previous)
       (global-set-key (kbd "<f2> l") 'bm-show)
+      (global-set-key (kbd "<f2> r") 'bm-bookmark-regexp)
 
       (global-set-key (kbd "<f2> <f2>") 'bm-next)
 
@@ -97,21 +132,6 @@
         (define-key global-map (kbd "<f2> <f2>") 'viss-bookmark-next-buffer)
         ))
       )
-
-
-;;;_. fold-dwim
-(autoload 'fold-dwim-toggle "fold-dwim" "Toggle folding at point." t)
-(autoload 'fold-dwim-show-all "fold-dwim")
-(autoload 'fold-dwm-hide-all   "fold-dwim")
-
-(global-set-key (kbd "C-c +") 'fold-dwim-toggle)
-(global-set-key (kbd "C-c C-+") 'fold-dwim-show-all)
-(global-set-key (kbd "C-c C--") 'fold-dwim-hide-all)
-
-;;(when (locate-library "fold-dwim")
-;;      ;; FIXME: fold-dwim-toggle would fold/unfold on cursor, not the mouse point
-;;      (global-set-key (kbd "<left-fringe><mouse-1>") 'fold-dwim-toggle)
-;;      )
 
 ;;;_. linkd: visualize section header & links (to file/man/info/url)
 (autoload 'linkd-mode "linkd" "Create or follow hypertext links." t)
@@ -135,8 +155,7 @@
       ))
 
 
-
-;;;_. block movement
+;;** block movement
 ;;stolen from http://xahlee.org/emacs/xah_emacs_cursor_movement.el
 ;;(modified: now it move to next occurrence of 3rd newline char)
 (defun forward-block ()
@@ -160,5 +179,5 @@ See: `forward-block'"
     )
   )
 
-(global-set-key (kbd "C-c n") 'forward-block)
-(global-set-key (kbd "C-c p") 'backward-block)
+;;(global-set-key (kbd "C-c n") 'forward-block)
+;;(global-set-key (kbd "C-c p") 'backward-block)
