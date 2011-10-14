@@ -1,9 +1,6 @@
 ;; some commands for the symbol/word at point
 
-(autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
-(autoload 'highlight-symbol-next       "highlight-symbol" nil t)
-(autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
-(autoload 'highlight-symbol-at-point   "highlight-symbol" nil t)
+
 
 
 ;;;_. internal functions
@@ -30,6 +27,49 @@
     (call-interactively 'isearch-repeat-backward)
   ))
 
+;;;_. highlight-symbol
+(autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
+(autoload 'highlight-symbol-next       "highlight-symbol" nil t)
+(autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
+(autoload 'highlight-symbol-at-point   "highlight-symbol" nil t)
+(autoload 'highlight-symbol-query-replace "highlight-symbol" nil t)
+
+
+
+;;;_. bookmark all lines containing current symbol
+;; based on code of `bm-bookmark-regexp'
+(defun bm-bookmark-symbol-at-point ()
+  "Set bookmark on lines that containing current symbol."
+  (interactive)
+  (let ( (beg (point-min))
+         (end (point-max))
+         (regexp (bmz/get-symbol-selected-or-current))
+         (annotation nil)
+         (count 0) )
+    (unless (featurep 'bm) (require 'bm))
+    (save-excursion
+      (if bm-annotate-on-create
+          (setq annotation (read-from-minibuffer
+                            "Annotation: " nil nil nil 'bm-annotation-history)))
+      (goto-char beg)
+      (while (re-search-forward regexp end t)
+        (bm-bookmark-add annotation)
+        (setq count (1+ count))
+        (forward-line 1)))
+    (message "%d bookmark(s) created." count)))
+
+(defun copy-symbol-at-point ()
+  (interactive)
+  (if (get 'symbol 'thing-at-point)
+      (funcall (get 'symbol 'thing-at-point))
+    (let ((bounds (bounds-of-thing-at-point 'symbol)))
+      (when bounds
+        (let ( (begin (car bounds))
+               (end   (cdr bounds)) )
+          (kill-ring-save begin end)
+          (if (fboundp 'pulse-momentary-highlight-region)
+              (pulse-momentary-highlight-region begin end)))
+          ))))
 
 ;;;_. symbol definition
 (defun bmz/imenu-at-point ()
@@ -228,7 +268,6 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "gr")    'rgrep)
     (define-key search-map (kbd "gl")    'lgrep)
 
-    ;;TODO: ack
     (define-key search-map (kbd "aa")    'bmz/ack-at-point-in-same-type-files)
     (define-key search-map (kbd "aA")    'bmz/ack-at-point-in-all-files)
     (define-key search-map (kbd "a SPC") 'ack)
@@ -252,6 +291,9 @@ Launches default browser and opens the doc's url."
 
     (define-key search-map (kbd "C-f") 'ffap-other-window)
     (define-key search-map (kbd "RET") 'browse-url-at-point)
+
+    (define-key search-map (kbd "<f2>") 'bm-bookmark-symbol-at-point)
+    (define-key search-map (kbd "M-w")  'copy-symbol-at-point)
     
     t
     )
