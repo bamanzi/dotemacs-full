@@ -16,7 +16,7 @@
 (require 'org)           ;; for face org-level-1..6
 
 ;;** we'll use an internal `outline-regexp' value
-(defun outorg/get-outline-regexp ()
+(defun outline-org/get-outline-regexp ()
   "Calculate the outline regexp for the current mode."
   (let ((comment-starter (replace-regexp-in-string
 						  "[[:space:]]+" "" comment-start)))
@@ -26,8 +26,8 @@
 	(concat "^" comment-starter "[*]+ ")))
 
 ;;** heading highlighting
-(defun outorg/get-heading-font-lock-keywords ()
-  (let ( (outline-regexp (outorg/get-outline-regexp)) )
+(defun outline-org/get-heading-font-lock-keywords ()
+  (let ( (outline-regexp (outline-org/get-outline-regexp)) )
     (let ( (heading-1-regexp
             (concat (substring outline-regexp 0 -1) "\\{1\\} \\(.*\\)"))
            (heading-2-regexp
@@ -45,7 +45,7 @@
   "org-mode like heading highlighting."
   nil
   :group 'outline
-  (let ( (keywords (outorg/get-heading-font-lock-keywords)) )
+  (let ( (keywords (outline-org/get-heading-font-lock-keywords)) )
     (if outline-org-heading-mode
       (font-lock-add-keywords nil keywords)
     (font-lock-remove-keywords nil keywords)))
@@ -53,15 +53,14 @@
   (font-lock-mode t)
   )
 
-
-;;** Use `C-z' as prefix key for other outline commands
-;;  e.g. C-z C-u similar to C-c @ C-u, but use our `outline-regexp'
-(defun outorg/outline-command-dispatcher (key)
+;; wrap other outline commands
+;; FIXME: some special key
+(defun outline-org/outline-command-dispatcher (key)
   (interactive "KOutline operation: ")
-  (let ( (outline-regexp (outorg/get-outline-regexp))
+  (let ( (outline-regexp (outline-org/get-outline-regexp))
          (command (lookup-key outline-mode-prefix-map key)) )
     (if (or (equal key (kbd "<f1>"))
-            (equal key (kbd "<f1> <f1>")))
+            (equal key (kbd "<f1> <f1>")))  
           (describe-variable 'outline-mode-prefix-map)
       (if (and command (commandp command))
           (progn
@@ -69,16 +68,22 @@
             (call-interactively command))
       (message "no command for that key in `outlint-mode-prefix-map'.")))))
 
-(global-set-key (kbd "C-z") 'outorg/outline-command-dispatcher)
+;; Use `C-z' as prefix key for other outline commands
+;;  e.g. C-z C-u similar to C-c @ C-u, but use our `outline-regexp'
+;;(global-set-key (kbd "C-z") 'outline-org/outline-command-dispatcher)
 
 
 ;;** our new `outline-cycle'
-(defun outorg/outline-cycle ()
+(defun outline-org/outline-cycle ()
   (interactive)
-  (let ( (outline-regexp (outorg/get-outline-regexp)) )
+  (let ( (outline-regexp (outline-org/get-outline-regexp)) )
+    (if (and (not outline-minor-mode) (not (eq major-mode 'outline-mode)))
+        (outline-minor-mode t))
+    (if (not outline-org-heading-mode)
+        (outline-org-heading-mode t))
     (call-interactively 'outline-cycle)))
 
-(global-set-key (kbd "<backtab>") 'outorg/outline-cycle)
+;;(global-set-key (kbd "<backtab>") 'outline-org/outline-cycle)
 
 ;;TODO: wrap outline-promote/demote, outline-move-subtree-up
 
