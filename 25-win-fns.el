@@ -230,6 +230,7 @@ an error is signaled."
   (imenu-tree arg)
   (if (featurep 'ide-skel)
       (add-to-list 'ide-skel-tabbar-hidden-buffer-names-regexp-list "^\\*imenu-tree\\*$"))
+  ;; make this window sticky to buffer '*imenu-tree*'
   (let* ( (windows (delq nil (mapcar '(lambda (window)
                                        (if (equal "*imenu-tree*" (buffer-name (window-buffer window)))
                                            window

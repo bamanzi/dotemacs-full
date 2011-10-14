@@ -1,10 +1,44 @@
-;;;_. winner-mode
+;;* window operations
+;;** winner-mode
 (setq winner-dont-bind-my-keys t)
 (winner-mode t)
 ;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
 ;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
 
-;;;_. tabbar
+;;** adjust `split-window', so that new window not 1/2 in size, but 1/3
+
+;;; this works only on Emacs 24
+;; (defadvice split-window-above-each-other (around make-new-win-one-third)
+;;     (let ( (old-window (selected-window))
+;;            (old-size (window-height (selected-window))) )
+;;       ad-do-it
+;;       (window-resize old-window (/ old-size 6) nil)))
+
+;; (ad-activate 'split-window-above-each-other)
+
+;; (defadvice split-window-side-by-side (around make-new-win-one-third)
+;;     (let ( (old-window (selected-window))
+
+;;            (old-size (window-width (selected-window))) )
+;;       ad-do-it
+;;       (window-resize old-window (/ old-size 6) 'horizontal)))
+
+;; (ad-activate 'split-window-side-by-side)
+
+;;; This works on both emacs 23 & 24 
+(defadvice split-window (around make-new-win-one-third)
+    (let* ( (old-window (selected-window))
+            (horizontal (ad-get-arg 2))
+            (old-size (if horizontal
+                          (window-width old-window)
+                        (window-height old-window))) )
+      ad-do-it
+      (with-selected-window old-window
+        (enlarge-window (/ old-size 6) horizontal))))
+
+(ad-activate 'split-window)
+
+;;** tabbar
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
 ;;(if window-system
 ;;    (require 'ide-skel nil t))
@@ -21,34 +55,7 @@
   )
 
 
-;;;_ M-1, M-2 to different window
-(if (require 'window-numbering nil t)
-    (window-numbering-mode t)
-  (if (require 'window-number nil t)
-      (window-number-meta-mode t)))
-
-;;;_ winner-mode
-(setq winner-dont-bind-my-keys t)
-(winner-mode t)
-;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
-;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
-
-
-;;;_ tabbar-mode
-;;(unless (require 'ide-skel nil t)  ;; `ide-skel' would load `tabbar' and  make its own tab group settings
-;;        (require 'tabbar nil t))
-(when (require 'tabbar nil t)
-  (tabbar-mode t)
-  (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward)
-  (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward)
-  (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
-  (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
-  )
-
-;;;_. tabbar-rules
-;;;.....
-
-;;;_ window-numbering (M-1 jump to first window, M-2 to the second...)
+;;** M-1, M-2 to go to different window
 (autoload 'window-numbering-mode "window-numbering" "A minor mode that assigns a number to each window" t)
 (autoload 'window-number-mode "window-number"
   "A global minor mode that enables selection of windows according to
@@ -65,15 +72,30 @@ the mode-line."
   (window-numbering-mode t)
   (window-numer-meta-mode t))
 
-;;;_ popwin
+
+;;** tabbar-mode
+;;(unless (require 'ide-skel nil t)  ;; `ide-skel' would load `tabbar' and  make its own tab group settings
+;;        (require 'tabbar nil t))
+(when (require 'tabbar nil t)
+  (tabbar-mode t)
+  (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward)
+  (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward)
+  (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
+  (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
+  )
+
+;;*** tabbar-rules
+;;;.....
+
+;;** popwin
 ;;;TODO: ?
 
 
-;;;_ misc
+;;** misc
 ;;(require 'pack-windows) ;; Resize all windows to display as much info as possible.
 
 
-;;;_. maximize frame
+;;*** maximize frame
 (when (and window-system
            (or (require 'maxframe nil t)
                (require 'fit-frame nil t)))
@@ -83,7 +105,7 @@ the mode-line."
   ;; maximize any new frame
   (add-hook 'window-setup-hook 'maximize-frame t))
 
-;;;_. opening server files always in a new frame
+;;*** opening server files always in a new frame
 ;;http://www.emacswiki.org/emacs/EmacsClient#toc21
 
 (add-hook 'server-switch-hook
