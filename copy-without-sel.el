@@ -56,12 +56,13 @@
 (defun end-of-big-word (&optional arg)
   (interactive "p")
   (dotimes (i arg)
-    (re-search-forward "[a-z0-9-_]" nil 'noerror arg)
+    (re-search-forward "[^a-z0-9-_]" nil 'noerror 1)
+    (backward-char 1)
     (if (< i (- arg 1))
         ;; skip punctations
-        (re-search-forward "[^a-z0-9-_]" nil 'noerror 1)))
+        (re-search-forward "[a-z0-9-_]" nil 'noerror 1)))
   )
-  
+
 (defun copy-big-word (&optional arg)
   "Copy big word at point"
   (interactive "p")
