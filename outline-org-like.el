@@ -6,8 +6,25 @@
 ;; All right reversed.
 
 ;;; Commentary:
-;; This package allow you to use org-mode style headings in other major modes
-;; (TODO: usage)
+;; This package allow you to use org-mode style headings in other major modes.
+;;
+;; Features:
+;; 1. org-style heading highlighting
+;; 2. org-style cycling heading visibilities with just one key (`H-tab' by default)
+;; 3. org-style move-up/down/promote/demote heading
+;; 4. other outline operations proxied via another prefix key (`C-z' by default)
+;;
+;; Usage:
+;;   Use `*' `**' `***' in comments as outline heading in any major modes.
+;;   Then you can either:
+;;      1. To leave you own `outline-regexp' setting untouched, use `outline-org-heading-mode' 
+;;         to turn on the heading highlighting, and use `outline-org/outline-command-dispatcher'
+;;         to navigate/fold the org-mode-style headings (and your original keybindings
+;;         for `outline-minor-mode' could be used.)
+;;      2. For convinience, you can also use `outline-org-mode', this would change the
+;;         `outline-regexp' settings. But you can use `outline-minor-mode' keybindings
+;;         to navigate/fold the org-mode-style headings.
+;;
 
 ;;; Code:
 
@@ -53,8 +70,12 @@
   (font-lock-mode t)
   )
 
-;; wrap other outline commands
-;; FIXME: some special key
+
+;; This would use another `outline-regexp' value inside to find the headings,
+;; you don't need to change your own settings. Thus you can use `C-c @ C-u' for your old
+;; `outline-up-heading', along with the new `C-z C-u' (which would behaves according
+;; org-style headings.)
+
 (defun outline-org/outline-command-dispatcher (key)
   (interactive "KOutline operation: ")
   (let ( (outline-regexp (outline-org/get-outline-regexp))
@@ -83,8 +104,25 @@
         (outline-org-heading-mode t))
     (call-interactively 'outline-cycle)))
 
-;;(global-set-key (kbd "<backtab>") 'outline-org/outline-cycle)
-
 ;;TODO: wrap outline-promote/demote, outline-move-subtree-up
+
+(define-minor-mode outline-org-mode
+  "A special `outline-minor-mode' that use org-mode-style headings."
+  nil
+  :group 'outline
+  (let ( (keywords (outline-org/get-heading-font-lock-keywords)) )
+    (if outline-org-mode
+        (progn  ;; to turn on
+          (if (not outline-minor-mode)
+              (outline-minor-mode t))
+          (set (make-local-variable 'outline-regexp-old) (outline-org/get-outline-regexp))
+          (if (not outline-org-heading-mode)
+              (outline-org-heading-mode t))
+          (hide-body))
+      (progn
+        (setq outline-regexp-old outline-regexp)
+        (outline-org-heading-mode nil))
+        )))
+
 
 (provide 'outline-org-like)
