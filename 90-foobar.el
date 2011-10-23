@@ -12,17 +12,6 @@
 (global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
 
 
-;;;_. anything-show-kill-ring を聞うように俐屎した
-;; http://dev.ariel-networks.com/articles/emacs/part4/
-(defadvice yank-pop (around anything-kill-ring-maybe activate)
-  (if (not (eq last-command 'yank))
-      (anything-show-kill-ring)
-    ad-do-it))
-
-(defadvice cua-paste-pop (around anything-kill-ring-maybe activate)
-  (if (not (eq last-command 'yank))
-      (anything-show-kill-ring)
-    ad-do-it))
 
 
 ;;;_. block movement
@@ -73,14 +62,7 @@ See: `forward-block'"
       )))
 
 
-;;;_. use `pos-tip' to fix the popup window position issue
-;; `auto-complete' 1.4 already use `pos-tip'
-(when (require 'popup-pos-tip nil t)
-  (defadvice popup-tip
-    (around popup-pos-tip-wrapper (string &rest args) activate)
-    (if (memq window-system '(x windows-nt))
-        (apply 'popup-pos-tip string args)
-      ad-do-it)))
+
 
 
 ;;;_. misc enhancement libraries

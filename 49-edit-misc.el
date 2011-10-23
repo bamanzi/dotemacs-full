@@ -61,22 +61,6 @@
 
 
 ;;;_ S(@* "editing")
-;; make M-z behave more as zap-up-to-char
-(defun zap-up-to-char (arg char)
-    "Kill up to the ARG'th occurence of CHAR, and leave CHAR.
-  The CHAR is replaced and the point is put before CHAR."
-    (interactive "p\ncZap to char: ")
-    (zap-to-char arg char)
-    (insert char)
-    (forward-char -1))
-
-(global-set-key (kbd "M-z") 'zap-up-to-char)
-
-(defun zap-back-to-char (arg char)
-  (interactive "p\ncBack-zap to char: ")
-  (zap-to-char (- arg) char))
-
-(global-set-key (kbd "ESC M-z") 'zap-back-to-char)
 
 
 ;;;_ S(@* "search")

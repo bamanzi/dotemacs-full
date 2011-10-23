@@ -1,4 +1,17 @@
-;;;_. backup rules
+;;** recentf
+(require 'recentf)
+(setq recentf-max-saved-items 100)
+(setq recentf-menu-path '("File"))
+(recentf-mode t)
+
+;;** archive
+;;....
+
+
+;;** tramp
+;;...
+
+;;** backup rules
 ;;(setq make-backup-files t) ;;to disable backup, set it to nil
 
 ;;(setq backup-directory-alist `(("." . "~/.saves")))
@@ -10,9 +23,10 @@
 ;;   kept-new-versions 6
 ;;   kept-old-versions 2)
 
+;;*** TODO: backup-each-save.el
 
 
-;;;_ S(@* "dired")
+;;** dired
 ;;(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
 
 (defun bmz/dired-jump ()
@@ -30,10 +44,10 @@ Otherwise, call the original `dired-jump'."
 (define-key goto-map "d" 'bmz/dired-jump)
 
 
-;;;_ S(@* "ediff")
+;;** ediff
 
 
-;;;_. command line args support
+;;*** command line args support
 ;; Usage: emacs -diff file1 file2
 (defun command-line-diff (switch)
   (let ((file1 (pop command-line-args-left))
@@ -43,7 +57,7 @@ Otherwise, call the original `dired-jump'."
 (add-to-list 'command-switch-alist '("diff" . command-line-diff))
 (add-to-list 'command-switch-alist '("-diff" . command-line-diff))  ;;FIXME: which one?
 
-;;;_. window configuration
+;;*** window configuration
 ;;I don't like multiframe
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 

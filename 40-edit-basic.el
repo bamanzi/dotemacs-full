@@ -1,0 +1,101 @@
+
+;;** CUA
+(setq cua-enable-cua-keys nil)
+;;(setq cua-rectangle-modifier-key 'hyper)  ;;leave C-RET
+(cua-mode t)
+
+(setq shift-select-mode t)
+(delete-selection-mode t)
+(transient-mark-mode t)
+
+(global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
+
+;;** where I am
+(global-set-key (kbd "C-`")   'set-mark)
+;;(global-set-key (kbd "M-`") 'exchange-point-and-mark)
+(global-set-key (kbd "M-`")   'pop-to-mark-command)
+(global-set-key (kbd "C-M-`") 'pop-mark)
+
+(line-number-mode t)
+(column-number-mode t)
+
+;;** tab key & indent
+(setq tab-always-indent t)
+
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;;** parens
+(setq show-paren-style 'mixed)
+(setq show-paren-mode t)
+(show-paren-mode t)
+
+;;** newline & line-wrap
+(setq require-final-newline 't)
+(setq-default truncate-lines t)
+(setq-default fill-column 100)
+;;(auto-fill-mode t)
+
+(global-set-key (kbd "C-c C-w") 'toggle-truncate-lines)
+
+(global-set-key (kbd "RET") 'newline-and-indent)
+(global-set-key (kbd "C-j") 'newline)
+
+;;** changes
+(setq highlight-changes-visibility-initial-state nil)
+(global-highlight-changes-mode t)
+
+(setq diff-switches "-u")    ;;I prefer the unified format
+(global-set-key (kbd "C-c d") 'diff-buffer-with-file)
+
+;;*** undo
+(if (require 'undo-tree nil 'noerror)
+    (progn
+      (global-undo-tree-mode t)
+      (global-set-key (kbd "C-c C-z") 'undo-tree-undo)
+      (global-set-key (kbd "C-c C-y") 'undo-tree-redo)
+      )
+  (message "%s: failed to load `undo-tree'."  load-file-name))
+
+
+;;** kill & yank
+(setq mouse-yank-at-point t) ;;rather than the click point
+
+
+;;** misc
+(global-set-key (kbd "C-=") 'align-regexp)
+
+;;*** move line up/down
+(idle-require 'drag-stuff)
+(eval-after-load "drag-stuff"
+  '(progn
+;;    (setq drag-stuff-modifier 'hyper)
+      (add-to-list 'drag-stuff-except-modes 'org-mode)
+      (drag-stuff-global-mode t)))
+
+;;;
+(defun join-line ()
+  "Join the following line with current line"
+  (interactive)
+  (delete-indentation 1))
+
+(global-set-key (kbd "C-c J") 'join-line)
+
+
+;; make M-z behave more as zap-up-to-char
+(defun zap-up-to-char (arg char)
+    "Kill up to the ARG'th occurence of CHAR, and leave CHAR.
+  The CHAR is replaced and the point is put before CHAR."
+    (interactive "p\ncZap to char: ")
+    (zap-to-char arg char)
+    (insert char)
+    (forward-char -1))
+
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+
+(defun zap-back-to-char (arg char)
+  (interactive "p\ncBack-zap to char: ")
+  (zap-to-char (- arg) char))
+
+(global-set-key (kbd "ESC M-z") 'zap-back-to-char)
+

@@ -180,67 +180,8 @@ an error is signaled."
   (interactive "p")
   (other-window (- arg)))
 
-(defun ido-jump-to-window ()
-  (interactive)
-  (defun swap(l)
-    (if (cdr l)
-	(cons (cadr l) (cons (car l) (cddr l)))
-      l))
-  (if (< emacs-major-version 24)
-      (ido-common-initialization))
-  (let* ( ;; Swaps the current buffer name with the next one along.
-         (visible-buffers (swap (mapcar '(lambda (window) (buffer-name (window-buffer window))) (window-list))))
-         (buffer-name (ido-completing-read "Window: " visible-buffers))
-         window-of-buffer)
-    (if (not (member buffer-name visible-buffers))
-        (error "'%s' does not have a visible window" buffer-name)
-      (setq window-of-buffer
-                (delq nil (mapcar '(lambda (window)
-                                       (if (equal buffer-name (buffer-name (window-buffer window)))
-                                           window
-                                         nil))
-                                  (window-list))))
-      (select-window (car window-of-buffer)))))
 
-;;(when (featurep 'tabbar)
-(defun ido-jump-to-tab ()
-  (interactive)
-  (if (< emacs-major-version 24)
-      (ido-common-initialization))
-  (require 'tabbar)
-  (let* ( ;; Swaps the current buffer name with the next one along.
-         (visible-buffers (mapcar '(lambda (tab) (buffer-name (tabbar-tab-value tab)))
-					  (tabbar-tabs (tabbar-current-tabset t))))
-         (buffer-name (ido-completing-read "Buffer: " visible-buffers))
-         window-of-buffer)
-    (if (not (member buffer-name visible-buffers))
-        (error "'%s' does not have a visible window" buffer-name)
-      (switch-to-buffer buffer-name))))
 
-(defun bmz/imenu-tree (arg)
-  (interactive "P")
-   ;; delete other-buffers' tree
-  (let ( (buffer (get-buffer "*imenu-tree*")) )
-    (if buffer
-        (with-current-buffer buffer
-          (beginning-of-buffer)
-          (ignore-errors
-            (tree-mode-delete (tree-mode-tree-ap))))))
-  ;; build current buffer's tree
-  (imenu-tree arg)
-  (if (featurep 'ide-skel)
-      (add-to-list 'ide-skel-tabbar-hidden-buffer-names-regexp-list "^\\*imenu-tree\\*$"))
-  ;; make this window sticky to buffer '*imenu-tree*'
-  (let* ( (windows (delq nil (mapcar '(lambda (window)
-                                       (if (equal "*imenu-tree*" (buffer-name (window-buffer window)))
-                                           window
-                                         nil))
-                                  (window-list))))
-          (window (car windows)) )
-    (when window
-        (set-window-dedicated-p window t)
-        (with-selected-window window
-          (tree-mode-expand-level 2)))))
     
 
 (defun split-root-window-vertially ()
@@ -305,6 +246,7 @@ an error is signaled."
     
     (define-key map (kbd "g w") 'ido-jump-to-window)
     (define-key map (kbd "g t") 'ido-jump-to-tab)
+    (define-key map (kbd "g g") 'ido-jump-to-tab-group)
 
     ;; (if (featurep 'window-numbering)
     ;;     ;;FIXME: customize the keymap
@@ -345,7 +287,7 @@ an error is signaled."
     ;;
     ;; some special windows
     ;;(when (featurep 'imenu-tree)
-    (define-key map (kbd "I") 'bmz/imenu-tree)
+    (define-key map (kbd "I") 'imenu-tree)
     (define-key map (kbd "T") 'tags-tree)
     (define-key map (kbd "N") 'nav)
 

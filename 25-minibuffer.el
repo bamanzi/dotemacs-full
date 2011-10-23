@@ -3,6 +3,7 @@
                     ;; variables (C-h v, customize-variable), functions (C-h f))
 
 ;;;_. ido
+(setq ido-save-directory-list-file "~/.emacs.d/ido.last")
 (require 'ido)
 (unless (fboundp 'ido-common-initialization)   ;;workaround for emacs 23.1's bug(?)
   (defun ido-common-initialization ()
@@ -20,17 +21,13 @@
 (ido-mode t)
 
 ;;;_. smex : ido for M-x
-(if (require 'smex nil t)
-    (progn
+(autoload 'smex "smex" nil t)
+(autoload 'smex-major-mode-commands "smex" nil t)
+(global-set-key (kbd "ESC M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(eval-after-load "smex"
+  `(progn
       (smex-initialize)
-  
-      (global-set-key (kbd "M-x") 'smex)
-      (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-      ;; This is your old M-x.
-      (global-set-key (kbd "ESC M-x") 'execute-extended-command))
-  (progn
-    (message "%s: failed to load `smex'." load-file-name)))
-
 
 
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)

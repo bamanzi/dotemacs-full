@@ -34,9 +34,10 @@
                         (window-height old-window))) )
       ad-do-it
       (with-selected-window old-window
-        (enlarge-window (/ old-size 6) horizontal))))
+        (enlarge-window (/ old-size 10) horizontal))))
 
 (ad-activate 'split-window)
+
 
 ;;** tabbar
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
@@ -55,7 +56,8 @@
   )
 
 
-;;** M-1, M-2 to go to different window
+;;** window switching
+;;*** M-1, M-2 to go to different window
 (autoload 'window-numbering-mode "window-numbering" "A minor mode that assigns a number to each window" t)
 (autoload 'window-number-mode "window-number"
   "A global minor mode that enables selection of windows according to
@@ -73,6 +75,28 @@ the mode-line."
   (window-numer-meta-mode t))
 
 
+(defun ido-jump-to-window ()
+  (interactive)
+  (defun swap(l)
+    (if (cdr l)
+	(cons (cadr l) (cons (car l) (cddr l)))
+      l))
+  (if (< emacs-major-version 24)
+      (ido-common-initialization))
+  (let* ( ;; Swaps the current buffer name with the next one along.
+         (visible-buffers (swap (mapcar '(lambda (window) (buffer-name (window-buffer window))) (window-list))))
+         (buffer-name (ido-completing-read "Window: " visible-buffers))
+         window-of-buffer)
+    (if (not (member buffer-name visible-buffers))
+        (error "'%s' does not have a visible window" buffer-name)
+      (setq window-of-buffer
+                (delq nil (mapcar '(lambda (window)
+                                       (if (equal buffer-name (buffer-name (window-buffer window)))
+                                           window
+                                         nil))
+                                  (window-list))))
+      (select-window (car window-of-buffer)))))
+
 ;;** tabbar-mode
 ;;(unless (require 'ide-skel nil t)  ;; `ide-skel' would load `tabbar' and  make its own tab group settings
 ;;        (require 'tabbar nil t))
@@ -83,6 +107,40 @@ the mode-line."
   (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
   (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
   )
+
+;;(when (featurep 'tabbar)
+(defun ido-jump-to-tab ()
+  (interactive)
+  (if (< emacs-major-version 24)
+      (ido-common-initialization))
+  (require 'tabbar)
+  (let* ( ;; Swaps the current buffer name with the next one along.
+         (visible-buffers (mapcar '(lambda (tab) (buffer-name (tabbar-tab-value tab)))
+					  (tabbar-tabs (tabbar-current-tabset t))))
+         (buffer-name (ido-completing-read "Buffer: " visible-buffers))
+         window-of-buffer)
+    (if (not (member buffer-name visible-buffers))
+        (error "'%s' does not have a visible window" buffer-name)
+      (switch-to-buffer buffer-name))))
+
+(defun ido-jump-to-tab-group ()
+  "Jump to a tabbar group."
+  (interactive)
+  (if (< emacs-major-version 24)
+      (ido-common-initialization))
+  (set tabbar-tabsets-tabset (tabbar-map-tabsets 'tabbar-selected-tab)) 
+  (let* ( (groups (mapcar #'(lambda (group)
+                              (format "%s" (cdr group)))
+                          (tabbar-tabs tabbar-tabsets-tabset)))
+          (group-name (ido-completing-read "Groups: " groups)) )
+    (mapc #'(lambda (group)
+              (when (string= group-name (format "%s" (cdr group)))
+                  (message "Switch to group '%s', current buffer: %s" (cdr group) (car group))
+                  (switch-to-buffer (car group))))
+          (tabbar-tabs tabbar-tabsets-tabset))))
+
+
+
 
 ;;*** tabbar-rules
 ;;;.....
