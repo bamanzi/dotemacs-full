@@ -29,7 +29,19 @@
 ;;;_. lint
 ;;;_.. v8 (http://koansys.com/tech/flymake-mode-for-emacs-javascript-v8-edition)
 (defun js-lint-with-v8 ()
-  (let ( (compile-command (concat "jslint " buffer-file-name)) )
+  (let ( (compile-command (concat "jslint-v8 --vim " buffer-file-name)) )
+    (call-interactively 'compile)))
+
+(defun js-lint-with-jshint ()
+  (let ( (compile-command (concat "jshint " buffer-file-name)) )
+    (call-interactively 'compile)))
+
+(defun js-lint-with-jsl ()
+  (let ( (compile-command (concat "jsl process " buffer-file-name)) )
+    (call-interactively 'compile)))
+
+(defun js-lint-with-jsdb ()
+  (let ( (compile-command (concat "jslint-jsdb " buffer-file-name)) )
     (call-interactively 'compile)))
 
 (eval-after-load "espresso"

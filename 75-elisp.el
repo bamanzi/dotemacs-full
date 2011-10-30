@@ -58,7 +58,7 @@
 
 
 ;;;_. documentatin
-(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 ;;; this would make eldoc-mode to show symbol description
 (idle-require 'eldoc-extension)
 
@@ -84,4 +84,6 @@
    :sources '( anything-c-source-emacs-functions
                anything-c-source-emacs-variables)))
 
-  
+;;** misc
+(if (fboundp 'reset-imenu-function)
+    (add-hook 'emacs-lisp-mode-hook 'reset-imenu-function))

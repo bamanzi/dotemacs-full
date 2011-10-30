@@ -1,5 +1,13 @@
 
-;;;_ S(@* "emacs options")
+;;** position
+;;** paren/pair
+;;** search
+
+(autoload 'highlight-parentheses-mode "highlight-parentheses" nil t)
+(global-set-key (kbd "<f10> P") 'highlight-parentheses-mode)
+
+(autoload 'rainbow-delimiters "rainbow-delimiters" nil t)
+(global-set-key (kbd "<f10> rd") 'rainbow-delimiters)
 
 (defun bmz/toggle-show-paren-style ()
   (interactive)
@@ -10,6 +18,10 @@
 
 (global-set-key (kbd "<C-f10> p") 'bmz/toggle-show-paren-style)
           
+;;** select
+
+;;** misc
+;;*** iedit
 
 ;;;_ S(@* "minor modes")
 
@@ -24,23 +36,8 @@
 ;; (global-set-key (kbd "<f10> t") 'toggle-truncate-lines)
 ;; (global-set-key (kbd "<f10> l") 'linum-mode)
 
-
-
 ;;;_. 3rd-party modules
-(global-set-key (kbd "<f10> C") 'auto-complete-mode)
 
-(autoload 'highlight-indentation "highlight-indentation" "Toggle highlight indentation." t)
-(autoload 'highlight-parentheses-mode "highlight-parentheses" nil t)
-(autoload 'idle-highlight "idle-highlight" nil t)
-(autoload 'rainbow-delimiters "rainbow-delimiters" nil t)
-(autoload 'visible-mark-mode "visible-mark" nil t)
-(autoload 'drag-stuff-mode "drag-stuff" nil t)
-(autoload 'setnu-mode "setnu" "vi-style line numbers" t)
-
-(global-set-key (kbd "<f10> I") 'highlight-indentation)
-(global-set-key (kbd "<f10> P") 'highlight-parentheses-mode)
-(global-set-key (kbd "<f10> H") 'idle-highlight)
-(global-set-key (kbd "<f10> R") 'rainbow-delimiters)
 (global-set-key (kbd "<f10> M") 'visibile-mark-mode)
 (global-set-key (kbd "<f10> D") 'drag-stuff-mode)
 (global-set-key (kbd "<f10> N") 'setnu-mode)

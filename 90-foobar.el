@@ -67,7 +67,7 @@ See: `forward-block'"
 
 ;;;_. misc enhancement libraries
 (idle-require 'menu-bar+)
-(idle-require 'info+)
+;(idle-require 'info+)
 (idle-require 'help-fns+)
 (idle-require 'dired+)
 (idle-require 'buff-menu+)
@@ -95,3 +95,27 @@ See: `forward-block'"
     (load "keyword-help" 'noerror))
 
 (idle-require 'scratch-log)
+
+
+
+(defun insert-function-autoload-spec (function)
+  "Insert the first line of documentation of a function.
+
+Useful when writing autoload spec."
+  (interactive
+   (let ((fn (function-called-at-point))
+	 (enable-recursive-minibuffers t)
+	 val)
+     (setq val (completing-read (if fn
+				    (format "Describe function (default %s): " fn)
+				  "Describe function: ")
+				obarray 'fboundp t nil nil
+				(and fn (symbol-name fn))))
+     (list (if (equal val "")
+	       fn (intern val)))))
+  (if (null function)
+      (message "You didn't specify a function")
+    (insert-string (format " \"%s\" \"%s\" t)"
+                           (file-name-nondirectory (symbol-file function 'defun))
+                           (or (eldoc-docstring-first-line (documentation function t))
+                               "Undocumented.")    ))))

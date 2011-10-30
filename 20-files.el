@@ -1,8 +1,14 @@
 ;;** recentf
 (require 'recentf)
 (setq recentf-max-saved-items 100)
+(setq recentf-max-menu-items 20)
 (setq recentf-menu-path '("File"))
+(setq recentf-save-file "~/.emacs.d/recentf")
 (recentf-mode t)
+
+;;** Open File
+;;(define-key search-key (kbd "C-f") 'ffap-other-window)
+
 
 ;;** archive
 ;;....
@@ -11,6 +17,7 @@
 ;;** tramp
 ;;...
 
+;;** Save File
 ;;** backup rules
 ;;(setq make-backup-files t) ;;to disable backup, set it to nil
 
@@ -45,7 +52,6 @@ Otherwise, call the original `dired-jump'."
 
 
 ;;** ediff
-
 
 ;;*** command line args support
 ;; Usage: emacs -diff file1 file2

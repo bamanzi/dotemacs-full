@@ -1,8 +1,12 @@
 (require 'windmove)
 
 
-(unless (require 'window-extension nil t)  ;; `window-extension' already contain the functions of `sticky-windows'
-    (require 'sticky-windows nil t))
+(autoload 'toggle-one-window "window-extension" "Toggle between window layout and one window." t)
+(autoload 'sticky-window-keep-window-visible "window-extension.el" "Insure the buffer associated with the current window stays visible." t)
+(autoload 'sticky-window-delete-window "window-extension.el" "This is intended to be a replacement for `delete-window', but" t)
+
+;;(unless (require 'window-extension nil t)  ;; `window-extension' already contain the functions of `sticky-windows'
+;;    (require 'sticky-windows nil t))
 ;;(require 'dedicated) ;;A very simple minor mode for dedicated buffers
 
 (autoload 'windresize "windresize" nil t)
@@ -91,98 +95,9 @@
 (autoload 'maximize-frame "maxframe" "Maximizes the frame to fit the display." t)
 
 ;;}}}
-;;{{{ move buffer across windows
-;; https://github.com/banister/window-rotate-for-emacs
-(defun rotate-windows-helper(x d)
-  (if (equal (cdr x) nil) (set-window-buffer (car x) d)
-    (set-window-buffer (car x) (window-buffer (cadr x))) (rotate-windows-helper (cdr x) d)))
- 
-(defun rotate-windows ()
-  (interactive)
-  (rotate-windows-helper (window-list) (window-buffer (car (window-list))))
-  (select-window (car (last (window-list)))))
-
-
-;;TODO: backward-rotate-windows
-
-
-;;{{{ swap buffer window
-;; modified from windmove-do-window-select
-(defun windmove-do-swap-window (dir swap &optional arg window)
-  "Move the buffer to the window at direction DIR.
-
-If SWAP is non-nil, the buffers in the source window and target
-window would be swapped, otherwise only the source buffer be
-moved to target window.  DIR, ARG, and WINDOW are handled as by
-`windmove-other-window-loc'.  If no window is at direction DIR,
-an error is signaled."
-  (let ((other-window (windmove-find-other-window dir arg window)))
-    (cond ((null other-window)
-           (error "No window %s from selected window" dir))
-          ((and (window-minibuffer-p other-window)
-                (not (minibuffer-window-active-p other-window)))
-           (error "Minibuffer is inactive"))
-	  ( (window-dedicated-p window)
-	    (error "Current window is dedicated, can't be moved") )
-	  ( (window-dedicated-p other-window)
-	    (error "Target window is dedicated, can't be swapped") )
-	  (t
-	   (let ( (this-buffer (window-buffer window))
-		  (other-buffer (window-buffer other-window)))
-	     (if (eq this-buffer other-buffer)
-		 (let ( (this-point (window-point window))
-			(other-point (window-point other-window)) )
-		   (progn
-		     (set-window-point window other-point)
-		     (set-window-point other-window this-point)))
-	       (progn
-                 (if swap
-                     (set-window-buffer window (window-buffer other-window)))
-		 (set-window-buffer other-window this-buffer)))
-	     (select-window other-window))))))
-
-
-(defun swap-buffer-up (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'up t arg))
-
-(defun swap-buffer-down (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'down t arg))
-
-(defun swap-buffer-left (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'left t arg))
-
-(defun swap-buffer-right (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'right t arg))
-
-(defun move-buffer-up (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'up nil arg))
-
-(defun move-buffer-down (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'down nil arg))
-
-(defun move-buffer-left (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'left nil arg))
-
-(defun move-buffer-right (&optional arg)
-  (interactive "P")
-  (windmove-do-swap-window 'right nil arg))
 
 
 ;;--- misc
-(defun other-window-backward (arg)
-  (interactive "p")
-  (other-window (- arg)))
-
-
-
-    
 
 (defun split-root-window-vertially ()
   (interactive)
@@ -214,7 +129,7 @@ an error is signaled."
     (define-key map (kbd "RET")   'windresize)
 
     (define-key map (kbd "b")     'balance-windows)
-    (define-key map (kbd "m")     'minimize-window) ;; Emacs 24?
+    (define-key map (kbd "m")     'minimize-window) ;; FIXME: only on Emacs 24?
     (define-key map (kbd "x")     'maximize-window)
     
     (define-key map (kbd "M-RET")     'maximize-frame)
@@ -267,14 +182,6 @@ an error is signaled."
     ;; rotate-frame-clockwise
     ;; rotate-frame-anti-clockwise
 
-    
-    ;; override C-x 0 and C-x 1, to regard window-dedicated-p
-    ;;(when (or (featurep 'window-extensions)
-    ;;          (featurep 'sticky-windows)))
-    (define-key map (kbd "*") 'sticky-window-keep-window-visible)    
-    (when (fboundp 'sticky-window-delete-window)
-        (global-set-key (kbd "C-x 0") 'sticky-window-delete-window)
-        (global-set-key (kbd "C-x 1") 'sticky-window-delete-other-windows))
 
     ;; split-root.el
     (define-key map (kbd "2") 'split-root-window-vertially)

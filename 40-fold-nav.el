@@ -18,7 +18,9 @@
 ;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
 
 ;;** outline
-(global-set-key (kbd "C-z")        outline-mode-prefix-map)
+(eval-after-load "outline"
+  `(progn
+     (global-set-key (kbd "C-z")        outline-mode-prefix-map)))
 
 (global-set-key (kbd "<H-up>")     'outline-previous-visible-heading)
 (global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
@@ -39,11 +41,13 @@
 (autoload 'outline-move-subtree-up   "outline-magic" "Move the currrent subtree up past ARG headlines of the same level." t)
 (autoload 'outline-move-subtree-down "outline-magic" "Move the currrent subtree down past ARG headlines of the same level. " t)
 
-(define-key outline-mode-prefix-map (kbd "<backtab>") 'outline-cycle) ;;on Linux, it's <backtab> but not <S-tab>
-(define-key outline-mode-prefix-map (kbd "<M-up>"   ) 'outline-move-subtree-up)
-(define-key outline-mode-prefix-map (kbd "<M-down>" ) 'outline-move-subtree-down)
-(define-key outline-mode-prefix-map (kbd "<M-left>" ) 'outline-promote)
-(define-key outline-mode-prefix-map (kbd "<M-right>") 'outline-demote)
+(eval-after-load "outline"
+  `(progn
+    (define-key outline-mode-prefix-map (kbd "<backtab>") 'outline-cycle) ;;on Linux, it's <backtab> but not <S-tab>
+    (define-key outline-mode-prefix-map (kbd "<M-up>"   ) 'outline-move-subtree-up)
+    (define-key outline-mode-prefix-map (kbd "<M-down>" ) 'outline-move-subtree-down)
+    (define-key outline-mode-prefix-map (kbd "<M-left>" ) 'outline-promote)
+    (define-key outline-mode-prefix-map (kbd "<M-right>") 'outline-demote)))
 
 ;;*** org-mode style headings in 
 (autoload 'outline-org/outline-cycle               "outline-org" nil t)
@@ -54,7 +58,7 @@
 
 ;;** allout
 (eval-after-load "allout"
-  '(progn
+  `(progn
      (define-key allout-mode-map (kbd "<C-M-up>")     'allout-previous-visible-heading)
      (define-key allout-mode-map (kbd "<C-M-down>")   'allout-next-visible-heading)
 
@@ -70,7 +74,7 @@
 (autoload 'fold-dwim-show-all "fold-dwim")
 (autoload 'fold-dwm-hide-all   "fold-dwim")
 
-(global-set-key (kbd "C-c +") 'fold-dwim-toggle)
+(global-set-key (kbd "C-c +")   'fold-dwim-toggle)
 (global-set-key (kbd "C-c C-+") 'fold-dwim-show-all)
 (global-set-key (kbd "C-c C--") 'fold-dwim-hide-all)
 
@@ -80,28 +84,27 @@
 ;;      )
 
 
-;;** list & choose method
-(defun bmz/select-method()
-  (interactive)
-  (require 'idomenu "idomenu" t)  
-  (cond
-   ( (and (fboundp 'anything-browse-code)
-	  (memq major-mode '(emacs-lisp-mode lisp-interaction-mode python-mode)))
-     (call-interactively 'anything-browse-code))
-   ( (fboundp 'anything-imenu)
-     (call-interactively 'anything-imenu) )
-   ( (and (fboundp 'semantic-mode)
-          (memq major-mode '(emacs-lisp-mode c-mode java-mode python-mode))
-          (memq 'semantic-mode minor-mode-alist))
-     (when (require 'eassist "eassist" t)  ;; for `eassist-list-methods'
-       (call-interactively 'eassist-list-methods)))
-   ( (fboundp 'idomenu)
-     (call-interactively 'idomenu) )
-   (t
-    (call-interactively 'imenu))))
+;;** selective display (quick & dirty code folding)
+;; http://www.emacswiki.org/emacs/HideShow#toc5
+;; hide lines whose indentation is bigger than x column
+(defun toggle-selective-display (column)
+  (interactive "P")
+  (set-selective-display
+   (or column
+       (unless selective-display
+         (1+ (current-column))))))
 
-(global-set-key (kbd "C-c C-o") 'bmz/select-method)
-(global-set-key (kbd "<f5> I") 'bmz/select-method)
+(defun toggle-hiding (column)
+  (interactive "P")
+  (if hs-minor-mode
+      (if (condition-case nil
+              (hs-toggle-hiding)
+            (error t))
+          (hs-show-all))
+    (toggle-selective-display column)))
+
+(global-set-key (kbd "C-c \\") 'toggle-selective-display)
+;;(global-set-key (kbd "C-+") 'toggle-hiding)
 
 
 ;;** bm: buffer-local bookmarks
@@ -133,16 +136,11 @@
         ))
       )
 
-;;;_. linkd: visualize section header & links (to file/man/info/url)
+;;**  linkd: visualize section header & links (to file/man/info/url)
 (autoload 'linkd-mode "linkd" "Create or follow hypertext links." t)
+(autoload 'linkd-follow "linkd.el" "Follow the link represented by SEXP." nil)
 (eval-after-load "linkd"
-    '(progn
-       ;;;_.. linkd icons path
-      (let ( (dir (concat (file-name-directory (locate-library "linkd")) "icons")) )
-        (when (file-exists-p dir)
-          (setq linkd-icons-directory dir)
-          (setq linkd-use-icons t)))
-
+    `(progn
       ;;;_.. restore [mouse-4] (for mwheel-scroll, linkd bind it to `linkd-back')
       (when (eq window-system 'x)
         (define-key linkd-map [mouse-4] nil)

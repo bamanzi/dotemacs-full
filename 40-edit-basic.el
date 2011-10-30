@@ -11,19 +11,24 @@
 (global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
 
 ;;** where I am
-(global-set-key (kbd "C-`")   'set-mark)
-;;(global-set-key (kbd "M-`") 'exchange-point-and-mark)
-(global-set-key (kbd "M-`")   'pop-to-mark-command)
-(global-set-key (kbd "C-M-`") 'pop-mark)
-
 (line-number-mode t)
 (column-number-mode t)
+
+(global-set-key (kbd "C-`")    'set-mark-command)
+(global-set-key (kbd "M-`")    'exchange-point-and-mark)
+(global-set-key (kbd "C-M-`")  'pop-to-mark-command)
+
+(autoload 'visible-mark-mode "visible-mark.el" "A mode to make the mark visible." t)
+(global-set-key (kbd "<f10> vm") 'visible-mark-mode)
+(eval-after-load "visible-mark"
+  `(global-visible-mark-mode))
 
 ;;** tab key & indent
 (setq tab-always-indent t)
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
+
 
 ;;** parens
 (setq show-paren-style 'mixed)
@@ -61,6 +66,20 @@
 ;;** kill & yank
 (setq mouse-yank-at-point t) ;;rather than the click point
 
+;;(setq kill-whole-line t)
+
+;;;_. anything-show-kill-ring を使うように修正した
+;; http://dev.ariel-networks.com/articles/emacs/part4/
+(defadvice yank-pop (around anything-kill-ring-maybe activate)
+  (if (not (eq last-command 'yank)
+      (anything-show-kill-ring)
+    ad-do-it))
+
+(defadvice cua-paste-pop (around anything-kill-ring-maybe activate)
+  (if (not (eq last-command 'yank))
+      (anything-show-kill-ring)
+    ad-do-it))
+
 
 ;;** misc
 (global-set-key (kbd "C-=") 'align-regexp)
@@ -73,7 +92,7 @@
       (add-to-list 'drag-stuff-except-modes 'org-mode)
       (drag-stuff-global-mode t)))
 
-;;;
+;;*** vi style join-line
 (defun join-line ()
   "Join the following line with current line"
   (interactive)
@@ -82,7 +101,7 @@
 (global-set-key (kbd "C-c J") 'join-line)
 
 
-;; make M-z behave more as zap-up-to-char
+;;*** make M-z behave more as zap-up-to-char
 (defun zap-up-to-char (arg char)
     "Kill up to the ARG'th occurence of CHAR, and leave CHAR.
   The CHAR is replaced and the point is put before CHAR."

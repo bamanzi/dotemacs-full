@@ -20,14 +20,16 @@
 (setq ido-use-url-at-point 'guess)
 (ido-mode t)
 
+
 ;;;_. smex : ido for M-x
 (autoload 'smex "smex" nil t)
 (autoload 'smex-major-mode-commands "smex" nil t)
+(setq smex-save-file "~/.emacs.d/smex-items")
 (global-set-key (kbd "ESC M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
 (eval-after-load "smex"
   `(progn
-      (smex-initialize)
+      (smex-initialize)))
 
 
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)
