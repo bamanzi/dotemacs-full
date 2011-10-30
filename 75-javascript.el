@@ -26,26 +26,38 @@
   (add-to-list 'ac-modes 'espresso-mode)
   
   )
-;;;_. lint
-;;;_.. v8 (http://koansys.com/tech/flymake-mode-for-emacs-javascript-v8-edition)
-(defun js-lint-with-v8 ()
+
+;;** lint
+;;*** jslint-v8 (http://koansys.com/tech/flymake-mode-for-emacs-javascript-v8-edition)
+(defun jslint-with-v8 ()
   (let ( (compile-command (concat "jslint-v8 --vim " buffer-file-name)) )
     (call-interactively 'compile)))
 
-(defun js-lint-with-jshint ()
+;;*** jshint (powered by jsdb intepreter)
+;;    https://github.com/spytheman/jshint-cli-with-jsdb
+(defun jslint-with-jshint ()
   (let ( (compile-command (concat "jshint " buffer-file-name)) )
     (call-interactively 'compile)))
 
-(defun js-lint-with-jsl ()
+;;*** jsl (available only on windows)
+;;    http://www.javascriptlint.com
+(defun jslint-with-jsl ()
   (let ( (compile-command (concat "jsl process " buffer-file-name)) )
     (call-interactively 'compile)))
 
-(defun js-lint-with-jsdb ()
-  (let ( (compile-command (concat "jslint-jsdb " buffer-file-name)) )
+;;*** nodejs + jslint
+;;   https://github.com/timemachine3030/node-jslint
+(defun jslint-with-node ()
+  (let ( (compile-command (concat "jslint " buffer-file-name)) )
     (call-interactively 'compile)))
 
+;;*** rhino + jslint
+;;.....
+
+
+;;*** b
 (eval-after-load "espresso"
-  '(define-key espresso-mode (kbd "<M-f9>")  'js-lint-with-v8))
+  '(define-key espresso-mode (kbd "<M-f9>")  'jslint-with-node))
 
 
 ;;;_. misc

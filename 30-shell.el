@@ -1,3 +1,35 @@
+;;stolen from http://linuxtoy.org/archives/emacs-eshell.html
+(eval-after-load "auto-complete"
+  `(progn
+     (ac-define-source eshell-pcomplete
+       '((candidates . pcomplete-completions)))
+
+     (add-to-list 'ac-modes 'eshell-mode)
+     ))
+
+;; (defun ac-complete-eshell-pcomplete ()
+;;   (interactive)
+;;   (auto-complete '(ac-source-eshell-pcomplete)))
+
+;;FIXME: (add-to-list hs-special-modes-alist
+;;             '(eshell-mode "^.* $" nil nil))
+
+(defun my-eshell-mode-init ()
+  ;; swap <home> and C-a
+  (define-key eshell-mode-map (kbd "C-a") 'eshell-maybe-bol)
+  (define-key eshell-mode-map (kbd "<home>") 'eshell-maybe-bol)
+
+  (setq outline-regexp "^.* $")
+  (outline-minor-mode t)
+
+  (when (boundp 'ac-sources)
+    (add-to-list 'ac-sources 'ac-source-files-in-current-dir)
+    (add-to-list 'ac-sources 'ac-source-eshell-pcomplete))
+  )
+
+(add-hook 'eshell-mode-hook 'my-eshell-mode-init)
+
+
 ;;**  A quick pop-up shell for emacs
 ;;Based on code stolen from http://tsdh.wordpress.com/2011/10/12/a-quick-pop-up-shell-for-emacs/
 (defvar th-shell-popup-buffer nil)
