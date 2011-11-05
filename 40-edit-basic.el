@@ -1,12 +1,12 @@
 
 ;;** CUA
-(setq cua-enable-cua-keys nil)
-;;(setq cua-rectangle-modifier-key 'hyper)  ;;leave C-RET
-(cua-mode t)
-
 (setq shift-select-mode t)
 (delete-selection-mode t)
 (transient-mark-mode t)
+
+(setq cua-enable-cua-keys nil)
+(setq cua-rectangle-modifier-key 'hyper)  ;;leave C-RET
+(cua-mode t)
 
 (global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
 
@@ -85,9 +85,11 @@
 (global-set-key (kbd "C-=") 'align-regexp)
 
 ;;*** move line up/down
+(autoload 'drag-stuff-global-mode "drag-stuff" "Toggle Drag-Stuff mode in every possible buffer." t)
+(autoload 'drag-stuff-mode "drag-stuff.elc" "Drag stuff around." t)
 (idle-require 'drag-stuff)
 (eval-after-load "drag-stuff"
-  '(progn
+  `(progn
 ;;    (setq drag-stuff-modifier 'hyper)
       (add-to-list 'drag-stuff-except-modes 'org-mode)
       (drag-stuff-global-mode t)))

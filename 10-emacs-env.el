@@ -82,6 +82,8 @@
 
 
 ;;** helps
+(idle-require 'help-mode)  ;;on linux sometime C-h v/f would complain 'help-setup-xref is void'
+(idle-require 'help-fns+) 
 (define-key help-map "\C-h" nil) ;;force '<f1> C-h' to list keymap of `help-map'
 
 (defun describe-major-mode ()

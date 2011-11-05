@@ -33,7 +33,7 @@
 (when (require 'popup-pos-tip nil t)
   (defadvice popup-tip
     (around popup-pos-tip-wrapper (string &rest args) activate)
-    (if (memq window-system '(x windows-nt))
+    (if (memq window-system '(x w32))
         (apply 'popup-pos-tip string args)
       ad-do-it)))
 

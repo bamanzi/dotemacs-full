@@ -5,6 +5,8 @@
 
 ;;TODO: buffer-menu
 
+;;** buffer-menu
+(idle-require 'buff-menu+)
 
 
 ;;** uniquify buffer name
@@ -41,6 +43,7 @@
 (autoload 'wcy-switch-buffer-backward "wcy-swbuffer" nil t)
 (global-set-key (kbd "<C-tab>")      'wcy-switch-buffer-forward)
 (global-set-key (kbd "<C-S-kp-tab>") 'wcy-switch-buffer-backward)
+;;NOTE: if `tabbar-mode' is on, <C-tab> in `tabbar-mode-map' override this
 
 ;;** auto-close
 ;;*** midnight-mode
