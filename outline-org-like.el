@@ -66,7 +66,7 @@
     (if outline-org-heading-mode
       (font-lock-add-keywords nil keywords)
     (font-lock-remove-keywords nil keywords)))
-  (font-lock-mode nil)
+  (font-lock-mode -1)
   (font-lock-mode t)
   )
 
@@ -106,6 +106,8 @@
 
 ;;TODO: wrap outline-promote/demote, outline-move-subtree-up
 
+(defvar outline-regexp-old nil "backup of value of `outline-regexp")
+
 (define-minor-mode outline-org-mode
   "A special `outline-minor-mode' that use org-mode-style headings."
   nil
@@ -115,13 +117,14 @@
         (progn  ;; to turn on
           (if (not outline-minor-mode)
               (outline-minor-mode t))
-          (set (make-local-variable 'outline-regexp-old) (outline-org/get-outline-regexp))
+          (set (make-local-variable 'outline-regexp-old) outline-regexp)
+          (setq outline-regexp (outline-org/get-outline-regexp))
           (if (not outline-org-heading-mode)
               (outline-org-heading-mode t))
           (hide-body))
       (progn
         (setq outline-regexp-old outline-regexp)
-        (outline-org-heading-mode nil))
+        (outline-org-heading-mode -1))
         )))
 
 
