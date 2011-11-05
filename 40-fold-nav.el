@@ -17,22 +17,67 @@
 ;(eval-after-load "hideshow"
 ;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
 
+;;**** fix compatibility between hideshowvis & transpose-words
+;; Because confliction with `transpose-words', we'll removed
+;; `hideshowvis-highlight-hs-regions-in-fringe' `after-change-functions'.
+(eval-after-load "hideshowvis"
+  `(progn
+     (add-hook 'hs-minor-mode-hook
+               #'(lambda ()
+                   (setq after-change-functions (remove 'hideshowvis-highlight-hs-regions-in-fringe
+                                                        after-change-functions))))
+
+     ;; but +/- signs on left fringe won't update automatically upon changes
+     ;; thus we need to refresh it manually
+     (defun hideshowvis-refresh-fringe ()
+       (interactive)
+       (hideshowvis-highlight-hs-regions-in-fringe))
+
+     (define-key hs-minor-mode-map (kbd "C-r") 'hideshowvis-refresh-fringe)
+     (define-key hs-minor-mode-map (kbd "<left-fringe> <mouse-2>")  'hideshowvis-refresh-fringe)
+     ))
+
 ;;** outline
 (eval-after-load "outline"
   `(progn
-     (global-set-key (kbd "C-z")        outline-mode-prefix-map)))
+     (global-set-key (kbd "C-z")        outline-mode-prefix-map)
+     (global-set-key (kbd "s-z")        outline-mode-prefix-map)
 
-(global-set-key (kbd "<H-up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
+     (define-key outline-mode-prefix-map (kbd "C-s") 'show-subtree)
 
-(global-set-key (kbd "<C-M-up>")     'outline-previous-visible-heading)
-(global-set-key (kbd "<C-M-down>")   'outline-next-visible-heading)
+     (global-set-key (kbd "<f2> z")        outline-mode-prefix-map)
 
-(global-set-key (kbd "<C-wheel-up>") 'outline-previous-visible-heading)
-(global-set-key (kbd "<C-wheel-down>") 'outline-next-visible-heading)
-(global-set-key (kbd "<C-mouse-1>")  'outline-toggle-children)
-(global-set-key (kbd "<C-mouse-3>")  'hide-sublevels)
-(global-set-key (kbd "<C-mouse-2>")  'show-all)
+     ))
+
+(progn
+  (global-set-key (kbd "<H-up>")     'outline-previous-visible-heading)
+  (global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
+
+  (global-set-key (kbd "<C-M-up>")     'outline-previous-visible-heading)
+  (global-set-key (kbd "<C-M-down>")   'outline-next-visible-heading)
+
+  (global-set-key (kbd "<C-wheel-up>") 'outline-previous-visible-heading)
+  (global-set-key (kbd "<C-wheel-down>") 'outline-next-visible-heading)
+
+  (global-set-key (kbd "<C-mouse-1>")  'outline-toggle-children)
+  (global-set-key (kbd "<C-mouse-3>")  'hide-sublevels)
+  (global-set-key (kbd "<C-mouse-2>")  'show-all)
+
+  (global-set-key (kbd "<f2> sa")      'show-all)
+  (global-set-key (kbd "<f2> sb")      'show-branches)
+  (global-set-key (kbd "<f2> sc")      'show-children)
+  (global-set-key (kbd "<f2> se")      'show-entry)
+  (global-set-key (kbd "<f2> ss")      'show-subtree)
+
+  (global-set-key (kbd "<f2> ha")       'hide-sublevels)
+  (global-set-key (kbd "<f2> hb")      'hide-body)
+  (global-set-key (kbd "<f2> he")      'hide-entry)
+  (global-set-key (kbd "<f2> hl")      'hide-leaves)
+  (global-set-key (kbd "<f2> hs")      'hide-subtree)
+
+  (global-set-key (kbd "<f2> S")       'hide-sublevels)
+  (global-set-key (kbd "<f2> <tab>")   'outline-cycle)
+  )
 
 ;;*** outline-cycle: org-mode like operation
 (autoload 'outline-cycle   "outline-magic" "Visibility cycling for outline(-minor)-mode." t)
@@ -49,12 +94,20 @@
     (define-key outline-mode-prefix-map (kbd "<M-left>" ) 'outline-promote)
     (define-key outline-mode-prefix-map (kbd "<M-right>") 'outline-demote)))
 
-;;*** org-mode style headings in 
+;;*** org-mode style headings in comment
 (autoload 'outline-org/outline-cycle               "outline-org" nil t)
 (autoload 'outline-org/outline-command-dispatcher  "outline-org" nil t)
 
 (global-set-key (kbd "<H-tab>") 'outline-org/outline-cycle)
 (global-set-key (kbd "C-z C-z") 'outline-org/outline-command-dispatcher)
+
+(autoload 'outline-org-heading-mode               "outline-org" nil t)
+(autoload 'outline-org-mode                       "outline-org" nil t)
+
+(add-hook 'find-file-hook #'(lambda ()
+                              (if (string-match "/.emacs.d/init.d/.*.el$" buffer-file-name)
+                                  (ignore-errors
+                                    (outline-org-mode t)))))
 
 ;;** allout
 (eval-after-load "allout"
@@ -108,37 +161,40 @@
 
 
 ;;** bm: buffer-local bookmarks
-(ignore-errors
-  (or (require 'bm nil t)
-      (require 'linkmark nil t))
-  )
-(if (featurep 'bm)
-    (progn
+(autoload 'bm-toggle "bm" "Toggle bookmark at point." t)
+(global-set-key (kbd "<f2> t") 'bm-toggle)
+(global-set-key (kbd "<C-f2>") 'bm-toggle)
+
+(idle-require 'bm)
+(eval-after-load "bm"
+  `(progn
       (global-set-key (kbd "<f2> t") 'bm-toggle)
       (global-set-key (kbd "<f2> n") 'bm-next)
       (global-set-key (kbd "<f2> p") 'bm-previous)
       (global-set-key (kbd "<f2> l") 'bm-show)
       (global-set-key (kbd "<f2> r") 'bm-bookmark-regexp)
+      (global-set-key (kbd "<f2> c") 'bm-remove-all-current-buffer)
 
       (global-set-key (kbd "<f2> <f2>") 'bm-next)
 
       (if (fboundp 'anything-bm-list)
           (global-set-key (kbd "<f2> l") 'anything-bm-list))
-      )
-  (if (featurep 'linemark)              ;; linemark.el from CEDET
-      (progn        
-        (define-key global-map (kbd "<f2> t") 'viss-bookmark-toggle)
-        (define-key global-map (kbd "<f2> n") 'viss-bookmark-prev-buffer)
-        (define-key global-map (kbd "<f2> p") 'viss-bookmark-next-buffer)
-        (define-key global-map (kbd "<f2> c") 'viss-bookmark-clear-all-buffer)
+      ))
 
-        (define-key global-map (kbd "<f2> <f2>") 'viss-bookmark-next-buffer)
-        ))
+;;(idle-require 'linemark) ;; linemark.el from CEDET
+(eval-after-load "linemark"
+  `(progn        
+     (define-key global-map (kbd "<f2> t") 'viss-bookmark-toggle)
+     (define-key global-map (kbd "<f2> n") 'viss-bookmark-prev-buffer)
+     (define-key global-map (kbd "<f2> p") 'viss-bookmark-next-buffer)
+     (define-key global-map (kbd "<f2> c") 'viss-bookmark-clear-all-buffer)
+
+     (define-key global-map (kbd "<f2> <f2>") 'viss-bookmark-next-buffer)
       )
 
 ;;**  linkd: visualize section header & links (to file/man/info/url)
 (autoload 'linkd-mode "linkd" "Create or follow hypertext links." t)
-(autoload 'linkd-follow "linkd.el" "Follow the link represented by SEXP." nil)
+(autoload 'linkd-follow "linkd" "Follow the link represented by SEXP." nil)
 (eval-after-load "linkd"
     `(progn
       ;;;_.. restore [mouse-4] (for mwheel-scroll, linkd bind it to `linkd-back')
