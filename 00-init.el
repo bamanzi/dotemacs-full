@@ -1,5 +1,7 @@
 (server-start)
 
+(setq message-log-max 1000)
+
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (add-to-list 'exec-path "~/.emacs.d/bin")

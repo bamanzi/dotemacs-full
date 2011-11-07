@@ -1,5 +1,7 @@
 ;;* buffer settings
 
+(global-set-key (kbd "<C-f4>") 'kill-buffer)
+
 ;;** buffer list 
 (global-set-key (kbd "C-c C-b") 'ibuffer)
 

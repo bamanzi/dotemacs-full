@@ -5,7 +5,7 @@
 (transient-mark-mode t)
 
 (setq cua-enable-cua-keys nil)
-(setq cua-rectangle-modifier-key 'hyper)  ;;leave C-RET
+;;(setq cua-rectangle-modifier-key 'meta) 
 (cua-mode t)
 
 (global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
@@ -59,6 +59,8 @@
       (global-undo-tree-mode t)
       (global-set-key (kbd "C-c C-z") 'undo-tree-undo)
       (global-set-key (kbd "C-c C-y") 'undo-tree-redo)
+
+      (define-key undo-tree-map (kbd "C-/") nil)
       )
   (message "%s: failed to load `undo-tree'."  load-file-name))
 

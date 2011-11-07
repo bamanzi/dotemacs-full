@@ -1,11 +1,11 @@
-;;;_ S(@* "basic")
+;;* basic
 (defmacro defun-mouse (newfunc function)
   `(defun ,newfunc (event)
      (interactive "e")
      (mouse-set-point event)
      (call-interactively ',function)))
 
-;;;_. on Linux, wheel-up/-down is called mouse-4/-5
+;;** on Linux, wheel-up/-down is called mouse-4/-5
 (define-key key-translation-map (kbd "<C-mouse-4>") (kbd "<C-wheel-up>"))
 (define-key key-translation-map (kbd "<C-mouse-5>") (kbd "<C-wheel-down>"))
 (define-key key-translation-map (kbd "<M-mouse-4>") (kbd "<M-wheel-up>"))
@@ -19,19 +19,21 @@
 
 
 
-;;;_ S(@* "without any modifier")
-
-;;;_. <left-fringe>: code folding
-;;; refer `hideshow-fringe' or `qtmstr-outline'
+;;* without any modifier
 (autoload 'highlight-symbol-at-point "highlight-symbol" "Toggle highlighting of the symbol at point." t)
 (global-set-key (kbd "<double-mouse-1>") 'highlight-symbol-at-point)
 
 
-;;;_ S(@* "Ctrl:  code folding")
+;;** <left-fringe>: code folding
+;;; refer `hideshow-fringe' or `qtmstr-outline'
+
+;;** <mode-line>
+(global-set-key (kbd "<mode-line> <down-mouse-2>") 'mouse-buffer-menu)
+
+
+;;* Ctrl:  code folding
 (global-unset-key (kbd "<C-down-mouse-1>")) ;;moved to <mode-line>
 (global-unset-key (kbd "<C-down-mouse-2>"))
-
-(require 'outline)
 
 ;; (defun outline-toggle-children-by-mouse (event)
 ;;   (interactive "e")
@@ -58,18 +60,18 @@
       
   
 
-;;;_. Ctrl on <left-fringe>
-(global-set-key (kbd "<left-fringe> <C-mouse-1>")    'outline-toggle-children-by-mouse)
-(global-set-key (kbd "<left-fringe> <C-mouse-2>") 'show-all)
+;;** Ctrl on <left-fringe>
+(global-set-key (kbd "<left-fringe> <C-mouse-1>")   'outline-toggle-children-by-mouse)
+(global-set-key (kbd "<left-fringe> <C-mouse-2>")   'show-all)
 
-;;;_. Ctrl on <mode-line>
+;;** Ctrl on <mode-line>
 (global-set-key (kbd "<mode-line> <C-down-mouse-1>")    'mouse-buffer-menu)
 
 (global-set-key (kbd "<mode-line> <C-wheel-up>")        'text-scale-increase)
 (global-set-key (kbd "<mode-line> <C-wheel-down>")      'text-scale-decrease)
 
 
-;;;_ S(@* "Shift: some special marks overlays")
+;;* Shift: some special marks overlays
 (global-unset-key (kbd "<S-down-mouse-1>")) ;;mouse-appearance-menu moved to mode-line
 (global-set-key (kbd "<S-down-mouse-3>") 'facemenu-menu) ;;moved from C-down-mouse-2
 
@@ -77,7 +79,7 @@
 (global-set-key (kbd "<S-wheel-down>")  'highlight-symbol-next)
 
 
-;;:_. Shift on <left-fringe> :  buffer-local bookmarks
+;;** Shift on <left-fringe> :  buffer-local bookmarks
 
 ;; see also: (@file :file-name "linemark.el" :to "enable-visual-studio-bookmarks")
 (ignore-errors
@@ -98,24 +100,24 @@
         (global-set-key (kbd "<left-fringe> <S-wheel-down>") 'viss-bookmark-prev-buffer))
     ))
 
-;;;_. Shift on <mode-line>
+;;** Shift on <mode-line>
 (global-set-key (kbd "<mode-line> <S-down-mouse-1>") 'mouse-appearance-menu)
 (global-set-key (kbd "<mode-line> <S-down-mouse-3>") 'facemenu-menu)
 
 
 
-;;;_ S(@* "Meta")
+;;* Meta
 ;;keep the original behaviour for secondary selection
 ;; M-mouse-1: mouse-drag-secondary
 ;; M-mouse-2: mouse-yank-secondary
 ;; M-mouse-3: mouse-secondary-save-then-kill
 
 
-;;;_. Meta on <left-fringe>
+;;** Meta on <left-fringe>
 
 
 
-;;;_ S(@* "other modifiers: super/hyper/alt")
+;;* other modifiers: super/hyper/alt
 ;;(global-set-key (kbd "<A-wheel-up>") 'highlight-symbol-prev)
 ;;(global-set-key (kbd "<A-wheel-down>")  'highlight-symbol-next)
 
@@ -131,7 +133,7 @@
 (define-key cua--rectangle-keymap (kbd "<H-mouse-1>") 'bmz/mouse-mark-cua-rectangle)
 
 
-;;;_ S(@* "other stuff")
+;;* other stuff
 
 ;;FIXME: markerpen.el
 (autoload 'markerpen-show-all-pens "markerpen" "Display a buffer with samples of the markerpens in use" t)

@@ -63,13 +63,14 @@
   (define-key key-translation-map (kbd "<menu>") 'event-apply-hyper-modifier)
 
 ;;  (define-key key-translation-map (kbd "<super>") (kbd "<f11>"))
+  (define-key key-translation-map (kbd "<C-S-iso-lefttab>") (kbd "<C-S-tab>"))
   )
 
 
 ;;;_ xterm & console
-(when (and (not window-system)
-           (eq system-type 'gnu/linux))
-  (xterm-mouse-mode t)
+(when (eq system-type 'gnu/linux)
+  (if (not window-system)
+      (xterm-mouse-mode t))
   ;;(gpm-mouse-mode t) ;;for Linux console
 
   (load-library "help-mode")  ;; to avoid the error message "Symbol's value as variable is void: help-xref-following"

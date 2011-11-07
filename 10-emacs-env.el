@@ -86,6 +86,8 @@
 (idle-require 'help-fns+) 
 (define-key help-map "\C-h" nil) ;;force '<f1> C-h' to list keymap of `help-map'
 
+(add-hook 'help-mode-hook 'visual-line-mode)
+
 (defun describe-major-mode ()
   (interactive)
   (let ( (mode major-mode) )
@@ -93,9 +95,15 @@
         (format "%s" mode)
       (insert-string (describe-function mode)))))
 
+(defun describe-major-mode ()
+  (interactive)
+  (describe-function major-mode))
+  
+
 (define-key help-map "M"  'describe-major-mode)
 (define-key help-map "F"  'describe-face) 
 
+;;** info
 (define-key help-map "i"  nil)
 (define-key help-map "ii" 'info)
 (define-key help-map "ia" 'info-apropos)
@@ -104,6 +112,15 @@
 (define-key help-map "ic" 'Info-goto-emacs-command-node)
 (define-key help-map "ik" 'Info-goto-emacs-key-command-node)
 
+(idle-require 'info+)
+
+(add-hook 'Info-mode-hook #'(lambda ()
+                              ;; cancel binding to `Info-history-forward' and `Info-history-back'
+                              (define-key Info-mode-map (kbd "<mouse-4>") nil)
+                              (define-key Info-mode-map (kbd "<mouse-5>") nil)
+                              ))
+
+;;** apropos
 (define-key help-map "a"  nil)
 (define-key help-map "aa" 'apropos)
 (define-key help-map "ac" 'apropos-command)
@@ -113,9 +130,8 @@
 (define-key help-map "ao" 'apropos-user-options)
 (define-key help-map "ag" 'apropos-group)
 
-(idle-require 'info+)
 
-(add-hook 'help-mode-hook 'visual-line-mode)
+
 
 ;;;_. "utils"
 
