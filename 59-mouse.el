@@ -78,6 +78,27 @@
 (global-set-key (kbd "<S-wheel-up>") 'highlight-symbol-prev)
 (global-set-key (kbd "<S-wheel-down>")  'highlight-symbol-next)
 
+;; S-click to mark region, just as other editors' style
+;;FROM: http://ignaciopp.wordpress.com/2009/06/17/emacs-indentunindent-region-as-a-block-using-the-tab-key/
+(progn
+  ;; mac and pc users would like selecting text this way
+  (defun dave-shift-mouse-select (event)
+    "Set the mark and then move point to the position clicked on with
+ the mouse. This should be bound to a mouse click event type."
+    (interactive "e")
+    (mouse-minibuffer-check event)
+    (if mark-active (exchange-point-and-mark))
+    (set-mark-command nil)
+    ;; Use event-end in case called from mouse-drag-region.
+    ;; If EVENT is a click, event-end and event-start give same value.
+    (posn-set-point (event-end event)))
+
+  (define-key global-map [S-down-mouse-1] 'dave-shift-mouse-select)
+
+  ;; to use in into emacs for  unix I  needed this instead
+  (define-key global-map [S-mouse-1] 'dave-shift-mouse-select)
+  )
+
 
 ;;** Shift on <left-fringe> :  buffer-local bookmarks
 
