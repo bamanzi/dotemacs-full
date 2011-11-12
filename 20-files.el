@@ -18,7 +18,8 @@
 ;;...
 
 ;;** Save File
-;;** backup rules
+;;...
+;;*** backup rules
 ;;(setq make-backup-files t) ;;to disable backup, set it to nil
 
 ;;(setq backup-directory-alist `(("." . "~/.saves")))
@@ -31,7 +32,6 @@
 ;;   kept-old-versions 2)
 
 ;;*** TODO: backup-each-save.el
-
 
 ;;** dired
 ;;(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
@@ -50,6 +50,19 @@ Otherwise, call the original `dired-jump'."
 
 (define-key goto-map "d" 'bmz/dired-jump)
 
+;;** nav: simple file system navigation
+(autoload 'nav "nav" "Opens Nav in a new window to the left of the current one." t)
+
+;;FIXME: check "*nav*" buffer whether already exist at first
+(defun bmz/nav-goto-dir ()
+  (interactive)
+  (let ( (dir (if buffer-file-name
+                  (file-name-directory buffer-file-name)
+                default-directory)) )
+    (with-current-buffer "*nav*"
+      (nav-jump-to-dir dir))))
+
+(define-key goto-map "D" 'bmz/nav-goto-dir)
 
 ;;** ediff
 
