@@ -8,6 +8,8 @@
 ;;(setq cua-rectangle-modifier-key 'meta) 
 (cua-mode t)
 
+;; to avoid key conflicting with org-mode
+(define-key cua-global-keymap (kbd "<C-return>") nil)
 (global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
 
 ;;** where I am

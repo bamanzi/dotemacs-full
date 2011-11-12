@@ -173,6 +173,8 @@
     (define-key map (kbd "<M-backspace>") 'rotate-windows)
     
     ;; the following need some 3rd-party library
+
+    (define-key map (kbd "*")  'sticky-window-keep-window-visible)
     
     ;;TODO:
     ;; transpose-frame
