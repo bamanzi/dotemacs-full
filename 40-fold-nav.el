@@ -41,7 +41,7 @@
 (eval-after-load "outline"
   `(progn
      (global-set-key (kbd "C-z")        outline-mode-prefix-map)
-     (global-set-key (kbd "s-z")        outline-mode-prefix-map)
+;;     (global-set-key (kbd "s-z")        outline-mode-prefix-map)
 
      (define-key outline-mode-prefix-map (kbd "C-s") 'show-subtree)
 
@@ -69,17 +69,33 @@
   (global-set-key (kbd "<f2> se")      'show-entry)
   (global-set-key (kbd "<f2> ss")      'show-subtree)
 
-  (global-set-key (kbd "<f2> ha")       'hide-sublevels)
+  (global-set-key (kbd "<f2> ha")      'hide-sublevels)
   (global-set-key (kbd "<f2> hb")      'hide-body)
   (global-set-key (kbd "<f2> he")      'hide-entry)
   (global-set-key (kbd "<f2> hl")      'hide-leaves)
   (global-set-key (kbd "<f2> hs")      'hide-subtree)
 
   (global-set-key (kbd "<f2> S")       'hide-sublevels)
-  (global-set-key (kbd "<f2> <tab>")   'outline-cycle)
+
   )
 
-;;*** outline-cycle: org-mode like operation
+;;*** foldout: narrow to outline subtree
+(autoload 'foldout-zoom-subtree "foldout" "Open the subtree under the current heading and narrow to it." t)
+(autoload 'foldout-exit-fold    "foldout" "Return to the ARG'th enclosing fold view.  With ARG = 0 exit all folds." t)
+;; default keybinding (from foldout.el)
+;; foldout-zoom-subtree:  C-c C-z,  (outline-prefix) C-z
+;; foldout-exit-fold:     C-c C-x,  (outline-prefix) C-x
+
+(defun foldout-zoom-or-exit ()
+  (interactive)
+  (if (null foldout-fold-list)
+      (foldout-zoom-subtree 1)
+    (foldout-exit-fold 1)))
+(define-key outline-mode-prefix-map [C-return] 'foldout-zoom-or-exit)
+
+
+;;*** outline-cycle: org-mode like operations
+;;  cycling between FOLDED, SUBTREE, CHILDREN
 (autoload 'outline-cycle   "outline-magic" "Visibility cycling for outline(-minor)-mode." t)
 (autoload 'outline-promote "outline-magic" "Decrease the level of an outline-structure by ARG levels." t)
 (autoload 'outline-demote  "outline-magic" "Increase the level of an outline-structure by ARG levels." t)
@@ -88,11 +104,13 @@
 
 (eval-after-load "outline"
   `(progn
-    (define-key outline-mode-prefix-map (kbd "<backtab>") 'outline-cycle) ;;on Linux, it's <backtab> but not <S-tab>
-    (define-key outline-mode-prefix-map (kbd "<M-up>"   ) 'outline-move-subtree-up)
-    (define-key outline-mode-prefix-map (kbd "<M-down>" ) 'outline-move-subtree-down)
-    (define-key outline-mode-prefix-map (kbd "<M-left>" ) 'outline-promote)
-    (define-key outline-mode-prefix-map (kbd "<M-right>") 'outline-demote)))
+     (global-set-key (kbd "<f2> <tab>")   'outline-cycle)
+     
+     (define-key outline-mode-prefix-map (kbd "<backtab>") 'outline-cycle) ;;on Linux, it's <backtab> but not <S-tab>
+     (define-key outline-mode-prefix-map (kbd "<M-up>"   ) 'outline-move-subtree-up)
+     (define-key outline-mode-prefix-map (kbd "<M-down>" ) 'outline-move-subtree-down)
+     (define-key outline-mode-prefix-map (kbd "<M-left>" ) 'outline-promote)
+     (define-key outline-mode-prefix-map (kbd "<M-right>") 'outline-demote)))
 
 ;;*** org-mode style headings in comment
 (autoload 'outline-org/outline-cycle               "outline-org" nil t)
@@ -108,6 +126,35 @@
                               (if (string-match "/.emacs.d/init.d/.*.el$" buffer-file-name)
                                   (ignore-errors
                                     (outline-org-mode t)))))
+
+;;*** qtmstr-outline
+;; with this package, we have another set of left-fringe icons to fold/unfold sections
+;; and it has overlays for clicking (and RET works on it too)
+(idle-require 'qtmstr-outline)
+(eval-after-load "qtmstr-outline"
+  `(progn
+     ;; supress auto turn on
+     (remove-hook 'outline-minor-mode-hook #'qtmstr-outline-mode-hook)
+
+     (define-minor-mode qtmstr-outline-mode
+       "Add left-fringe +/- icons and line overlays for outline-sections."
+       nil
+       :group 'outline
+       (if qtmstr-outline-mode
+           ;; turn on
+           (progn
+             (unless outline-minor-mode
+               (outline-minor-mode t))
+             (qtmstr-outline-add-overlays))
+         (qtmstr-outline-remove-overlays)))
+
+     ;; leave mouse-1 for hideshowvis
+     (define-key outline-minor-mode-map [left-fringe mouse-1] nil)
+     (define-key outline-minor-mode-map [left-fringe C-mouse-1] 'qtmstr-outline-fringe-click)
+
+     (define-key qtmstr-outline-header-map [mouse-2]  'hide-leaves)
+     (define-key qtmstr-outline-header-map [mouse-3]  'show-all)
+     ))
 
 ;;** allout
 (eval-after-load "allout"
