@@ -98,10 +98,30 @@
 (defun describe-major-mode ()
   (interactive)
   (describe-function major-mode))
-  
 
 (define-key help-map "M"  'describe-major-mode)
-(define-key help-map "F"  'describe-face) 
+(define-key help-map "F"  'describe-face)
+(define-key help-map "K"  'describe-keymap)
+
+(defun show-variable-value (var)
+  (interactive
+     (let ((symb                          (or (and (fboundp 'symbol-nearest-point)
+                                                   (symbol-nearest-point))
+                                              (and (symbolp (variable-at-point)) (variable-at-point))))
+           (enable-recursive-minibuffers  t)
+           val)
+       (setq val  (completing-read "variable: " obarray
+                                   (if current-prefix-arg
+                                       (lambda (vv) (user-variable-p vv))
+                                     (lambda (vv) (or (boundp vv) (get vv 'variable-documentation))))
+                                   t
+                                   (symbol-name symb)
+                                   nil (and (symbolp symb) (symbol-name symb))))
+       (list (if (equal val "") symb (intern val)))))
+  (message "%s: %s" (symbol-name var) (symbol-value var)))
+
+(define-key help-map "V" 'show-variable-value)
+
 
 ;;** info
 (define-key help-map "i"  nil)
@@ -119,6 +139,17 @@
                               (define-key Info-mode-map (kbd "<mouse-4>") nil)
                               (define-key Info-mode-map (kbd "<mouse-5>") nil)
                               ))
+
+
+(defun info-view-file (file-or-node &optional buffer)
+  "Read specific info file."
+  (interactive (list
+                (read-file-name "Info file name: " nil nil t)
+                (if (numberp current-prefix-arg)
+                    (format "*info*<%s>" current-prefix-arg))))
+  (info-setup file-or-node
+	      (pop-to-buffer-same-window (or buffer "*info*"))))
+(define-key help-map "i " 'info-view-file)
 
 ;;** apropos
 (define-key help-map "a"  nil)
