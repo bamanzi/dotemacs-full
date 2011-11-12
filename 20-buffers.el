@@ -2,21 +2,44 @@
 
 (global-set-key (kbd "<C-f4>") 'kill-buffer)
 
-;;** buffer list 
+;;** buffer navigation
+(global-set-key (kbd "<C-tab>")   'previous-buffer)
+(global-set-key (kbd "<C-S-tab>") 'next-buffer)
+(global-set-key (kbd "C-c b")     'electric-buffer-list)
+
+;;*** wcy-swbuffer
+(autoload 'wcy-switch-buffer-forward "wcy-swbuff" nil t)
+(autoload 'wcy-switch-buffer-backward "wcy-swbuffer" nil t)
+(global-set-key (kbd "<C-tab>")      'wcy-switch-buffer-forward)
+(global-set-key (kbd "<C-S-kp-tab>") 'wcy-switch-buffer-backward)
+;;NOTE: if `tabbar-mode' is on, <C-tab> in `tabbar-mode-map' override this
+
+
+;;** buffer management
 (global-set-key (kbd "C-c C-b") 'ibuffer)
-
 ;;TODO: buffer-menu
-
-;;** buffer-menu
 (idle-require 'buff-menu+)
 
+;;** temporary buffers
+;;*** midnight-mode
+;;...
+;;*** tempbuf
+;;(autoload 'turn-on-tempbuf-mode "tempbuf")
+(when (load "tempbuf" t)
+  (add-hook 'dired-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'custom-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
+  (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
 
-;;** uniquify buffer name
+
+;;** misc
+;;*** uniquify buffer name
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
 
-;;** show buffer changes
+;;*** show buffer changes
 (defun bmz/diff-buffer-with-file (arg)
   (interactive "P")
   (if arg
@@ -36,27 +59,39 @@
 (global-set-key (kbd "C-x M-r") 'bmz/revert-buffer)
 
 
-;;** switch buffer
-(global-set-key (kbd "<C-tab>") 'previous-buffer)
-(global-set-key (kbd "<C-S-tab>") 'next-buffer)
 
-;;***wcy-swbuffer
-(autoload 'wcy-switch-buffer-forward "wcy-swbuff" nil t)
-(autoload 'wcy-switch-buffer-backward "wcy-swbuffer" nil t)
-(global-set-key (kbd "<C-tab>")      'wcy-switch-buffer-forward)
-(global-set-key (kbd "<C-S-kp-tab>") 'wcy-switch-buffer-backward)
-;;NOTE: if `tabbar-mode' is on, <C-tab> in `tabbar-mode-map' override this
+;;*** Kills live buffers, leaves some emacs work buffers
+;; optained from http://www.chrislott.org/geek/emacs/dotemacs.html
+(defun nuke-some-buffers (&optional list)
+  "For each buffer in LIST, kill it silently if unmodified. Otherwise ask.
+LIST defaults to all existing live buffers."
+  (interactive)
+  (if (null list)
+      (setq list (buffer-list)))
+  (while list
+    (let* ((buffer (car list))
+	   (name (buffer-name buffer)))
+      (and (not (string-equal name ""))
+	   (not (string-equal name "*Messages*"))
+	  ;; (not (string-equal name "*Buffer List*"))
+	   (not (string-equal name "*buffer-selection*"))
+	   (not (string-equal name "*Shell Command Output*"))
+	   (not (string-equal name "*scratch*"))
+	   (/= (aref name 0) ? )
+	   (if (buffer-modified-p buffer)
+	       (if (yes-or-no-p
+		    (format "Buffer %s has been edited. Kill? " name))
+		   (kill-buffer buffer))
+	     (kill-buffer buffer))))
+    (setq list (cdr list))))
 
-;;** auto-close
-;;*** midnight-mode
-;;...
-;;*** tempbuf
-;;(autoload 'turn-on-tempbuf-mode "tempbuf")
-(when (load "tempbuf" t)
-  (add-hook 'dired-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'custom-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
+;;This function kills all the buffer except the *scratch* buffer. Call it with "alt-x nuke-all-buffers"
 
-
+;; Kills all them buffers except scratch
+;; optained from http://www.chrislott.org/geek/emacs/dotemacs.html
+(defun nuke-all-buffers ()
+  "kill all buffers, leaving *scratch* only"
+  (interactive)
+  (mapcar (lambda (x) (kill-buffer x))
+	  (buffer-list))
+  (delete-other-windows))
