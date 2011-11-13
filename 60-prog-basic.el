@@ -2,9 +2,18 @@
 
 ;;(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 
-(which-func-mode t)
 
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
+
+(which-func-mode t)
+(when (require 'bmz-misc nil t)
+  ;; move which-func to the front of mode-line
+  (mode-line-uninstall-element 'which-func-mode)
+  (mode-line-install-element 'which-func-format)
+
+  (define-key which-func-keymap (kbd "<mode-line> <mouse-2>") 'imenu)
+  
+  )
 
 
 ;;** compilation

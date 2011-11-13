@@ -85,5 +85,14 @@
                anything-c-source-emacs-variables)))
 
 ;;** misc
-(if (fboundp 'reset-imenu-function)
-    (add-hook 'emacs-lisp-mode-hook 'reset-imenu-function))
+(defun emacs-lisp-mode-init-misc ()
+
+  ;; disable CEDET's stupid overriden on emacs-lisp-mode
+  (if (fboundp 'reset-imenu-function)
+      (add-hook 'emacs-lisp-mode-hook 'reset-imenu-function))
+  (if (fboundp 'set-mode-local)
+      (setq-mode-local emacs-lisp-mode imenu-create-index-function 'imenu-default-create-index-function))
+  )
+
+(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-init-misc)
+  

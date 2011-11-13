@@ -53,12 +53,16 @@ Otherwise, call the original `dired-jump'."
 ;;** nav: simple file system navigation
 (autoload 'nav "nav" "Opens Nav in a new window to the left of the current one." t)
 
-;;FIXME: check "*nav*" buffer whether already exist at first
+
 (defun bmz/nav-goto-dir ()
   (interactive)
   (let ( (dir (if buffer-file-name
                   (file-name-directory buffer-file-name)
                 default-directory)) )
+    (unless (get-buffer "*nav*")
+      (nav))
+    (let ( (window (get-buffer-window "*nav*")) )
+      (set-window-dedicated-p window t))
     (with-current-buffer "*nav*"
       (nav-jump-to-dir dir))))
 

@@ -17,7 +17,7 @@
      (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward-tab)
      (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
      (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
-     )
+     ))
 
 ;;(when (featurep 'tabbar)
 (defun ido-jump-to-tab ()
@@ -81,7 +81,6 @@
      ))
 
 ;;*** tabbar-rules
-;;;.....
 (if (not (featurep 'ide-skel))
     (idle-require 'tabbar-ruler)) 
 
