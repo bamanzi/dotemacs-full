@@ -18,6 +18,7 @@
 ;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
 
 ;;**** fix compatibility between hideshowvis & transpose-words
+(if nil
 ;; Because confliction with `transpose-words', we'll removed
 ;; `hideshowvis-highlight-hs-regions-in-fringe' `after-change-functions'.
 (eval-after-load "hideshowvis"
@@ -26,16 +27,30 @@
                #'(lambda ()
                    (setq after-change-functions (remove 'hideshowvis-highlight-hs-regions-in-fringe
                                                         after-change-functions))))
-
+  
      ;; but +/- signs on left fringe won't update automatically upon changes
      ;; thus we need to refresh it manually
      (defun hideshowvis-refresh-fringe ()
        (interactive)
        (hideshowvis-highlight-hs-regions-in-fringe))
 
-     (define-key hs-minor-mode-map (kbd "C-r") 'hideshowvis-refresh-fringe)
+     (define-key hs-minor-mode-map (kbd "C-c @ C-r") 'hideshowvis-refresh-fringe)
      (define-key hs-minor-mode-map (kbd "<left-fringe> <mouse-2>")  'hideshowvis-refresh-fringe)
      ))
+)
+
+;;this solution would be better (?)
+(eval-after-load "hideshowvis"
+  `(progn
+     (defadvice transpose-words (around disable-hideshowvis-change-for-transpose-words activate)
+       (let ( (old (copy-sequence after-change-functions)) )
+         (setq after-change-functions
+               (remove 'hideshowvis-highlight-hs-regions-in-fringe after-change-functions))
+         ad-do-it
+         (setq after-change-functions old)
+         )))
+  )
+
 
 ;;** outline
 (eval-after-load "outline"
