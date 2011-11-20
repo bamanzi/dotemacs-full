@@ -20,6 +20,10 @@
 
 ;;;_. json-pretty-print
 
+(defun json-pretty-print (begin end)
+  (interactive "r")
+  (shell-command-on-region begin end "python -mjson.tool" nil 'replace))
+
 ;;;_. code completion
 ;;;_.. autocomplete + semantic
 (defun js-mode-init-auto-complete ()

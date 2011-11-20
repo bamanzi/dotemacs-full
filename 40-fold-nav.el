@@ -145,7 +145,10 @@
            (progn
              (unless outline-minor-mode
                (outline-minor-mode t))
-             (qtmstr-outline-add-overlays))
+             (qtmstr-outline-add-overlays)
+             (unless hs-minor-mode
+                 ;; avoid key conflictingve with hideshowvis
+                 (local-set-key [left-fringe mouse-1] 'qtmstr-outline-fringe-click)))                 
          (qtmstr-outline-remove-overlays)))
 
      ;; leave mouse-1 for hideshowvis

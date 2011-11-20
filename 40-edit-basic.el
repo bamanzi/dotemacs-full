@@ -26,7 +26,7 @@
   `(global-visible-mark-mode))
 
 ;;** tab key & indent
-(setq tab-always-indent t)
+(setq tab-always-indent 'complete)
 
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
@@ -36,6 +36,20 @@
 (setq show-paren-style 'mixed)
 (setq show-paren-mode t)
 (show-paren-mode t)
+
+;; http://www.emacswiki.org/emacs/ParenthesisMatching
+(defun goto-match-paren (arg)
+  "Go to the matching parenthesis if on parenthesis, otherwise insert %.
+vi style of % jumping to matching brace."
+  (interactive "p")
+  (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
+        ((looking-at "\\s\)") (forward-char 1) (backward-list 1))
+        (t (self-insert-command (or arg 1)))))
+
+;;*** autopair
+(autoload 'autopair-mode "autopair" "Automagically pair braces and quotes like in TextMate." t)
+(autoload 'autopair-on   "autopair" "Undocumented." t)
+(global-set-key (kbd "<f10> ap") 'autopair-mode)
 
 ;;** newline & line-wrap
 (setq require-final-newline 't)
@@ -70,9 +84,13 @@
 ;;** kill & yank
 (setq mouse-yank-at-point t) ;;rather than the click point
 
-;;(setq kill-whole-line t)
+;; C-y is too far for single-palm 
+(if cua-mode
+    (define-key global-map (kbd "C-c C-v")  'cua-paste)
+  (define-key global-map (kbd "C-c C-v") 'yank))
+  
 
-;;;_. anything-show-kill-ring を使うように修正した
+;;*** anything-show-kill-ring を使うように修正した
 ;; http://dev.ariel-networks.com/articles/emacs/part4/
 (defadvice yank-pop (around anything-kill-ring-maybe activate)
   (if (not (eq last-command 'yank)
@@ -83,6 +101,23 @@
   (if (not (eq last-command 'yank))
       (anything-show-kill-ring)
     ad-do-it))
+
+;;*** kill/yank a line
+;;(setq kill-whole-line t)
+
+
+(defun copy-line (arg)
+  "Copy current line."
+  (interactive "p")
+  (save-excursion
+	(let ( (beg (progn (beginning-of-line) (point)))
+		   (end (progn (end-of-line arg)   (point))) )
+	  (if (fboundp 'pulse-momentary-highlight-region)
+		  (pulse-momentary-highlight-region beg end))
+	  (kill-ring-save beg end)
+	  )))
+
+(global-set-key (kbd "H-l") 'copy-line)
 
 
 ;;** misc
@@ -123,4 +158,9 @@
   (zap-to-char (- arg) char))
 
 (global-set-key (kbd "ESC M-z") 'zap-back-to-char)
+
+;;*** smart-operator
+(autoload 'smart-operator-mode     "smart-operator" "Insert operators with surrounding spaces smartly." t)
+(autoload 'smart-operator-mode-on  "smart-operator" "Undocumented." t)
+(define-key global-map (kbd "<f10> so") 'smart-operator-mode)
 

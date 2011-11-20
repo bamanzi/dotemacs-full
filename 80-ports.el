@@ -73,6 +73,15 @@
       (xterm-mouse-mode t))
   ;;(gpm-mouse-mode t) ;;for Linux console
 
+  (define-key key-translation-map (kbd "M-[ 1;5l") (kbd "C-,"))
+  (define-key key-translation-map (kbd "M-[ 1;5n") (kbd "C-."))
+
+  ;; iTerm meta-shift-<arrows> fix
+  (define-key input-decode-map "\e[1;10A" [M-S-up])
+  (define-key input-decode-map "\e[1;10B" [M-S-down])
+  (define-key input-decode-map "\e[1;10C" [M-S-right])
+  (define-key input-decode-map "\e[1;10D" [M-S-left])
+
   (load-library "help-mode")  ;; to avoid the error message "Symbol's value as variable is void: help-xref-following"
   )
                

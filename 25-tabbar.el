@@ -1,12 +1,15 @@
 ;;** tabbar
 ;; (find-library "tabbar")
 
+;;*** ide-skel
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
 ;;(if window-system
 ;;    (require 'ide-skel nil t))
 
-;; if you use `ide-skel', don't directly load `tabbar' after `ide-ske'
+;; if you use `ide-skel', don't directly load `tabbar' after `ide-skel'
 ;; as this would mess up the tab group definition of `ide-skel'
+
+;;*** tabbar-mode basic
 (unless (featurep 'tabbar)
   (require 'tabbar nil t))
 
@@ -19,13 +22,16 @@
      (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
      ))
 
+;;*** jump to tab/group, ido style
 ;;(when (featurep 'tabbar)
 (defun ido-jump-to-tab ()
   "Jump to a buffer in current tabbar group."
   (interactive)
   (if (< emacs-major-version 24)
       (ido-common-initialization))
-  (require 'tabbar)
+  (unless (and (featurep 'tabbar)
+               tabbar-mode)
+    (error "Error: tabbar-mode not turned on."))
   (let* ( ;; Swaps the current buffer name with the next one along.
          (visible-buffers (mapcar '(lambda (tab) (buffer-name (tabbar-tab-value tab)))
 					  (tabbar-tabs (tabbar-current-tabset t))))
@@ -40,7 +46,10 @@
   (interactive)
   (if (< emacs-major-version 24)
       (ido-common-initialization))
-  (set tabbar-tabsets-tabset (tabbar-map-tabsets 'tabbar-selected-tab)) 
+  (unless (and (featurep 'tabbar)
+               tabbar-mode)
+    (error "Error: tabbar-mode not turned on."))  
+  (set tabbar-tabsets-tabset (tabbar-map-tabsets 'tabbar-selected-tab)) ;; refresh groups
   (let* ( (groups (mapcar #'(lambda (group)
                               (format "%s" (cdr group)))
                           (tabbar-tabs tabbar-tabsets-tabset)))
@@ -80,9 +89,10 @@
      (add-hook 'first-change-hook 'ztl-on-buffer-modification)
      ))
 
-;;*** tabbar-rules
-(if (not (featurep 'ide-skel))
-    (idle-require 'tabbar-ruler)) 
+;;*** tabbar-ruler: add context menu to tabs
+(if (and (not (featurep 'ide-skel))   ;;conflicting with idle-
+         (not (display-graphic-p)))   ;;won't work well in GUI
+    (idle-require 'tabbar-ruler))
 
 ;;*** show tabbar group on modeline
 (setq mode-line-tabbar-group  '(:eval (when (tabbar-mode-on-p)
@@ -90,6 +100,7 @@
                                                             'face 'tabbar-selected
                                                             'help-echo "tabbar group")
                                                 " > "))))
+;;FIXME: not work?
 (eval-after-load "tabbar"
   `(progn
      (if (require 'bmz-misc nil t)

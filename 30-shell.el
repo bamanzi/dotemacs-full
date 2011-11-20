@@ -1,3 +1,12 @@
+;;** eshell
+(setq eshell-cp-interactive-query t
+      eshell-mv-interactive-query t
+      eshell-ln-interactive-query t
+      eshell-rm-interactive-query t
+      eshell-cp-overwrite-files t
+      eshell-mv-overwrite-files t
+      eshell-ln-overwrite-files t)
+
 ;;stolen from http://linuxtoy.org/archives/emacs-eshell.html
 (eval-after-load "auto-complete"
   `(progn
@@ -10,6 +19,13 @@
 ;; (defun ac-complete-eshell-pcomplete ()
 ;;   (interactive)
 ;;   (auto-complete '(ac-source-eshell-pcomplete)))
+
+(defun eshell-maybe-bol ()
+  (interactive)
+  (let ((p (point)))
+    (eshell-bol)
+    (if (= p (point))
+        (beginning-of-line))))
 
 ;;FIXME: (add-to-list hs-special-modes-alist
 ;;             '(eshell-mode "^.* $" nil nil))
@@ -29,8 +45,35 @@
 
 (add-hook 'eshell-mode-hook 'my-eshell-mode-init)
 
+;;*** eshell commands
+(defun eshell/vim (&rest args)
+  "Invoke find-file' on the file.
+\"vi +42 foo\" also goes to line 42 in the buffer."
+  (while args
+    (if (string-match "\\\+\([0-9]+\)\'" (car args))
+        (let* ((line (string-to-number (match-string 1 (pop args))))
+               (file (pop args)))
+          (find-file file)
+          (goto-line line))
+      (find-file (pop args)))))
 
-;;**  A quick pop-up shell for emacs
+(defalias 'eshell/vi 'eshell/vim)
+
+;;** shell
+(add-hook shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+(autoload 'msys-shell    "w32shell" "Run `shell' with MSYS as the shell." t)
+(autoload 'cygwin-shell  "w32shell" "Run `shell' with Cygwin as the shell." t)
+(autoload 'cmd-shell     "w32shell" "Run `shell' with Windows Command Prompt as the shell." t)
+
+;;** misc
+;;*** oneliner: a special shell supporing piping to/from buffer
+;; http://oneliner-elisp.sourceforge.net/
+;; a special shell that support piping input/output from/to emacs buffer
+(autoload 'oneliner "oneliner" "shell-mode hooks for Oneliners" t)
+
+
+;;*** A quick pop-up shell for emacs
 ;;Based on code stolen from http://tsdh.wordpress.com/2011/10/12/a-quick-pop-up-shell-for-emacs/
 (defvar th-shell-popup-buffer nil)
 

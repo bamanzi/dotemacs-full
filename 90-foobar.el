@@ -84,6 +84,21 @@ See: `forward-block'"
              (require 'color-theme-tangotango nil t)
              (color-theme-tangotango))))
 
+;; code folding for my init scripts
+(add-hook 'find-file-hook '(lambda ()
+                             (when (string-match "/.emacs.d/init.d" buffer-file-name)
+                                 (if (load "outline-org-like" t)
+                                     (outline-org-mode t))
+                                 (if (require 'qtmstr-outline nil t)
+                                     (qtmstr-outline-mode-hook)))))
+
+;; highlight FIXME/TODO etc in any file
+(add-hook 'find-file-hook
+          '(lambda ()
+             (font-lock-add-keywords
+              nil
+              '(("\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 1 font-lock-warning-face prepend)
+                ("\\<\\(and\\|or\\|not\\)\\>" . font-lock-keyword-face)))))
 
          
 ;;;_. copy without sel

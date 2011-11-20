@@ -11,6 +11,13 @@
 ;;*** common used layouts
 ;;TODO
 
+;;*** layout transformation
+;;(require 'transpose-frame nil t) ;; flip window layout within a frame
+(autoload 'transpose-frame "transpose-frame"  "Transpose windows arrangement at FRAME." t)
+(autoload 'flip-frame "transpose-frame" "Flip windows arrangement vertically at FRAME." t)
+(autoload 'flop-frame "transpose-framer" "Flop windows arrangement horizontally at FRAME." t)
+(autoload 'rotate-frame "transpose-frame" "Rotate windows arrangement 180 degrees at FRAME." t)
+
 
 ;;** resizing windows
 ;;*** windresize.el
@@ -98,9 +105,34 @@ the mode-line."
 
 
 ;;** window buffer swapping
+(defun swap-or-move-buffer-between-windows (other-window swap &optional this-window)
+  (let ( (window (or this-window
+                     (selected-window))) )
+    (cond ( (null other-window)
+            (error "No window %s from selected window" dir))
+          ( (and (window-minibuffer-p other-window)
+                 (not (minibuffer-window-active-p other-window)))
+            (error "Minibuffer is inactive"))
+          ( (window-dedicated-p window)
+            (error "Current window is dedicated, can't be moved") )
+          ( (window-dedicated-p other-window)
+            (error "Target window is dedicated, can't be swapped") )
+          (t
+           (let ( (this-buffer (window-buffer window))
+                  (other-buffer (window-buffer other-window)))
+             (if (eq this-buffer other-buffer)
+                 (let ( (this-point (window-point window))
+                        (other-point (window-point other-window)) )
+                   (progn
+                     (set-window-point window other-point)
+                     (set-window-point other-window this-point)))
+               (progn
+                 (if swap
+                     (set-window-buffer window (window-buffer other-window)))
+                 (set-window-buffer other-window this-buffer)))
+             (select-window other-window))))))
 
-;;*** two windows
-;;{{{ swap buffer window
+;;*** move/swap by direction (two windows)
 ;; modified from windmove-do-window-select
 (defun windmove-do-swap-window (dir swap &optional arg window)
   "Move the buffer to the window at direction DIR.
@@ -111,29 +143,7 @@ moved to target window.  DIR, ARG, and WINDOW are handled as by
 `windmove-other-window-loc'.  If no window is at direction DIR,
 an error is signaled."
   (let ((other-window (windmove-find-other-window dir arg window)))
-    (cond ((null other-window)
-           (error "No window %s from selected window" dir))
-          ((and (window-minibuffer-p other-window)
-                (not (minibuffer-window-active-p other-window)))
-           (error "Minibuffer is inactive"))
-	  ( (window-dedicated-p window)
-	    (error "Current window is dedicated, can't be moved") )
-	  ( (window-dedicated-p other-window)
-	    (error "Target window is dedicated, can't be swapped") )
-	  (t
-	   (let ( (this-buffer (window-buffer window))
-		  (other-buffer (window-buffer other-window)))
-	     (if (eq this-buffer other-buffer)
-		 (let ( (this-point (window-point window))
-			(other-point (window-point other-window)) )
-		   (progn
-		     (set-window-point window other-point)
-		     (set-window-point other-window this-point)))
-	       (progn
-                 (if swap
-                     (set-window-buffer window (window-buffer other-window)))
-		 (set-window-buffer other-window this-buffer)))
-	     (select-window other-window))))))
+    (swap-or-move-buffer-between-windows other-window swap window)))
 
 
 (defun swap-buffer-up (&optional arg)
@@ -168,6 +178,64 @@ an error is signaled."
   (interactive "P")
   (windmove-do-swap-window 'right nil arg))
 
+;;*** swap/move by window name
+(defun ido-move-or-swap-window-buffer (justmove)
+  (interactive "P")
+  (let (windows)
+    (mapc '(lambda (window)
+             (if (and (not (window-dedicated-p window))
+                      (not (eq window (selected-window))))
+               (add-to-list 'windows (format "%s" window))))
+          (window-list))
+;;    (message "%s" (car (window-list)))
+    (let ( (target-window (ido-completing-read
+                           (if justmove
+                               "Move window to: "
+                             "Swap window with: ")
+                           windows)) )
+      (mapc '(lambda (window)
+               (if (string= target-window (format "%s" window))
+                   (move-or-swap-window-buffer (selected-window) window justmove)))
+            (window-list)))       
+    ))
+
+(defun ido-move-window-buffer-to ()
+  (interactive)
+  (ido-move-or-swap-window-buffer 'justmove))
+
+(global-set-key (kbd "<f11> M-m") 'ido-move-window-buffer-to)
+(global-set-key (kbd "<f11> M-s") 'ido-move-or-swap-window-buffer)
+
+;;*** move/swap by window number
+;;Seems not very useful?
+(eval-after-load "window-numbering"
+  `(progn
+     (defun move-or-swap-buffer-to-numbered-window (arg swap)
+       (let ((window (selected-window))
+             (windows (car (gethash (selected-frame) window-numbering-table)))
+             other-window)
+         (if (and (>= arg 0) (< arg 10)
+                  (setq other-window (aref windows arg)))        
+             (move-or-swap-window-buffer window other-window swap)
+           (error "No window numbered %s" i))))
+
+     (defun move-buffer-to-numbered-window (arg)
+       (interactive
+        (list (- (read-char "move window buffer to (1-9): ") 48)))
+       (message "Move %s to window %s." (buffer-name) arg)
+       (move-or-swap-buffer-to-numbered-window arg nil))
+
+     (defun swap-buffer-with-numbered-window (arg)
+       (interactive
+        (list (- (read-char "swap window buffer with(1-9): ") 48)))
+       (message "Swap current window with window %s." arg)
+       (move-or-swap-buffer-to-numbered-window arg 'swap))
+     
+    ; (global-set-key (kbd "<f11> M-m") 'move-buffer-to-numbered-window)
+    ; (global-set-key (kbd "<f11> M-s") 'swap-buffer-with-numbered-window)
+      
+     ))
+
 ;;*** rotate
 ;; https://github.com/banister/window-rotate-for-emacs
 (defun rotate-windows-helper(x d)
@@ -180,11 +248,6 @@ an error is signaled."
   (select-window (car (last (window-list)))))
 
 ;;*** other transformations
-;;(require 'transpose-frame nil t) ;; flip window layout within a frame
-(autoload 'transpose-frame "transpose-frame"  "Transpose windows arrangement at FRAME." t)
-(autoload 'flip-frame "transpose-frame" "Flip windows arrangement vertically at FRAME." t)
-(autoload 'flop-frame "transpose-framer" "Flop windows arrangement horizontally at FRAME." t)
-(autoload 'rotate-frame "transpose-frame" "Rotate windows arrangement 180 degrees at FRAME." t)
 
 
 
@@ -206,6 +269,38 @@ an error is signaled."
   (maximize-frame)
   ;; maximize any new frame
   (add-hook 'window-setup-hook 'maximize-frame t))
+
+;;*** full-screen (or maximize)
+(defun toggle-full-screen (arg)
+  "Toggle frame full-screen or maximization."
+  (interactive "P")
+  (cond
+   ( (and (eq window-system 'w32)             
+          (locate-file "emacs_fullscreen.exe" exec-path nil 'file-executable-p))
+     (shell-command "emacs_fullscreen.exe") )
+   ( (display-graphic-p)
+     (let ((current-value (frame-parameter nil 'fullscreen)))
+       (set-frame-parameter nil 'fullscreen
+                            (if (equal 'fullboth current-value)
+                                (if (boundp 'old-fullscreen) old-fullscreen nil)
+                              (progn
+                                (setq old-fullscreen current-value)
+                                'fullboth)))) )
+   (t
+    (or (require 'maxframe nil t)
+        (require 'fit-frame nil t))
+    (if (fboundp 'maximize-frame)
+        (if menu-bar-mode
+            (call-interactively 'restore-frame)
+          (call-interactively 'maximize-frame))
+      (message "Failed to find a way to toggle full screen."))))
+   (when arg
+     (tool-bar-mode (not menu-bar-mode))
+     (menu-bar-mode (not menu-bar-mode))
+     (scroll-bar-mode (not menu-bar-mode)))
+   )
+
+(global-set-key (kbd "<f11> M-RET") 'toggle-full-screen)
 
 ;;*** opening server files always in a new frame
 ;;http://www.emacswiki.org/emacs/EmacsClient#toc21

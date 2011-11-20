@@ -34,6 +34,12 @@
 
 
 ;;** misc
+(define-key global-map (kbd "<C-f4>") 'kill-buffer)
+
+;;*** mode-line
+;;(setq mouse-buffer-menu-maxlen 20)
+(define-key mode-line-buffer-identification-keymap (kbd "<mode-line> <down-mouse-2>") 'mouse-buffer-menu)
+
 ;;*** uniquify buffer name
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
@@ -77,6 +83,8 @@ LIST defaults to all existing live buffers."
 	   (not (string-equal name "*buffer-selection*"))
 	   (not (string-equal name "*Shell Command Output*"))
 	   (not (string-equal name "*scratch*"))
+	   (not (string-equal name "*nav*"))
+	   (not (string-equal name "*imenu-tree*"))       
 	   (/= (aref name 0) ? )
 	   (if (buffer-modified-p buffer)
 	       (if (yes-or-no-p
@@ -95,3 +103,25 @@ LIST defaults to all existing live buffers."
   (mapcar (lambda (x) (kill-buffer x))
 	  (buffer-list))
   (delete-other-windows))
+
+
+(defun nuke-unmodified-buffers (&optional list)
+  "For each buffer in LIST, kill it if unmodified."
+  (interactive)
+  (if (null list)
+      (setq list (buffer-list)))
+  (while list
+    (let* ((buffer (car list))
+           (name (buffer-name buffer)))
+      (and (not (string-equal name ""))
+           (not (string-equal name "*Messages*"))
+           ;; (not (string-equal name "*Buffer List*"))
+           (not (string-equal name "*buffer-selection*"))
+           (not (string-equal name "*Shell Command Output*"))
+           (not (string-equal name "*scratch*"))
+           (not (string-equal name "*nav*"))
+           (not (string-equal name "*imenu-tree*"))       
+           (/= (aref name 0) ? )
+           (unless (buffer-modified-p buffer)
+             (kill-buffer buffer))))
+    (setq list (cdr list))))

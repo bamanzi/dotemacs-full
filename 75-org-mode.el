@@ -1,4 +1,4 @@
-;;(@* "org-mode")
+;;* Org-mode
 
 (setq org-CUA-compatible t)
 
@@ -16,6 +16,38 @@
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c q") 'org-capture)
 
+
+;;** buffer-local faces for org-mode
+(defun font-exists-p (font)
+  "Test if FONT is available."
+   (if (null (list-fonts (font-spec :family font)))
+              ;; 2008-02-26 function of the new font backend (Emacs 23),
+              ;; instead of `x-list-fonts'
+       nil
+     t))
+
+;;Use some specific monospace font, so that cells in orgtbl would align well
+;; when Chinese/English are mixed
+(defun org-mode-init-face ()
+  (if (font-exists-p "Inconsolata")
+      (set-face-attribute 'variable-pitch nil
+                          :family  "Inconsolata"
+                          :foundry "outline"
+                          :font    "-outline-Inconsolata-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1")
+    (if (font-exists-p "Consolas")
+      (set-face-attribute 'variable-pitch nil
+                          :family  "Consolas"
+                          :foundry "outline"
+                          :font    "-outline-Consolas-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1"
+                          :fontset "-outline-Consolas-normal-normal-normal-mono-*-*-*-*-c-*-*-*")         
+        (message "No suitable font found for org-mode. ")))                                                                                                      
+  (set (make-variable-buffer-local 'line-spacing) 2) 
+  (buffer-face-mode t))
+
+;;FIXME: not work?
+;;(add-hook 'org-mode-hook 'org-mode-init-face)
+
+;;*** misc
 ;;FIXME: '<s' template
 (defun org-quote-region (begin end)
   (interactive "r")

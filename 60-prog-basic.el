@@ -5,15 +5,6 @@
 
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
 
-(which-func-mode t)
-(when (require 'bmz-misc nil t)
-  ;; move which-func to the front of mode-line
-  (mode-line-uninstall-element 'which-func-mode)
-  (mode-line-install-element 'which-func-format)
-
-  (define-key which-func-keymap (kbd "<mode-line> <mouse-2>") 'imenu)
-  
-  )
 
 
 ;;** compilation
@@ -66,10 +57,49 @@
         (with-selected-window window
           (tree-mode-expand-level 2)))))
 
+;;** which-func mode: show the 'nearest' function name
+;; which-func-mode used imenu to get the function name, thus check imenu settings if it not work
+;; refer `which-func-modes'
+(which-func-mode t)
+
+(when (require 'bmz-misc nil t)
+  ;; move which-func to the front of mode-line
+  (mode-line-uninstall-element 'which-func-mode)
+  (mode-line-install-element 'which-func-format)
+
+  (define-key which-func-keymap (kbd "<mode-line> <mouse-2>") 'imenu)
+  
+  )
 
 ;;** tags (etags, ctags, cscope, gnu global)
 (define-key goto-map "e" 'find-tag)
 
+(defun ido-find-tag ()
+  "Find a tag using ido"
+  (interactive)
+  (require 'etags)
+  (tags-completion-table)
+  (let (tag-names)
+    (mapc (lambda (x)
+	    (unless (integerp x)
+	      (push (prin1-to-string x t) tag-names)))
+	  tags-completion-table)
+    (find-tag (ido-completing-read "Tag: " tag-names))))
+ 
+(defun ido-find-file-in-tag-files ()
+  (interactive)
+  (save-excursion
+    (let ((enable-recursive-minibuffers t))
+      (visit-tags-table-buffer))
+    (find-file
+     (expand-file-name
+      (ido-completing-read
+       "Project file: " (tags-table-files) nil t)))))
+ 
+(global-set-key [remap find-tag] 'ido-find-tag)
+;;(global-set-key (kbd "C-M-.") 'ido-find-file-in-tag-files)
+
+;;*** anything-tags
 ;;anything-c-etag-select
 
 

@@ -1,13 +1,13 @@
-
-;;** position
 ;;** paren/pair
-;;** search
 
 (autoload 'highlight-parentheses-mode "highlight-parentheses" nil t)
-(global-set-key (kbd "<f10> P") 'highlight-parentheses-mode)
+(global-set-key (kbd "<f10> hp") 'highlight-parentheses-mode)
 
 (autoload 'rainbow-delimiters "rainbow-delimiters" nil t)
 (global-set-key (kbd "<f10> rd") 'rainbow-delimiters)
+
+(autoload 'rainbow-mode "rainbow-mode" "Colorize strings that represent colors." t)
+(global-set-key (kbd "<f10> rb") 'rainbow-mode)
 
 (defun bmz/toggle-show-paren-style ()
   (interactive)
@@ -18,50 +18,33 @@
 
 (global-set-key (kbd "<C-f10> p") 'bmz/toggle-show-paren-style)
           
-;;** select
-
-;;** misc
 ;;*** iedit
+(autoload 'iedit-mode "iedit" "Toggle iedit mode." t)
 
-;;;_ S(@* "minor modes")
 
-;; (global-set-key (kbd "<f10> c") 'highlight-changes-visible-mode)
-;; (global-set-key (kbd "<f10> f") 'auto-fill-mode)
-;; (global-set-key (kbd "<f10> p") 'show-paren-mode)
-;; (global-set-key (kbd "<f10> w") 'whitespace-mode)
-;; (global-set-key (kbd "<f10> h") 'hs-minor-mode)
-;; (global-set-key (kbd "<f10> o") 'outline-minor-mode)
-;; (global-set-key (kbd "<f10> v") 'toggle-viper-mode)
-;; (global-set-key (kbd "<f10> C-w") 'visual-line-mode)
-;; (global-set-key (kbd "<f10> t") 'toggle-truncate-lines)
-;; (global-set-key (kbd "<f10> l") 'linum-mode)
+;;*** minor modes
+
+;; (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
+;; (global-set-key (kbd "<f10> af") 'auto-fill-mode)
+;; (global-set-key (kbd "<f10> sp") 'show-paren-mode)
+;; (global-set-key (kbd "<f10> ws") 'whitespace-mode)
+;; (global-set-key (kbd "<f10> hs") 'hs-minor-mode)
+;; (global-set-key (kbd "<f10> om") 'outline-minor-mode)
+;; (global-set-key (kbd "<f10> vi") 'toggle-viper-mode)
+;; (global-set-key (kbd "<f10> vl") 'visual-line-mode)
+;; (global-set-key (kbd "<f10> C-w") 'toggle-truncate-lines)
+;; (global-set-key (kbd "<f10> ln") 'linum-mode)
 
 ;;;_. 3rd-party modules
 
-(global-set-key (kbd "<f10> M") 'visibile-mark-mode)
-(global-set-key (kbd "<f10> D") 'drag-stuff-mode)
-(global-set-key (kbd "<f10> N") 'setnu-mode)
+(global-set-key (kbd "<f10> vm") 'visibile-mark-mode)
+(global-set-key (kbd "<f10> ds") 'drag-stuff-mode)
+(global-set-key (kbd "<f10> sn") 'setnu-mode)
 
      
-;;;_ S(@* "keybindings")
 
-
-;;;_. misc keys
-
-
-;(global-set-key (kbd "<f3> C-f") 'ffap-other-window)
-
-
-(global-set-key (kbd "C-c d") 'diff-buffer-with-file)
-
-
-
-
-;;;_ S(@* "editing")
-
-
-;;;_ S(@* "search")
-;;;_. hidesearch
+;;** search
+;;*** hidesearch
 (autoload 'hidesearch "hidesearch" "Incrementally show only lines in file based on what user types." t)
 (autoload 'show-all-invisible "hide-lines" "Show all areas hidden by the filter-buffer command" t)
 (autoload 'hide-non-matching-lines "hide-lines" "Hide lines that don't match the specified regexp." t)
@@ -71,7 +54,7 @@
 
 ;;FIXME: anything-occur is better?
 
-;;;_ S(@* "secondary selection")
+;;** secondary selection
 (autoload 'secondary-to-primary "second-sel" nil t)
 (autoload 'primary-to-secondary "second-sel" nil t)
 (autoload 'secondary-swap-region "second-sel" nil t)
@@ -81,16 +64,15 @@
 
 ;;(define-key search-map (kbd "~") 'transpose-selections)
 
-;;;_ S(@* "misc")
-;;;_. extend selection incrementally (ergoemacs-functions.el)
+;;** misc
+;;*** extend selection incrementally (ergoemacs-functions.el)
 ;; http://xahlee.org/emacs/syntax_tree_walk.html
 (autoload 'extend-selection "ergoemacs-functions" nil t)
 (global-set-key (kbd "C-.") 'extend-selection)
 ;; see also: mark-sexp (C-M-SPC), mark-word (M-@)
 
 
-
-;;;_. quickly swap lines
+;;** quickly swap lines
 ;; Move line up/down. Stolen from org-mode's M-up/down
 ;; TODO: support region (move region line up/down)
 ;; see also:  (@file :file-name "drag-stuff.el" :to "define-minor-mode drag-stuff-mode")

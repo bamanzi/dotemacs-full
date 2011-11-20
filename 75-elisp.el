@@ -90,7 +90,7 @@
   ;; disable CEDET's stupid overriden on emacs-lisp-mode
   (if (fboundp 'reset-imenu-function)
       (add-hook 'emacs-lisp-mode-hook 'reset-imenu-function))
-  (if (fboundp 'set-mode-local)
+  (if (fboundp 'setq-mode-local)
       (setq-mode-local emacs-lisp-mode imenu-create-index-function 'imenu-default-create-index-function))
   )
 

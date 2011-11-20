@@ -24,16 +24,15 @@
 (global-set-key (kbd "<double-mouse-1>") 'highlight-symbol-at-point)
 
 
-;;** <left-fringe>: code folding
-;;; refer `hideshow-fringe' or `qtmstr-outline'
 
 ;;** <mode-line>
 ;;*** on which-func label
 ;;... (refer to prog-basic.el)
 
 ;;*** on buffer-ame label
+;;... (refer to buffers.el)
 ;;(setq mouse-buffer-menu-maxlen (- (frame-parameter nil 'height) 10))
-(define-key mode-line-buffer-identification-keymap (kbd "<mode-line> <down-mouse-2>") 'mouse-buffer-menu)
+;(define-key mode-line-buffer-identification-keymap (kbd "<mode-line> <down-mouse-2>") 'mouse-buffer-menu)
 
 
 ;;* Ctrl:  code folding
@@ -65,9 +64,7 @@
       
   
 
-;;** Ctrl on <left-fringe>
-(global-set-key (kbd "<left-fringe> <C-mouse-1>")   'outline-toggle-children-by-mouse)
-(global-set-key (kbd "<left-fringe> <C-mouse-2>")   'show-all)
+
 
 ;;** Ctrl on <mode-line>
 (global-set-key (kbd "<mode-line> <C-down-mouse-1>")    'mouse-buffer-menu)
@@ -105,26 +102,6 @@
   )
 
 
-;;** Shift on <left-fringe> :  buffer-local bookmarks
-
-;; see also: (@file :file-name "linemark.el" :to "enable-visual-studio-bookmarks")
-(ignore-errors
-  (or (require 'bm nil t)
-      (require 'linkmark nil t))
-  )
-(if (featurep 'bm)
-    (progn
-      (global-set-key (kbd "<left-fringe> <S-mouse-1>") 'bm-toggle-mouse)
-      (global-set-key (kbd "<left-fringe> <S-wheel-up>") 'bm-previous-mouse)
-      (global-set-key (kbd "<left-fringe> <S-wheel-down>") 'bm-next-mouse)
-      (global-set-key (kbd "<left-fringe> <S-mouse-2>") 'bm-show-all)
-      )
-  (if (featurep 'linemark)              ;; linemark.el from CEDET
-      (progn
-        (global-set-key (kbd "<left-fringe> <S-mouse-1>") 'viss-bookmark-toggle)
-        (global-set-key (kbd "<left-fringe> <S-wheel-up>") 'viss-bookmark-next-buffer)
-        (global-set-key (kbd "<left-fringe> <S-wheel-down>") 'viss-bookmark-prev-buffer))
-    ))
 
 ;;** Shift on <mode-line>
 (global-set-key (kbd "<mode-line> <S-down-mouse-1>") 'mouse-appearance-menu)
@@ -139,7 +116,7 @@
 ;; M-mouse-3: mouse-secondary-save-then-kill
 
 
-;;** Meta on <left-fringe>
+;;** Meta on <left-fringe> : empty
 
 
 
@@ -157,6 +134,40 @@
     (cua-mouse-resize-rectangle event)))
 (global-set-key (kbd "<H-mouse-1>") 'bmz/mouse-mark-cua-rectangle)
 (define-key cua--rectangle-keymap (kbd "<H-mouse-1>") 'bmz/mouse-mark-cua-rectangle)
+
+
+
+;;* left-fringe
+;;** left-fringe without modifiers: hideshow
+;;; refer `hideshow-fringe'
+;;
+
+;;** Ctrl on <left-fringe>: outline
+;;; refer `qtmstr-outline'
+;;(global-set-key (kbd "<left-fringe> <C-mouse-1>")   'outline-toggle-children-by-mouse)
+;;(global-set-key (kbd "<left-fringe> <C-mouse-2>")   'show-all)
+
+;;** Shift on <left-fringe> :  buffer-local bookmarks
+(autoload 'bm-toggle-mouse  "bm" "Toggle a bookmark with a mouse click." t)
+(autoload 'bm-previous-mouse  "bm" "Go to the previous bookmark with the scroll wheel." t)
+(autoload 'bm-next-mouse  "bm" "Go to the next bookmark with the scroll wheel." t)
+
+(progn
+  (global-set-key (kbd "<left-fringe> <S-mouse-1>") 'bm-toggle-mouse)
+  (global-set-key (kbd "<left-fringe> <S-wheel-up>") 'bm-previous-mouse)
+  (global-set-key (kbd "<left-fringe> <S-wheel-down>") 'bm-next-mouse)
+  (global-set-key (kbd "<left-fringe> <S-mouse-2>") 'bm-show-all)
+)
+
+;;linemark.el from CEDET
+;; see also: (@file :file-name "linemark.el" :to "enable-visual-studio-bookmarks")
+(if nil 
+    (progn
+      (require 'linemark)
+      (global-set-key (kbd "<left-fringe> <S-mouse-1>") 'viss-bookmark-toggle)
+      (global-set-key (kbd "<left-fringe> <S-wheel-up>") 'viss-bookmark-next-buffer)
+      (global-set-key (kbd "<left-fringe> <S-wheel-down>") 'viss-bookmark-prev-buffer))
+    )
 
 
 ;;* other stuff

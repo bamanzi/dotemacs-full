@@ -85,6 +85,9 @@
 (idle-require 'help-mode)  ;;on linux sometime C-h v/f would complain 'help-setup-xref is void'
 (idle-require 'help-fns+) 
 (define-key help-map "\C-h" nil) ;;force '<f1> C-h' to list keymap of `help-map'
+(define-key help-map " "  #'(lambda ()
+                              (interactive)
+                              (describe-keymap help-map)))  ;;help-fns+ needed?
 
 (add-hook 'help-mode-hook 'visual-line-mode)
 
@@ -160,8 +163,10 @@
 (define-key help-map "al" 'apropos-library)
 (define-key help-map "ao" 'apropos-user-options)
 (define-key help-map "ag" 'apropos-group)
-
-
+(define-key help-map "av" 'apropos-variable)
+(define-key help-map "aV" 'apropos-value)
+(autoload 'sys-apropos "sys-apropos" nil t)
+(define-key help-map "as" 'sys-apropos)
 
 
 ;;;_. "utils"

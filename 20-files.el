@@ -9,12 +9,11 @@
 ;;** Open File
 ;;(define-key search-key (kbd "C-f") 'ffap-other-window)
 
-
-;;** archive
+;;*** archive
 ;;....
 
 
-;;** tramp
+;;*** tramp
 ;;...
 
 ;;** Save File
@@ -33,7 +32,8 @@
 
 ;;*** TODO: backup-each-save.el
 
-;;** dired
+;;** filesystem navigation & management
+;;*** dired
 ;;(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
 
 (defun bmz/dired-jump ()
@@ -50,9 +50,13 @@ Otherwise, call the original `dired-jump'."
 
 (define-key goto-map "d" 'bmz/dired-jump)
 
-;;** nav: simple file system navigation
+;;*** nav: simple file system navigation
 (autoload 'nav "nav" "Opens Nav in a new window to the left of the current one." t)
 
+(defadvice nav (after set-nav-window-dedicated activate)
+  (let ( (window (get-buffer-window "*nav*")) )
+    (if window
+        (set-window-dedicated-p window t))))
 
 (defun bmz/nav-goto-dir ()
   (interactive)
@@ -67,6 +71,41 @@ Otherwise, call the original `dired-jump'."
       (nav-jump-to-dir dir))))
 
 (define-key goto-map "D" 'bmz/nav-goto-dir)
+
+;;*** nc.el: norton commander clone
+(autoload 'nc "nc" "Major mode for File Browser in GNU emacs." t)
+
+(eval-after-load "nc"
+  `(progn
+     (defadvice nc (around nc-window-configuration activate)
+       ;;save window configuration before nc starts
+       (frame-configuration-to-register ? )
+       ad-do-it
+       (let ( (nc-win1 (get-buffer-window "*NC 1*"))
+              (nc-win2 (get-buffer-window "*NC 2*"))
+              (nc-win3 (get-buffer-window "*NC shell*")) )
+         (set-window-dedicated-p nc-win1 t)
+         (set-window-dedicated-p nc-win2 t)
+         (set-window-dedicated-p nc-win3 t)
+         (unless (get-register ?n)
+           (frame-configuration-to-register ?n))))
+     ))
+
+(defun nc-goto-dir (arg)
+  (interactive "P")
+  (let* ( (curdir (if buffer-file-name
+                     (file-name-directory buffer-file-name)
+                   default-directory))
+         (dir (if current-prefix-arg
+                  (read-directory-name "nc to: " nil curdir)
+                curdir)) )
+    (nc)
+    (with-current-buffer nc-active-nc-buffer
+      (nc-display-new-dir dir))))
+
+(define-key goto-map "c" 'nc-goto-dir)
+
+
 
 ;;** ediff
 
@@ -90,3 +129,4 @@ Otherwise, call the original `dired-jump'."
                                     (if (> (frame-width) 150)
                                         (split-window-horizontally arg)
                                       (split-window-vertically arg))))
+

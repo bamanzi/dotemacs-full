@@ -32,10 +32,10 @@
 (global-set-key (kbd "<S-f2>")    'bm-previous)
 (global-set-key (kbd "<H-f2>")    'bm-show)
 
-(global-set-key (kbd "<left-fringe> <C-mouse-1>")     'bm-toggle-mouse)
-(global-set-key (kbd "<left-fringe> <C-wheel-up>")    'bm-previous-mouse)
-(global-set-key (kbd "<left-fringe> <C-wheel-down>")  'bm-next-mouse)
-(global-set-key (kbd "<left-fringe> <C-mouse-2>")     'bm-show)
+(global-set-key (kbd "<left-fringe> <S-mouse-1>")     'bm-toggle-mouse)
+(global-set-key (kbd "<left-fringe> <S-wheel-up>")    'bm-previous-mouse)
+(global-set-key (kbd "<left-fringe> <S-wheel-down>")  'bm-next-mouse)
+(global-set-key (kbd "<left-fringe> <S-mouse-2>")     'bm-show)
 
 (autoload 'highlight-indentation "highlight-indentation" "Toggle highlight indentation." t)
 (global-set-key (kbd "<f10> hi") 'highlight-indentation)

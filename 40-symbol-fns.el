@@ -95,14 +95,14 @@
       (call-interactively 'find-tag))))
 
 ;;;_. occur
-(defun bmz/occur-at-point ()
-  (interactive)
-  (occur (format "%s" (bmz/get-symbol-selected-or-current))))
+(defun bmz/occur-at-point (nlines)
+  (interactive "P")
+  (occur (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
 
-(defun bmz/multi-occur-at-point ()
-  (interactive)
+(defun bmz/multi-occur-at-point (nlines)
+  (interactive "P")
   ;;FIXME: use multi-occur?
-  (multi-occur (format "%s" (bmz/get-symbol-selected-or-current))))
+  (multi-occur nil (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
 
 
 ;;;_.. multi-occur in same mode buffers
