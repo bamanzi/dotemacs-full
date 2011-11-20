@@ -180,7 +180,6 @@ an error is signaled."
 
 ;;*** swap/move by window name
 (defun ido-move-or-swap-window-buffer (justmove)
-  (interactive "P")
   (let (windows)
     (mapc '(lambda (window)
              (if (and (not (window-dedicated-p window))
@@ -199,11 +198,16 @@ an error is signaled."
             (window-list)))       
     ))
 
+(defun ido-swap-window-buffer-with ()
+  "Swap the window's buffer with another window."
+  (interactive)
+  (ido-move-or-swap-window-buffer nil)
+
 (defun ido-move-window-buffer-to ()
   (interactive)
   (ido-move-or-swap-window-buffer 'justmove))
 
-(global-set-key (kbd "<f11> M-m") 'ido-move-window-buffer-to)
+(global-set-key (kbd "<f11> M-m") 'ido-swap-window-buffer-with)
 (global-set-key (kbd "<f11> M-s") 'ido-move-or-swap-window-buffer)
 
 ;;*** move/swap by window number
