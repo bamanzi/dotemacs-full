@@ -26,7 +26,7 @@
   (setq ahk-indetion tab-width)
     
   (if (boundp 'ac-source-scite-api)
-      (add-to-list 'ac-modes 'ac-source-scite-api))
+      (add-to-list 'ac-sources 'ac-source-scite-api))
 
   (define-key ahk-mode-map (kbd "<C-f9>") 'compile-autohotkey)
   (define-key ahk-mode-map (kbd "<f9>")   'run-autohotkey)  
@@ -44,12 +44,14 @@
 (defun xahk-mode-my-init ()
   (setq indent-tabs-mode t)
   (setq c-basic-offset tab-width)
+  (setq mode-name "xahk")
   
   (modify-syntax-entry ?_ "_") ;; '_' is part of a symbol
   (modify-syntax-entry ?# "_")
+  (modify-syntax-entry ?* ".")
   
   (if (boundp 'ac-source-scite-api)
-      (add-to-list 'ac-modes 'ac-source-scite-api))
+      (add-to-list 'ac-sources 'ac-source-scite-api))
 
   (define-key xahk-mode-map (kbd "<C-f9>") 'compile-autohotkey)
   (define-key xahk-mode-map (kbd "<f9>")   'run-autohotkey)  
