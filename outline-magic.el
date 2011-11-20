@@ -296,8 +296,10 @@ them set by set, separated by a nil element.  See the example for
           (message "EMPTY ENTRY"))
          ((>= eol eos)
           ;; Entire subtree is hidden in one line: open it
-          (show-entry)
-          (show-children)
+          ;;(show-entry)
+          ;;(show-children)
+          (show-subtree)
+          (hide-leaves)
           (message "CHILDREN")
           (setq this-command 'outline-cycle-children))
          ((eq last-command 'outline-cycle-children)
