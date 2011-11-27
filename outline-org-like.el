@@ -70,7 +70,7 @@
   (font-lock-mode t)
   )
 
-
+;;** outline commands wrapper without changing user `outline-regexp'
 ;; This would use another `outline-regexp' value inside to find the headings,
 ;; you don't need to change your own settings. Thus you can use `C-c @ C-u' for your old
 ;; `outline-up-heading', along with the new `C-z C-u' (which would behaves according
@@ -89,12 +89,11 @@
             (call-interactively command))
       (message "no command for that key in `outlint-mode-prefix-map'.")))))
 
-;; Use `C-z' as prefix key for other outline commands
+;; Now you can bind a key (e.g `C-z') to `outline-org/outline-command-dispatcher'.
+;; It would be used as prefix key for other outline commands
 ;;  e.g. C-z C-u similar to C-c @ C-u, but use our `outline-regexp'
-;;(global-set-key (kbd "C-z") 'outline-org/outline-command-dispatcher)
 
-
-;;** our new `outline-cycle'
+;;*** our new `outline-cycle'
 (defun outline-org/outline-cycle ()
   (interactive)
   (let ( (outline-regexp (outline-org/get-outline-regexp)) )
@@ -104,7 +103,41 @@
         (outline-org-heading-mode t))
     (call-interactively 'outline-cycle)))
 
-;;TODO: wrap outline-promote/demote, outline-move-subtree-up
+;;TODO: you can wrap more outline command as you like
+
+;;** `anything' integration: list headings and jump to it
+(defun anything-c-outline-org-heading-hide-others (elm)
+  (anything-c-action-line-goto elm)
+  (hide-other))
+
+(defvar anything-c-source-outline-org-headings
+  '((name . "Org-like HeadLine")
+    (headline . (lambda ()
+                  (outline-org/get-outline-regexp)))
+    (condition . (memq 'outline-minor-mode minor-mode-list))
+    (migemo)
+    (persistent-action . (lambda (elm)
+                           (anything-c-action-line-goto elm)
+                           (outline-org/show-subtree)))
+    (action-transformer
+     . (lambda (actions candidate)
+         '(("Go to Line" . anything-c-action-line-goto)
+           ("Go to section and fold otherse" . anything-c-outline-org-heading-hide-others)))))
+  "Show Org-like headlines.
+outline-org-mode is a special outline-minor-mode that uses org-mode like
+headings.
+
+See (find-library \"outline-org.el\") ")
+
+(defun anything-outline-org-headings ()
+  "Preconfigured anything to show org-like headings."
+  (interactive)
+  (anything-other-buffer 'anything-c-source-outline-org-headings "*org-like headlines*"))
+
+
+;;** `outline-org-mode': a special `outline-minor-mode' that use org-mode style headings
+;; It supports heading highlighting and all outline commands.
+;; NOTE: it would overtake your `outline-regexp' settings
 
 (defvar outline-regexp-old nil "backup of value of `outline-regexp")
 
@@ -126,6 +159,7 @@
         (setq outline-regexp-old outline-regexp)
         (outline-org-heading-mode -1))
         )))
+
 
 
 (provide 'outline-org-like)
