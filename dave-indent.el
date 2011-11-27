@@ -46,6 +46,7 @@ or expand the word preceding point. "
           (insert "\t")
         (insert-char 32 tab-width)))))
 
+
 (defun dave-unindent()
   "Unindent line, or block if it's a region selected.
 When pressing Shift+tab, erase words backward (one at a time) up
@@ -56,6 +57,22 @@ the white spaces, as well as the last word of the previous line."
   (interactive)
   (if mark-active
       (dave-unindent-block)
+    (unless(bolp)
+      (if (looking-back "^[ \t]*")
+          (backward-delete-char-untabify (min tab-width (current-column)))        
+        (move-to-column (max 0 (- (current-column) tab-width)))))))
+
+(if nil  ;;original implementation
+(defun my-unindent()
+  "Unindent line, or block if it's a region selected.
+When pressing Shift+tab, erase words backward (one at a time) up
+to the beginning of line.  Now it correctly stops at the
+beginning of the line when the pointer is at the first char of an
+indented line. Before the command would (unconveniently) kill all
+the white spaces, as well as the last word of the previous line."
+  (interactive)
+  (if mark-active
+      (unindent-block)
     (progn
       (unless(bolp)
         (if (looking-back "^[ \t]*")
@@ -72,6 +89,7 @@ the white spaces, as well as the last word of the previous line."
             (if(looking-back "[ \t]\\{2,\\}")
                 (delete-horizontal-space)
               (backward-kill-word 1))))))))
+)
 
 
 (defvar dave-indent-mode-map
