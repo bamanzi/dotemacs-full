@@ -93,18 +93,19 @@ vi style of % jumping to matching brace."
 ;;*** anything-show-kill-ring を使うように修正した
 ;; http://dev.ariel-networks.com/articles/emacs/part4/
 (defadvice yank-pop (around anything-kill-ring-maybe activate)
-  (if (not (eq last-command 'yank)
+  (if (and (not (eq last-command 'yank))
+           (fboundp 'anything-show-kill-ring))
       (anything-show-kill-ring)
     ad-do-it))
 
 (defadvice cua-paste-pop (around anything-kill-ring-maybe activate)
-  (if (not (eq last-command 'yank))
+  (if (and (not (eq last-command 'yank))
+           (fboundp 'anything-show-kill-ring))
       (anything-show-kill-ring)
     ad-do-it))
 
 ;;*** kill/yank a line
 ;;(setq kill-whole-line t)
-
 
 (defun copy-line (arg)
   "Copy current line."

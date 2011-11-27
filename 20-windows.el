@@ -2,6 +2,9 @@
 ;;See also (linkd-follow '(@file :file-name "25-win-fns.el" :to "init-win-fns-keys" :display "window-related keybindings"))
 
 ;;** window layout
+;;TIP: C-x r w  window-configuration-to-register
+;;TIP: C-x r j  jump-to-register (could be used to restore window layout)
+
 ;;*** winner-mode
 (setq winner-dont-bind-my-keys t)
 (winner-mode t)
@@ -22,7 +25,7 @@
 ;;** resizing windows
 ;;*** windresize.el
 (autoload 'windresize "windresize" "Resize windows interactively." t)
-;;(global-set-key (kbd "<f11> RET") 'windresize)
+(global-set-key (kbd "<f11> RET") 'windresize)
 
 ;;*** adjust `split-window', so that new window not 1/2 in size, but 1/3
 
@@ -55,8 +58,10 @@
       (with-selected-window old-window
         (enlarge-window (/ old-size 10) horizontal))))
 
-(ad-activate 'split-window)
+(ad-enable-advice split-window around make-new-win-one-third)
 
+;;*** misc
+;;(require 'pack-windows) ;; Resize all windows to display as much info as possible.
 
 
 ;;** window switching
@@ -100,8 +105,6 @@ the mode-line."
                                   (window-list))))
       (select-window (car window-of-buffer)))))
 
-;;*** misc
-;;(require 'pack-windows) ;; Resize all windows to display as much info as possible.
 
 
 ;;** window buffer swapping
@@ -201,14 +204,14 @@ an error is signaled."
 (defun ido-swap-window-buffer-with ()
   "Swap the window's buffer with another window."
   (interactive)
-  (ido-move-or-swap-window-buffer nil)
+  (ido-move-or-swap-window-buffer nil))
 
 (defun ido-move-window-buffer-to ()
   (interactive)
   (ido-move-or-swap-window-buffer 'justmove))
 
-(global-set-key (kbd "<f11> M-m") 'ido-swap-window-buffer-with)
-(global-set-key (kbd "<f11> M-s") 'ido-move-or-swap-window-buffer)
+(global-set-key (kbd "<f11> M-m") 'ido-move-window-buffer-to)
+(global-set-key (kbd "<f11> M-s") 'ido-swap-window-buffer-with)
 
 ;;*** move/swap by window number
 ;;Seems not very useful?
@@ -337,7 +340,7 @@ an error is signaled."
 ;; override C-x 0 and C-x 1, to regard window-dedicated-p
 ;;(when (or (featurep 'window-extensions)
 ;;          (featurep 'sticky-windows)))
-(global-set-keyy (kbd "<f11> *") 'sticky-window-keep-window-visible)
+(global-set-key (kbd "<f11> *") 'sticky-window-keep-window-visible)
 (eval-after-load "window-extension"
   `(progn
         (global-set-key (kbd "C-x 0") 'sticky-window-delete-window)

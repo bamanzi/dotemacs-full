@@ -3,9 +3,9 @@
       eshell-mv-interactive-query t
       eshell-ln-interactive-query t
       eshell-rm-interactive-query t
-      eshell-cp-overwrite-files t
-      eshell-mv-overwrite-files t
-      eshell-ln-overwrite-files t)
+      eshell-cp-overwrite-files nil
+      eshell-mv-overwrite-files nil
+      eshell-ln-overwrite-files nil)
 
 ;;stolen from http://linuxtoy.org/archives/emacs-eshell.html
 (eval-after-load "auto-complete"
@@ -60,7 +60,7 @@
 (defalias 'eshell/vi 'eshell/vim)
 
 ;;** shell
-(add-hook shell-mode-hook 'ansi-color-for-comint-mode-on)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
 (autoload 'msys-shell    "w32shell" "Run `shell' with MSYS as the shell." t)
 (autoload 'cygwin-shell  "w32shell" "Run `shell' with Cygwin as the shell." t)
@@ -96,3 +96,6 @@
 					      "\n")))))
 
 (global-set-key (kbd "<f11> ~") 'th-shell-popup)
+
+;;*** shell-toggle
+;;TODO: shell-toggle.el

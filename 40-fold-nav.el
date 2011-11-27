@@ -137,10 +137,14 @@
 (autoload 'outline-org-heading-mode               "outline-org" nil t)
 (autoload 'outline-org-mode                       "outline-org" nil t)
 
-(add-hook 'find-file-hook #'(lambda ()
-                              (if (string-match "/.emacs.d/init.d/.*.el$" buffer-file-name)
-                                  (ignore-errors
-                                    (outline-org-mode t)))))
+;;*** outline settings for my init files
+(defun bmz/turn-on-outline-settings ()
+  (if (string-match "/.emacs.d/init.d/.*.el$" buffer-file-name)
+      (ignore-errors
+        (outline-org-mode t)
+        (qtmstr-outline-mode t))))
+
+(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
 
 ;;*** qtmstr-outline
 ;; with this package, we have another set of left-fringe icons to fold/unfold sections
@@ -255,7 +259,7 @@
      (define-key global-map (kbd "<f2> c") 'viss-bookmark-clear-all-buffer)
 
      (define-key global-map (kbd "<f2> <f2>") 'viss-bookmark-next-buffer)
-      )
+     ))
 
 ;;**  linkd: visualize section header & links (to file/man/info/url)
 (autoload 'linkd-mode "linkd" "Create or follow hypertext links." t)

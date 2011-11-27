@@ -32,7 +32,7 @@
   (define-key ahk-mode-map (kbd "<f9>")   'run-autohotkey)  
   )
 
-(setq ahk-syntax-directory (concat autohotkey-dir "Extras/Editors/Syntax/")
+(setq ahk-syntax-directory (concat autohotkey-dir "Extras/Editors/Syntax/"))
 (eval-after-load "ahk-mode"
   '(add-hook 'ahk-mode-hook 'ahk-mode-my-init))
 
