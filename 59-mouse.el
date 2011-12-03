@@ -25,16 +25,6 @@
 
 
 
-;;** <mode-line>
-;;*** on which-func label
-;;... (refer to prog-basic.el)
-
-;;*** on buffer-ame label
-;;... (refer to buffers.el)
-;;(setq mouse-buffer-menu-maxlen (- (frame-parameter nil 'height) 10))
-;(define-key mode-line-buffer-identification-keymap (kbd "<mode-line> <down-mouse-2>") 'mouse-buffer-menu)
-
-
 ;;* Ctrl:  code folding
 (global-unset-key (kbd "<C-down-mouse-1>")) ;;moved to <mode-line>
 (global-unset-key (kbd "<C-down-mouse-2>"))
@@ -61,16 +51,6 @@
     (define-key allout-mode-map (kbd "<C-mouse-1>")     'allout-toggle-current-subtree-exposure-by-mouse)
     (define-key allout-mode-map (kbd "<C-mouse-3>")     'allout-show-all)
     ))
-      
-  
-
-
-
-;;** Ctrl on <mode-line>
-(global-set-key (kbd "<mode-line> <C-down-mouse-1>")    'mouse-buffer-menu)
-
-(global-set-key (kbd "<mode-line> <C-wheel-up>")        'text-scale-increase)
-(global-set-key (kbd "<mode-line> <C-wheel-down>")      'text-scale-decrease)
 
 
 ;;* Shift: some special marks overlays
@@ -102,13 +82,6 @@
   )
 
 
-
-;;** Shift on <mode-line>
-(global-set-key (kbd "<mode-line> <S-down-mouse-1>") 'mouse-appearance-menu)
-(global-set-key (kbd "<mode-line> <S-down-mouse-3>") 'facemenu-menu)
-
-
-
 ;;* Meta
 ;;keep the original behaviour for secondary selection
 ;; M-mouse-1: mouse-drag-secondary
@@ -116,7 +89,8 @@
 ;; M-mouse-3: mouse-secondary-save-then-kill
 
 
-;;** Meta on <left-fringe> : empty
+(define-key global-map [M-wheel-up] 'previous-error)
+(define-key global-map [M-wheel-down]  'next-error)
 
 
 
@@ -169,6 +143,30 @@
       (global-set-key (kbd "<left-fringe> <S-wheel-down>") 'viss-bookmark-prev-buffer))
     )
 
+
+
+
+;;** Meta on <left-fringe> : empty
+
+;;* mode-line
+;;** Ctrl on <mode-line>
+(global-set-key (kbd "<mode-line> <C-down-mouse-1>")    'mouse-buffer-menu)
+
+(global-set-key (kbd "<mode-line> <C-wheel-up>")        'text-scale-increase)
+(global-set-key (kbd "<mode-line> <C-wheel-down>")      'text-scale-decrease)
+
+;;** Shift on <mode-line>
+(global-set-key (kbd "<mode-line> <S-down-mouse-1>") 'mouse-appearance-menu)
+(global-set-key (kbd "<mode-line> <S-down-mouse-3>") 'facemenu-menu)
+
+;;** mode-line parts
+;;*** on which-func label
+;;... (refer to prog-basic.el)
+
+;;*** on buffer-ame label
+;;... (refer to buffers.el)
+;;(setq mouse-buffer-menu-maxlen (- (frame-parameter nil 'height) 10))
+;(define-key mode-line-buffer-identification-keymap (kbd "<mode-line> <down-mouse-2>") 'mouse-buffer-menu)
 
 ;;* other stuff
 

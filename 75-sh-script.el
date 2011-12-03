@@ -1,4 +1,15 @@
 
+(defun anything-info-awk ()
+  (interactive)
+    (anything
+      :prompt "Info about: "
+      :candidate-number-limit 10
+      :sources
+      '( anything-c-source-info-gawk )))
+
+(eval-after-load "cc-mode"
+  `(define-key awk-mode-map (kbd "<M-f1>") 'anything-info-awk))
+
 (defun anything-info-sh-script ()
   (interactive)
   (anything

@@ -1,8 +1,9 @@
-;;;_. icomplete
+
+;;** icomplete
 (icomplete-mode t)  ;; completion for minibuffer (commands (M-x)
                     ;; variables (C-h v, customize-variable), functions (C-h f))
 
-;;;_. ido
+;;** ido
 (setq ido-save-directory-list-file "~/.emacs.d/ido.last")
 (require 'ido)
 (unless (fboundp 'ido-common-initialization)   ;;workaround for emacs 23.1's bug(?)
@@ -21,7 +22,7 @@
 (ido-mode t)
 
 
-;;;_. smex : ido for M-x
+;;** smex : ido for M-x
 (autoload 'smex "smex" nil t)
 (autoload 'smex-major-mode-commands "smex" nil t)
 (setq smex-save-file "~/.emacs.d/smex-items")
@@ -32,6 +33,9 @@
       (smex-initialize)))
 
 
+;;** misc
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)
 
 (define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
+
+

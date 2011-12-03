@@ -178,7 +178,7 @@
 
 ;;;_.. DICT protocol with dictem.el (external program `dict' needed)
 ;;(require 'dictem)
-(setq dictem-server "localhost")
+;;(setq dictem-server "localhost")
 ;;(require 'dictem)
 ;;(dictem-initialize)
 (autoload 'dictem-run-search "dictem" nil t)
@@ -186,9 +186,10 @@
 
 ;;;_.. DICT protocol with dict.el (external program `dict' needed)
 ;;;  (NOTE: it's hard to use it on windows)
-(setq dict-servers '("localhost" "dict.org"))
+;;(setq dict-servers '("localhost" "dict.org"))
 ;;(setq dict-enable-key-bindings t)
 ;;(setq dict-databases '("gcide" "pydict"))
+
 (autoload 'dict "dict" "Lookup a WORD on dict.org." t)
 (defun bmz/dict-org-at-point  ()
   (interactive)

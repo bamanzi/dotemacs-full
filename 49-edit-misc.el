@@ -1,47 +1,69 @@
-;;** paren/pair
 
-(autoload 'highlight-parentheses-mode "highlight-parentheses" nil t)
-(global-set-key (kbd "<f10> hp") 'highlight-parentheses-mode)
+;;** line numbers & column 
+;;*** linum-mode: emacs built-in 
+;; linum-mode
 
-(autoload 'rainbow-delimiters "rainbow-delimiters" nil t)
-(global-set-key (kbd "<f10> rd") 'rainbow-delimiters)
+;;*** setnu.el
+(autoload 'setnu-mode "setnu" "Toggle setnu-mode." t)
 
-(autoload 'rainbow-mode "rainbow-mode" "Colorize strings that represent colors." t)
-(global-set-key (kbd "<f10> rb") 'rainbow-mode)
+;;*** ruler: should column ruler on header-line
+;;ruler-mode
 
-(defun bmz/toggle-show-paren-style ()
+
+;;** iedit: variable/function refactoring
+(autoload 'iedit-mode "iedit" "Edit multiple regions with the same content simultaneously." t)
+
+(defun iedit-symbol-in-defun ()
+  "Enter `iedit-mode' to rename the symbol in current function, or exit it."
   (interactive)
-  (if (eq show-paren-style 'parenthesis)
-      (setq show-paren-style 'expression)
-    (setq show-parent-style 'parenthesis))
-  (message "show-paren-style switched to %s." show-paren-style))
+  (let ( (symbol (thing-at-point 'symbol)) )
+    ;;FIXME: judge the symbol type
+    (if (assq 'iedit-mode minor-mode-map-alist)
+        (progn
+          (iedit-mode -1)
+          (widen))
+      (narrow-to-defun)
+      (iedit-mode t))))
 
-(global-set-key (kbd "<C-f10> p") 'bmz/toggle-show-paren-style)
-          
-;;*** iedit
-(autoload 'iedit-mode "iedit" "Toggle iedit mode." t)
 
+;;** kill & yank
+;;*** copy from above line
+;; http://www.emacswiki.org/emacs-en/CopyFromAbove
+(autoload 'copy-from-above-command "misc"
+    "Copy characters from previous nonblank line, starting just above point." t)
+(global-set-key (kbd "C-c c <down>") 'copy-from-above-command)
 
-;;*** minor modes
+(defun copy-char-from-above ()
+  (interactive)
+  (copy-from-above-command 1))
 
-;; (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
-;; (global-set-key (kbd "<f10> af") 'auto-fill-mode)
-;; (global-set-key (kbd "<f10> sp") 'show-paren-mode)
-;; (global-set-key (kbd "<f10> ws") 'whitespace-mode)
-;; (global-set-key (kbd "<f10> hs") 'hs-minor-mode)
-;; (global-set-key (kbd "<f10> om") 'outline-minor-mode)
-;; (global-set-key (kbd "<f10> vi") 'toggle-viper-mode)
-;; (global-set-key (kbd "<f10> vl") 'visual-line-mode)
-;; (global-set-key (kbd "<f10> C-w") 'toggle-truncate-lines)
-;; (global-set-key (kbd "<f10> ln") 'linum-mode)
+(global-set-key [C-s-right] 'copy-char-from-above)
 
-;;;_. 3rd-party modules
+;;** copy/cut current line if no region marked
+;;NOTE: not used. as sometimes I use the non-visible region
+(when nil
+;; Change cutting behavior:
+;; "Many times you'll do a kill-line command with the only intention of
+;; getting the contents of the line into the killring. Here's an idea stolen
+;; from Slickedit, if you press copy or cut when no region is active, you'll
+;; copy or cut the current line."
+;; <http://www.zafar.se/bkz/Articles/EmacsTips>
+(defadvice kill-ring-save (before slickcopy activate compile)
+  "When called interactively with no active region, copy the
+current line instead."
+  (interactive
+   (if mark-active (list (region-beginning) (region-end))
+     (list (line-beginning-position)
+           (line-beginning-position 2)))))
 
-(global-set-key (kbd "<f10> vm") 'visibile-mark-mode)
-(global-set-key (kbd "<f10> ds") 'drag-stuff-mode)
-(global-set-key (kbd "<f10> sn") 'setnu-mode)
-
-     
+(defadvice kill-region (before slickcut activate compile)
+  "When called interactively with no active region, kill the
+current line instead."
+  (interactive
+   (if mark-active (list (region-beginning) (region-end))
+     (list (line-beginning-position)
+           (line-beginning-position 2)))))
+)
 
 ;;** search
 ;;*** hidesearch
@@ -62,7 +84,48 @@
 (define-key search-map (kbd "1") 'secondary-to-primary)
 (define-key search-map (kbd "`") 'secondary-swap-region)
 
-;;(define-key search-map (kbd "~") 'transpose-selections)
+;; http://www.cnblogs.com/bamanzi/archive/2011/06/04/emacs-secondary-selection.html
+(defun transpose-selections ()
+  "Transpose the content of the primary region and of the secondary."
+  (interactive)
+  (let ( (osecondary  (x-get-selection 'SECONDARY)) )
+    (unless (and osecondary (overlayp mouse-secondary-overlay))
+      (error "No secondary selection"))
+    (unless (eq (current-buffer) (overlay-buffer mouse-secondary-overlay))
+      (error "Primary selection and secondary selection should be in same buffer."))
+    (let* ( (pri-start (region-beginning))
+            (pri-end   (region-end))
+            (pri-content (buffer-substring pri-start pri-end))
+            (sec-start (overlay-start mouse-secondary-overlay))
+            (sec-end   (overlay-end mouse-secondary-overlay))
+            (sec-content (buffer-substring sec-start sec-end)) )
+      ;;(message "swap `%s' with `%s'." pri-content sec-content)
+      ;;FIXME: ugly code. any good idea?
+      (if (> sec-start pri-start)
+          (progn
+            ;; move primary's content to secondary's location
+            (delete-region sec-start sec-end)
+            (goto-char sec-start)
+            (insert-string pri-content)
+
+            ;; move secondary's to primary
+            (delete-region pri-start pri-end)
+            (goto-char pri-start)
+            (insert-string sec-content))
+        (progn
+            ;; move secondary's to primary
+            (delete-region pri-start pri-end)
+            (goto-char pri-start)
+            (insert-string sec-content))
+
+            ;; move primary's content to secondary's location
+            (delete-region sec-start sec-end)
+            (goto-char sec-start)
+            (insert-string pri-content)
+      ))))
+
+(define-key search-map (kbd "~") 'transpose-selections)
+(global-set-key (kbd "C-x M-t") 'transpose-selections)
 
 ;;** misc
 ;;*** extend selection incrementally (ergoemacs-functions.el)
@@ -72,7 +135,7 @@
 ;; see also: mark-sexp (C-M-SPC), mark-word (M-@)
 
 
-;;** quickly swap lines
+;;*** quickly swap lines
 ;; Move line up/down. Stolen from org-mode's M-up/down
 ;; TODO: support region (move region line up/down)
 ;; see also:  (@file :file-name "drag-stuff.el" :to "define-minor-mode drag-stuff-mode")
@@ -86,3 +149,8 @@
   "Swap current line with the line below."
   (interactive)
   (beginning-of-line 2) (transpose-lines 1) (beginning-of-line 0))
+;;*** title case
+;; http://xahlee.blogspot.com/2011/11/emacs-lisp-example-title-case-string.html
+(autoload 'title-case-string-region-or-line  "xeu_elisp_util"
+  "Capitalize the current line or text selection, following title conventions." t)
+(global-set-key (kbd "ESC M-c") 'title-case-string-region-or-line)

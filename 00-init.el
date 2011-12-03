@@ -45,7 +45,7 @@
 (global-unset-key [f6]) 
 (global-unset-key [f7]) 
 (global-unset-key [f8]) 
-(global-unset-key [f9]) 
+(global-unset-key [f9])
 (global-unset-key [f11])
 (global-unset-key [f12])
 

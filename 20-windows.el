@@ -65,6 +65,11 @@
 
 
 ;;** window switching
+;;*** windmove: move by direction
+(idle-require 'windmove)
+(windmove-default-keybindings 'super)
+
+
 ;;*** M-1, M-2 to go to different window
 (autoload 'window-numbering-mode "window-numbering" "A minor mode that assigns a number to each window" t)
 (autoload 'window-number-mode "window-number"
@@ -135,6 +140,7 @@ the mode-line."
                  (set-window-buffer other-window this-buffer)))
              (select-window other-window))))))
 
+
 ;;*** move/swap by direction (two windows)
 ;; modified from windmove-do-window-select
 (defun windmove-do-swap-window (dir swap &optional arg window)
@@ -197,8 +203,8 @@ an error is signaled."
                            windows)) )
       (mapc '(lambda (window)
                (if (string= target-window (format "%s" window))
-                   (move-or-swap-window-buffer (selected-window) window justmove)))
-            (window-list)))       
+                   (swap-or-move-buffer-between-windows window (not justmove))))
+            (window-list)))
     ))
 
 (defun ido-swap-window-buffer-with ()
@@ -222,8 +228,8 @@ an error is signaled."
              (windows (car (gethash (selected-frame) window-numbering-table)))
              other-window)
          (if (and (>= arg 0) (< arg 10)
-                  (setq other-window (aref windows arg)))        
-             (move-or-swap-window-buffer window other-window swap)
+                  (setq other-window (aref windows arg)))
+             (swap-or-move-buffer-between-windows other-window swap window)
            (error "No window numbered %s" i))))
 
      (defun move-buffer-to-numbered-window (arg)
@@ -238,8 +244,8 @@ an error is signaled."
        (message "Swap current window with window %s." arg)
        (move-or-swap-buffer-to-numbered-window arg 'swap))
      
-    ; (global-set-key (kbd "<f11> M-m") 'move-buffer-to-numbered-window)
-    ; (global-set-key (kbd "<f11> M-s") 'swap-buffer-with-numbered-window)
+     (global-set-key (kbd "<f11> M-m") 'move-buffer-to-numbered-window)
+     (global-set-key (kbd "<f11> M-s") 'swap-buffer-with-numbered-window)
       
      ))
 
@@ -278,6 +284,18 @@ an error is signaled."
   (add-hook 'window-setup-hook 'maximize-frame t))
 
 ;;*** full-screen (or maximize)
+;;NOTE: this only works in X & Emacs > 23
+(defun x-toggle-fullscreen (&optional f)
+  (interactive)
+  (let ((current-value (frame-parameter nil 'fullscreen)))
+    (set-frame-parameter nil 'fullscreen
+                         (if (equal 'fullboth current-value)
+                             (if (boundp 'old-fullscreen) old-fullscreen nil)
+                           (progn (setq old-fullscreen current-value)
+                                  'fullboth)))))
+
+;;    (global-set-key [f11] 'toggle-fullscreen)
+
 (defun toggle-full-screen (arg)
   "Toggle frame full-screen or maximization."
   (interactive "P")
@@ -285,14 +303,8 @@ an error is signaled."
    ( (and (eq window-system 'w32)             
           (locate-file "emacs_fullscreen.exe" exec-path nil 'file-executable-p))
      (shell-command "emacs_fullscreen.exe") )
-   ( (display-graphic-p)
-     (let ((current-value (frame-parameter nil 'fullscreen)))
-       (set-frame-parameter nil 'fullscreen
-                            (if (equal 'fullboth current-value)
-                                (if (boundp 'old-fullscreen) old-fullscreen nil)
-                              (progn
-                                (setq old-fullscreen current-value)
-                                'fullboth)))) )
+   ( (and (display-graphic-p) (>= emacs-major-version 23))
+     (x-toggle-fullscreen arg))
    (t
     (or (require 'maxframe nil t)
         (require 'fit-frame nil t))
@@ -301,6 +313,7 @@ an error is signaled."
             (call-interactively 'restore-frame)
           (call-interactively 'maximize-frame))
       (message "Failed to find a way to toggle full screen."))))
+  
    (when arg
      (tool-bar-mode (not menu-bar-mode))
      (menu-bar-mode (not menu-bar-mode))
@@ -317,6 +330,22 @@ an error is signaled."
             (let ((server-buf (current-buffer)))
               (bury-buffer)
               (switch-to-buffer-other-frame server-buf))))
+
+;;** multiple layouts management
+;;*** elscreen
+;;elscreen uses header-line, thus conflicting with tabbar
+
+;;*** el-screen
+;; https://github.com/medikoo/el-screen
+
+;;*** escreen
+;; http://www.emacswiki.org/emacs/EmacsScreen
+
+;;*** perspective
+;;
+
+;;*** workgroups
+;; 
 
 ;;** misc
 

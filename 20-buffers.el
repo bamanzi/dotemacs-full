@@ -5,6 +5,8 @@
 ;;** buffer navigation
 (global-set-key (kbd "<C-tab>")   'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
+;;`electric-buffer-list' derived from `buffer-menu'
+;;but you can mark multiple buffers and perform operations at a single ENTER key
 (global-set-key (kbd "C-c b")     'electric-buffer-list)
 
 ;;*** wcy-swbuffer
@@ -16,9 +18,12 @@
 
 
 ;;** buffer management
-(global-set-key (kbd "C-c C-b") 'ibuffer)
-;;TODO: buffer-menu
+;;C-x C-b : buffer-menu
 (idle-require 'buff-menu+)
+
+;;*** ibuffer
+(global-set-key (kbd "C-c C-b") 'ibuffer)
+
 
 ;;** temporary buffers
 ;;*** midnight-mode

@@ -57,23 +57,21 @@
   `(progn
      (global-set-key (kbd "C-z")        outline-mode-prefix-map)
 ;;     (global-set-key (kbd "s-z")        outline-mode-prefix-map)
-
-     (define-key outline-mode-prefix-map (kbd "C-s") 'show-subtree)
-
      (global-set-key (kbd "<f2> z")        outline-mode-prefix-map)
 
+     (define-key outline-mode-prefix-map (kbd "C-s") 'show-subtree)
+     (define-key outline-mode-prefix-map (kbd "<up>")     'outline-previous-visible-heading)
+     (define-key outline-mode-prefix-map (kbd "<down>")   'outline-next-visible-heading)
+     (define-key outline-mode-prefix-map (kbd "<C-up>")   'outline-backward-same-level)
+     (define-key outline-mode-prefix-map (kbd "<C-down>") 'outline-next-visible-heading)
      ))
 
 (progn
-  (global-set-key (kbd "<H-up>")     'outline-previous-visible-heading)
-  (global-set-key (kbd "<H-down>")   'outline-next-visible-heading)
-
-  (global-set-key (kbd "<C-M-up>")     'outline-previous-visible-heading)
-  (global-set-key (kbd "<C-M-down>")   'outline-next-visible-heading)
+;;  (global-set-key (kbd "<C-up>")     'outline-previous-visible-heading)
+;;  (global-set-key (kbd "<C-down>")   'outline-next-visible-heading)
 
   (global-set-key (kbd "<C-wheel-up>") 'outline-previous-visible-heading)
   (global-set-key (kbd "<C-wheel-down>") 'outline-next-visible-heading)
-
   (global-set-key (kbd "<C-mouse-1>")  'outline-toggle-children)
   (global-set-key (kbd "<C-mouse-3>")  'hide-sublevels)
   (global-set-key (kbd "<C-mouse-2>")  'show-all)
@@ -106,7 +104,14 @@
   (if (null foldout-fold-list)
       (foldout-zoom-subtree 1)
     (foldout-exit-fold 1)))
-(define-key outline-mode-prefix-map [C-return] 'foldout-zoom-or-exit)
+(eval-after-load "outline"
+  `(progn
+     (define-key outline-mode-prefix-map [C-return] 'foldout-zoom-or-exit)
+     (define-key outline-mode-prefix-map [C-z]      nil)
+     (define-key outline-mode-prefix-map ">"        foldout-zoom-subtree)
+     (define-key outline-mode-prefix-map "<"        foldout-exit-fold)
+     ))
+     
 
 
 ;;*** outline-cycle: org-mode like operations
@@ -144,7 +149,7 @@
         (outline-org-mode t)
         (qtmstr-outline-mode t))))
 
-(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
+;;(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
 
 ;;*** qtmstr-outline
 ;; with this package, we have another set of left-fringe icons to fold/unfold sections
@@ -229,53 +234,8 @@
 ;;(global-set-key (kbd "C-+") 'toggle-hiding)
 
 
-;;** bm: buffer-local bookmarks
-(autoload 'bm-toggle "bm" "Toggle bookmark at point." t)
-(global-set-key (kbd "<f2> t") 'bm-toggle)
-(global-set-key (kbd "<C-f2>") 'bm-toggle)
-
-(idle-require 'bm)
-(eval-after-load "bm"
-  `(progn
-      (global-set-key (kbd "<f2> t") 'bm-toggle)
-      (global-set-key (kbd "<f2> n") 'bm-next)
-      (global-set-key (kbd "<f2> p") 'bm-previous)
-      (global-set-key (kbd "<f2> l") 'bm-show)
-      (global-set-key (kbd "<f2> r") 'bm-bookmark-regexp)
-      (global-set-key (kbd "<f2> c") 'bm-remove-all-current-buffer)
-
-      (global-set-key (kbd "<f2> <f2>") 'bm-next)
-
-      (if (fboundp 'anything-bm-list)
-          (global-set-key (kbd "<f2> l") 'anything-bm-list))
-      ))
-
-;;(idle-require 'linemark) ;; linemark.el from CEDET
-(eval-after-load "linemark"
-  `(progn        
-     (define-key global-map (kbd "<f2> t") 'viss-bookmark-toggle)
-     (define-key global-map (kbd "<f2> n") 'viss-bookmark-prev-buffer)
-     (define-key global-map (kbd "<f2> p") 'viss-bookmark-next-buffer)
-     (define-key global-map (kbd "<f2> c") 'viss-bookmark-clear-all-buffer)
-
-     (define-key global-map (kbd "<f2> <f2>") 'viss-bookmark-next-buffer)
-     ))
-
-;;**  linkd: visualize section header & links (to file/man/info/url)
-(autoload 'linkd-mode "linkd" "Create or follow hypertext links." t)
-(autoload 'linkd-follow "linkd" "Follow the link represented by SEXP." nil)
-(eval-after-load "linkd"
-    `(progn
-      ;;;_.. restore [mouse-4] (for mwheel-scroll, linkd bind it to `linkd-back')
-      (when (eq window-system 'x)
-        (define-key linkd-map [mouse-4] nil)
-        (define-key linkd-overlay-map [mouse-4] nil))
-        
-;;      (add-hook 'emacs-lisp-mode-hook 'linkd-enable)
-;;      (add-hook 'python-mode-hook 'linkd-enable)
-;;      (add-hook 'espresso-mode-hook 'linkd-enable)
-      
-      ))
+;;** hide-region: manually hide
+;;TODO: sfafa
 
 
 ;;** block movement

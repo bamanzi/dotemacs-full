@@ -88,6 +88,7 @@
 (define-key help-map " "  #'(lambda ()
                               (interactive)
                               (describe-keymap help-map)))  ;;help-fns+ needed?
+(define-key help-map "K"  'describe-keymap)
 
 (add-hook 'help-mode-hook 'visual-line-mode)
 
@@ -104,7 +105,7 @@
 
 (define-key help-map "M"  'describe-major-mode)
 (define-key help-map "F"  'describe-face)
-(define-key help-map "K"  'describe-keymap)
+
 
 (defun show-variable-value (var)
   (interactive
@@ -124,6 +125,7 @@
   (message "%s: %s" (symbol-name var) (symbol-value var)))
 
 (define-key help-map "V" 'show-variable-value)
+
 
 
 ;;** info

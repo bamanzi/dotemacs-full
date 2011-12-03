@@ -24,12 +24,15 @@
 (defun ahk-mode-my-init ()
   (setq indent-tabs-mode t)
   (setq ahk-indetion tab-width)
-    
+
+  (modify-syntax-entry ?\; "< b") ;;comment start
+  (modify-syntax-entry ?\n "> b") ;;comment end
+s
   (if (boundp 'ac-source-scite-api)
       (add-to-list 'ac-sources 'ac-source-scite-api))
 
   (define-key ahk-mode-map (kbd "<C-f9>") 'compile-autohotkey)
-  (define-key ahk-mode-map (kbd "<f9>")   'run-autohotkey)  
+  (define-key ahk-mode-map (kbd "<f9>")   'run-autohotkey)
   )
 
 (setq ahk-syntax-directory (concat autohotkey-dir "Extras/Editors/Syntax/"))
@@ -46,7 +49,7 @@
   (setq c-basic-offset tab-width)
   (setq mode-name "xahk")
   
-  (modify-syntax-entry ?_ "_") ;; '_' is part of a symbol
+  (modify-syntax-entry ?_ "w") ;; '_' is part of a symbol
   (modify-syntax-entry ?# "_")
   (modify-syntax-entry ?* ".")
   
@@ -54,7 +57,7 @@
       (add-to-list 'ac-sources 'ac-source-scite-api))
 
   (define-key xahk-mode-map (kbd "<C-f9>") 'compile-autohotkey)
-  (define-key xahk-mode-map (kbd "<f9>")   'run-autohotkey)  
+  (define-key xahk-mode-map (kbd "<f9>")   'run-autohotkey)
   )
 
 (eval-after-load "xahk-mode"
@@ -62,34 +65,3 @@
 
 (add-to-list 'which-func-modes 'xahk-mode)
 
-
-;;** awk
-(defun anything-info-awk ()
-  (interactive)
-    (anything
-      :prompt "Info about: "
-      :candidate-number-limit 10
-      :sources
-      '( anything-c-source-info-gawk )))
-
-(eval-after-load "cc-mode"
-  `(define-key awk-mode-map (kbd "<M-f1>") 'anything-info-awk))
-
-;;** shell script
-(defun anything-info-shell-script ()
-  (interactive)
-    (anything
-      :prompt "Info about: "
-      :candidate-number-limit 10
-      :sources
-      '( anything-c-source-info-bash
-;;         anything-c-source-info-zsh
-;;         anything-c-source-info-sh-utils
-         anything-c-source-info-coreutils
-;;         anything-c-source-info-textutils
-;;         anything-c-source-info-fileutils
-         anything-c-source-man-pages
-         )))
-
-(eval-after-load "sh-script"
-  `(define-key sh-mode-map (kbd "<M-f1>") 'anything-info-shell-script))

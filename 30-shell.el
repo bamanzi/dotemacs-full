@@ -98,4 +98,21 @@
 (global-set-key (kbd "<f11> ~") 'th-shell-popup)
 
 ;;*** shell-toggle
-;;TODO: shell-toggle.el
+(autoload 'shell-toggle "shell-toggle" 
+  "Toggles between the *shell* buffer and whatever buffer you are editing."
+  t)
+(autoload 'shell-toggle-cd "shell-toggle" 
+  "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
+
+(global-set-key [C-f11] 'shell-toggle)
+(global-set-key [M-f11] 'shell-toggle-cd)
+
+;;*** term-toggle
+(autoload 'term-toggle "term-toggle" 
+  "Toggles between the *terminal* buffer and whatever buffer you are editing."
+  t)
+(autoload 'term-toggle-cd "term-toggle" 
+  "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
+
+(global-set-key [C-f12] 'term-toggle)
+(global-set-key [M-f12] 'term-toggle-cd)

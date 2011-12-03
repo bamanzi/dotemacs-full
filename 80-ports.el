@@ -12,7 +12,7 @@
   (setq w32-scroll-lock-modifier nil)
 
 
-    (defun toggle-w32-alt-is-meta ()
+  (defun toggle-w32-alt-is-meta ()
     (interactive)
     (setq w32-alt-is-meta (not w32-alt-is-meta))
     (setq w32-lwindow-modifier (if w32-lwindow-modifier
@@ -64,6 +64,17 @@
 
 ;;  (define-key key-translation-map (kbd "<super>") (kbd "<f11>"))
   (define-key key-translation-map (kbd "<C-S-iso-lefttab>") (kbd "<C-S-tab>"))
+
+
+  (defun toggle-x-super-hyper ()
+    (interactive)
+    (if x-hyper-keysym
+        (setq x-hyper-keysym nil)
+      (setq x-hyper-keysym 'super))
+
+    (message "Now %s modifier is on SUPER key."
+             (if x-hyper-keysym "super" "hyper"))
+    )
   )
 
 

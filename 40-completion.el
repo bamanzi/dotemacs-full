@@ -1,7 +1,7 @@
 ;;* buffer completion
 ;; (for minibuffer completion, see 25-minibuffer.el)
 
-;;** built-in 
+;;** built-in mach
 ;; Emacs default:
 ;;   M-TAB - lisp-complete-symbol(<24)/completion-at-point(v24)
 ;;   M-/ - dabbrev-expand
@@ -10,7 +10,8 @@
 (if (string< "23.1.99" emacs-version) ;; emacs >= 23.2
    (setq tab-always-indent 'complete))
 
-(global-set-key (kbd "M-/") 'hippie-expand)
+(global-set-key (kbd "M-/")      'hippie-expand)
+(global-set-key (kbd "ESC M-/")  'dabbrev-expand)
 
 
 ;;** auto-compelte
@@ -95,4 +96,4 @@
 
 
 ;;** pabbrev ...
-;;...
+;;TODO: pabbrev...

@@ -25,6 +25,13 @@
 (eval-after-load "visible-mark"
   `(global-visible-mark-mode))
 
+;;*** goto last change
+(autoload 'goto-last-change  "goto-chg" "Go to the point where the last edit was made in the current buffer." t)
+(autoload 'goto-last-change-reverse "goto-chg" "Undocumented." t)
+
+(define-key goto-map "." 'goto-last-change)
+(define-key goto-map "," 'goto-last-change-reverse)
+
 ;;** tab key & indent
 (setq tab-always-indent 'complete)
 
@@ -45,6 +52,19 @@ vi style of % jumping to matching brace."
   (cond ((looking-at "\\s\(") (forward-list 1) (backward-char 1))
         ((looking-at "\\s\)") (forward-char 1) (backward-list 1))
         (t (self-insert-command (or arg 1)))))
+
+(define-key goto-map "%" 'goto-match-paren)
+
+
+(defun select-parened-expression ()
+  (interactive)
+  (if (re-search-backward "[({]")
+      (set-mark (save-excursion
+                 (goto-match-paren 1)
+                 (point)
+                 ))))
+
+(define-key global-map (kbd "C-c m (") 'select-parened-expression)
 
 ;;*** autopair
 (autoload 'autopair-mode "autopair" "Automagically pair braces and quotes like in TextMate." t)
@@ -105,7 +125,9 @@ vi style of % jumping to matching brace."
     ad-do-it))
 
 ;;*** kill/yank a line
-;;(setq kill-whole-line t)
+;;TIP: C-o C-k would backward kill to the beginning of line
+
+;;(setq kill-whole-line t) ;;ensure the newline char deleted, avoid two C-k
 
 (defun copy-line (arg)
   "Copy current line."
@@ -118,7 +140,7 @@ vi style of % jumping to matching brace."
 	  (kill-ring-save beg end)
 	  )))
 
-(global-set-key (kbd "H-l") 'copy-line)
+(global-set-key (kbd "C-c c l") 'copy-line)
 
 
 ;;** misc
@@ -126,8 +148,10 @@ vi style of % jumping to matching brace."
 
 ;;*** move line up/down
 (autoload 'drag-stuff-global-mode "drag-stuff" "Toggle Drag-Stuff mode in every possible buffer." t)
-(autoload 'drag-stuff-mode "drag-stuff.elc" "Drag stuff around." t)
+(autoload 'drag-stuff-mode "drag-stuff" "Drag stuff around." t)
 (idle-require 'drag-stuff)
+(global-set-key (kbd "<f10> ds") 'drag-stuff-mode)
+
 (eval-after-load "drag-stuff"
   `(progn
 ;;    (setq drag-stuff-modifier 'hyper)
