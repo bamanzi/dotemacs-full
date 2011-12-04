@@ -47,6 +47,7 @@
 
 ;; (ad-activate 'split-window-side-by-side)
 
+;;NOTE: this might cause some problems
 ;;; This works on both emacs 23 & 24 
 (defadvice split-window (around make-new-win-one-third)
     (let* ( (old-window (selected-window))
@@ -58,7 +59,26 @@
       (with-selected-window old-window
         (enlarge-window (/ old-size 10) horizontal))))
 
-(ad-enable-advice split-window around make-new-win-one-third)
+;;(ad-enable-advice 'split-window 'around 'make-new-win-one-third)
+
+;;**** this one is safer
+(defun split-window-vertically+ ()
+  (interactive)
+  (let ( (old-window (selected-window))
+	 (old-size (window-height (selected-window))) )
+    (split-window old-window nil nil)
+    (window-resize old-window (/ old-size 6) nil)))
+
+(defun split-window-horizontally+ ()
+  (interactive)
+  (let ( (old-window (selected-window))
+	 (old-size (window-height (selected-window))) )
+    (split-window old-window nil 'horizontal)
+    (window-resize old-window (/ old-size 6) nil)))
+
+(global-set-key [remap split-window-vertically]   'split-window-vertically+)
+(global-set-key [remap split-window-horizontally] 'split-window-horizontally+)
+
 
 ;;*** misc
 ;;(require 'pack-windows) ;; Resize all windows to display as much info as possible.
