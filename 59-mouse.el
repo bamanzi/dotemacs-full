@@ -43,14 +43,14 @@
 (global-set-key (kbd "<C-mouse-3>")    'show-all)
 
 (eval-after-load "allout"
-  (progn
-    (define-key allout-mode-map (kbd "<C-wheel-up>")    'allout-previous-visible-heading)
-    (define-key allout-mode-map (kbd "<C-wheel-down>")  'allout-next-visible-heading)
+  `(progn
+     (define-key allout-mode-map (kbd "<C-wheel-up>")    'allout-previous-visible-heading)
+     (define-key allout-mode-map (kbd "<C-wheel-down>")  'allout-next-visible-heading)
 
-    (defun-mouse allout-toggle-current-subtree-exposure-by-mouse allout-toggle-current-subtree-exposure)
-    (define-key allout-mode-map (kbd "<C-mouse-1>")     'allout-toggle-current-subtree-exposure-by-mouse)
-    (define-key allout-mode-map (kbd "<C-mouse-3>")     'allout-show-all)
-    ))
+     (defun-mouse allout-toggle-current-subtree-exposure-by-mouse allout-toggle-current-subtree-exposure)
+     (define-key allout-mode-map (kbd "<C-mouse-1>")     'allout-toggle-current-subtree-exposure-by-mouse)
+     (define-key allout-mode-map (kbd "<C-mouse-3>")     'allout-show-all)
+     ))
 
 
 ;;* Shift: some special marks overlays

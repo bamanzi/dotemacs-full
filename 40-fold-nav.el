@@ -53,6 +53,8 @@
 
 
 ;;** outline
+(if (global-key-binding (kbd "C-z"))
+    (global-unset-key (kbd "C-z")))
 (eval-after-load "outline"
   `(progn
      (global-set-key (kbd "C-z")        outline-mode-prefix-map)
