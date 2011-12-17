@@ -84,13 +84,15 @@
 ;;** helps
 (idle-require 'help-mode)  ;;on linux sometime C-h v/f would complain 'help-setup-xref is void'
 (idle-require 'help-fns+) 
+(add-hook 'help-mode-hook 'visual-line-mode)
+
 (define-key help-map "\C-h" nil) ;;force '<f1> C-h' to list keymap of `help-map'
 (define-key help-map " "  #'(lambda ()
                               (interactive)
                               (describe-keymap help-map)))  ;;help-fns+ needed?
-(define-key help-map "K"  'describe-keymap)
+(define-key help-map "K"  'describe-key-briefly)
+(define-key help-map "F"  'describe-face)
 
-(add-hook 'help-mode-hook 'visual-line-mode)
 
 (defun describe-major-mode ()
   (interactive)
@@ -104,7 +106,6 @@
   (describe-function major-mode))
 
 (define-key help-map "M"  'describe-major-mode)
-(define-key help-map "F"  'describe-face)
 
 
 (defun show-variable-value (var)
@@ -146,6 +147,7 @@
                               ))
 
 
+;;Read specific info file, similar to C-u M-x info
 (defun info-view-file (file-or-node &optional buffer)
   "Read specific info file."
   (interactive (list

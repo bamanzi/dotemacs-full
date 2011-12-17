@@ -1,9 +1,12 @@
 (require 'windmove)
 
 
-(autoload 'toggle-one-window "window-extension" "Toggle between window layout and one window." t)
-(autoload 'sticky-window-keep-window-visible "window-extension.el" "Insure the buffer associated with the current window stays visible." t)
-(autoload 'sticky-window-delete-window "window-extension.el" "This is intended to be a replacement for `delete-window', but" t)
+(autoload 'toggle-one-window "window-extension"
+  "Toggle between window layout and one window." t)
+(autoload 'sticky-window-keep-window-visible "window-extension.el"
+  "Insure the buffer associated with the current window stays visible." t)
+(autoload 'sticky-window-delete-window "window-extension.el"
+  "This is intended to be a replacement for `delete-window', but" t)
 
 ;;(unless (require 'window-extension nil t)  ;; `window-extension' already contain the functions of `sticky-windows'
 ;;    (require 'sticky-windows nil t))
@@ -12,18 +15,24 @@
 (autoload 'windresize "windresize" nil t)
 
 ;;(require 'transpose-frame nil t) ;; flip window layout within a frame
-(autoload 'transpose-frame "transpose-frame"  "Transpose windows arrangement at FRAME." t)
-(autoload 'flip-frame "transpose-frame" "Flip windows arrangement vertically at FRAME." t)
-(autoload 'flop-frame "transpose-frame" "Flop windows arrangement horizontally at FRAME." t)
-(autoload 'rotate-frame "transpose-frame" "Rotate windows arrangement 180 degrees at FRAME." t)
+(autoload 'transpose-frame "transpose-frame"
+  "Transpose windows arrangement at FRAME." t)
+(autoload 'flip-frame "transpose-frame"
+  "Flip windows arrangement vertically at FRAME." t)
+(autoload 'flop-frame "transpose-frame"
+  "Flop windows arrangement horizontally at FRAME." t)
+(autoload 'rotate-frame "transpose-frame"
+  "Rotate windows arrangement 180 degrees at FRAME." t)
 
 ;;(require 'window-numbering nil t) ;; each window has a number in mode-line
-;;(autoload 'window-numbering-mode "window-numbering" "A minor mode that assigns a number to each window" t)
+;;(autoload 'window-numbering-mode "window-numbering"
+;; "A minor mode that assigns a number to each window" t)
 
 ;;(require 'pack-windows) ;; Resize all windows to display as much info as possible.
 
 ;;(require 'split-root) ;; roote window splitter
-(autoload 'split-root-window "split-root" "Split a window of SIZE lines/columns from the root window." t)
+(autoload 'split-root-window "split-root"
+  "Split a window of SIZE lines/columns from the root window." t)
 
 (autoload 'tabbar-forward-tab     "tabbar" nil t)
 (autoload 'tabbar-backward-tab    "tabbar" nil t)
@@ -116,19 +125,19 @@
     (define-key map (kbd "}")    'enlarge-window-more)
     ;;(define-key map (kbd "{")  'shrink-window)
     (define-key map (kbd "{")    'shrink-window-more)
-    
+
     ;;(define-key map (kbd "^")  'enlarge-window-horizontally)
     (define-key map (kbd "^")    'enlarge-window-vertically-more)
     ;;(define-key map (kbd "v")  'shrink-window-horizontally)
     (define-key map (kbd "v")    'shrink-window-vertically-more)
-    
+
     (define-key map (kbd "+")    'enlarge-window-2d-more)
     (define-key map (kbd "-")    'shrink-window-2d-more)
 
     (define-key map (kbd "b")    'balance-windows)
     (define-key map (kbd "m")    'minimize-window) ;; FIXME: only on Emacs 24?
     (define-key map (kbd "x")    'maximize-window)
-    
+
     (define-key map (kbd "RET")  'windresize)
 
 
@@ -141,7 +150,7 @@
 
     (define-key map (kbd "<tab>")     'other-window)
     (define-key map (kbd "<S-tab>")   'other-window-backward)
-        
+
     (define-key map (kbd "g w")       'ido-jump-to-window)
     (define-key map (kbd "g t")       'ido-jump-to-tab)
     (define-key map (kbd "g g")       'ido-jump-to-tab-group)
@@ -159,7 +168,7 @@
     (define-key map (kbd "<M-up>")    'swap-buffer-up)
     (define-key map (kbd "<M-down>")  'swap-buffer-down)
     (define-key map (kbd "<M-left>")  'swap-buffer-left)
-    (define-key map (kbd "<M-right>") 'swap-buffer-right)    
+    (define-key map (kbd "<M-right>") 'swap-buffer-right)
 
     (define-key map (kbd "M-m") 'ido-move-window-buffer-to)
     (define-key map (kbd "M-s") 'ido-swap-window-buffer-with)
@@ -176,7 +185,7 @@
     ;; rotate-frame
     ;; rotate-frame-clockwise
     ;; rotate-frame-anti-clockwise
-    
+
   ;;; the following need some 3rd-party library
   ;;; window-extensions.el
     (define-key map (kbd "<f11>")     'toggle-one-window)
@@ -185,12 +194,12 @@
 ;;    (define-key map (kbd "M-RET")     'maximize-frame)
 ;;    (define-key map (kbd "ESC M-RET") 'restore-frame)
     (define-key map (kbd "M-RET")     'toggle-full-screen)
-    
+
     ;; split-root.el
     (define-key map (kbd "C-x 2")     'split-root-window-vertially)
-    (define-key map (kbd "C-x 3")     'split-root-window-horizontally)
-    
-    ;;(when (featurep 'tabbar)            
+    (define-key map (kbd "C-x 3")     'split-root-whenhorizontallywindow-)
+
+    ;;( (featurep 'tabbar)
     (define-key map (kbd "C-n")       'tabbar-forward-tab)
     (define-key map (kbd "C-p")       'tabbar-backward-tab)
 

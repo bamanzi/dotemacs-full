@@ -5,22 +5,28 @@
 (global-set-key (kbd "<f10> ws") 'whitespace-mode)
 
 ;;*** develock: programmers whitespace-mode
-;;TODO: 
-;;(autoload 'develock-mode 
+(autoload 'develock-mode  "develock" "Toggle Develock mode." t)
 
 ;;** highlight mark
 ;;visible-mark-mode
 
 ;;** highlight current position
 ;;*** current line
-(autoload 'highline-mode "highline" "minor mode to highlight current line in buffer" t)
+
+(autoload 'highline-mode "highline"
+  "minor mode to highlight current line in buffer" t)
 
 (autoload 'hl-spotlight-mode "hl-spotlight" "spotlight current few lines." t)
 
 ;;*** current column
-(autoload 'fci-mode "fill-column-indicator" nil t)
+(autoload 'column-marker-1 "column-marker"
+  "Highlight a column." t)
 
-(autoload 'column-marker-1 "column-marker" "Highlight a column." t)
+;;*** target column
+(autoload 'highlight-beyond-fill-column "highlight-beyond-fill-column"
+  "Setup this buffer to highlight beyond the `fill-column'." t)
+
+(autoload 'fci-mode "fill-column-indicator" "Undocumented." t)
 
 ;;*** both
 ;; crosshair
@@ -45,11 +51,16 @@
 (global-set-key (kbd "<f10> rd") 'rainbow-delimiters)
 
 ;;** highlight symbol
+(autoload 'highlight-regexp  "hi-lock" "Set face of each match of REGEXP to FACE." t)
+(autoload 'highlight-phrase  "hi-lock" "Set face of each match of phrase REGEXP to FACE." t)
+(autoload 'highlight-lines-matching-regexp  "hi-lock" "Set face of all lines containing a match of REGEXP to FACE." t)
+(autoload 'unhighlight-regexp  "hi-lock" "Remove highlighting of each match to REGEXP set by hi-lock." t)
+
 ;;*** manually
 (autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
 (autoload 'highlight-symbol-next       "highlight-symbol" nil t)
 (autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
-(autoload 'highlight-symbol-at-point   "highlight-symbol" nil t)
+(autoload 'highlight-symbol-at-point   "highlight-symbol" "Toggle highlighting of the symbol at point." t)
 
 (idle-require 'highlight-symbol)
 
@@ -134,6 +145,22 @@
 ;;      (add-hook 'emacs-lisp-mode-hook 'linkd-enable)
 ;;      (add-hook 'python-mode-hook 'linkd-enable)
 ;;      (add-hook 'espresso-mode-hook 'linkd-enable)
+
+      (progn  ;; change linkd faces according to current theme
+        ;; (copy-face 'org-link 'linkd-generic-link )
+        ;; (copy-face 'org-link 'linkd-generic-link-name)
+        
+        (set-face-foreground 'linkd-generic-link (face-foreground 'org-link))
+        (set-face-underline  'linkd-generic-link t)
+        
+        (set-face-foreground 'linkd-generic-link-name (face-foreground 'org-link))
+        (set-face-underline  'linkd-generic-link-name t)
+        
+        (set-face-foreground 'linkd-generic-link-name (face-foreground 'org-link))
+        (set-face-underline  'linkd-generic-link-name t)
+        
+        (set-face-foreground 'linkd-tag-name (face-foreground 'org-done))
+        )
       ))
 
 ;; turn
@@ -161,8 +188,17 @@
 (autoload 'fixme-mode "fixme-mode" "A minor mode for making FIXME and other warnings stand out" t)
 (autoload 'fic-ext-mode "fic-ext-mode"  "minor mode for highlighting FIXME/TODO in comments" t)
   
-;;** pulse
-;;TODO: pulse
+;;** pulse: temperarily highlight a line/region, to draw user's attension
+(idle-require 'pulse)
+(unless (fboundp 'cedet-called-interactively-p)
+  (defalias 'cedet-called-interactively-p 'called-interactively-p))
+(setq pulse-command-advice-flag t)
+
+(defadvice imenu (after pulse-advice activate)
+  "Cause the line that is `imenu'd to pulse when the cursor gets there."
+  (when (and pulse-command-advice-flag (cedet-called-interactively-p))
+    (pulse-momentary-highlight-one-line (point))))
+
 
 ;;** misc
 ;;*** rainbow-mode: colorize strings like 'red', "#3303c4"

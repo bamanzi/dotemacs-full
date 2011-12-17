@@ -18,12 +18,15 @@
   (interactive)
   (let ( (symbol (thing-at-point 'symbol)) )
     ;;FIXME: judge the symbol type
-    (if (assq 'iedit-mode minor-mode-map-alist)
-        (progn
-          (iedit-mode -1)
-          (widen))
-      (narrow-to-defun)
-      (iedit-mode t))))
+    (if symbol
+        (if (assq 'iedit-mode minor-mode-map-alist)
+            (progn
+              (iedit-mode -1)
+              (widen))
+          (narrow-to-defun)
+          (iedit-mode t)
+          (message "When done, run `iedit-symbol-in-defun' again to quit."))
+      (message "You need to put cursor on an identifier."))))
 
 
 ;;** kill & yank
