@@ -29,7 +29,35 @@ vi style of % jumping to matching brace."
       (next-line)
       (open-line 1))))
 
-;;(global-set-key (kbd "<f6> J") 'join-line)
+;;stolen from https://github.com/gabrielelanaro/emacs-for-python/blob/master/extensions/open-next-line.el
+;; Behave like vi's o command
+(defun open-next-line (arg)
+  "Move to the next line and then opens a line.
+See also `newline-and-indent'."
+  (interactive "p")
+  (end-of-line)
+  (open-line arg)
+  (next-line 1)
+  (when newline-and-indent
+    (indent-according-to-mode)))
+;;(global-set-key (kbd "C-o") 'open-next-line)
+
+;; Behave like vi's O command
+(defun open-previous-line (arg)
+  "Open a new line before the current one.
+See also `newline-and-indent'."
+  (interactive "p")
+  (beginning-of-line)
+  (open-line arg)
+  (when newline-and-indent
+    (indent-according-to-mode)))
+;;(global-set-key (kbd "M-o") 'open-previous-line)
+
+;; Autoindent open-*-lines
+(defvar newline-and-indent t
+  "Modify the behavior of the open-*-line functions to cause them to
+autoindent.")
+
 
 ;;---
 (defun shift-region-or-line (dir)
@@ -107,6 +135,7 @@ whitespaces of the next line. Otherwise it would kill current word."
 
 
 
+
 ;;---
 (defun init-vi-style-keys (prefix-key)
   (let ( (map (make-sparse-keymap "Vi-style operation")) )
@@ -160,6 +189,9 @@ whitespaces of the next line. Otherwise it would kill current word."
 
     (define-key map (kbd "f")   'go-to-char)
 ;;    (define-key map (kbd "B")   'go-back-to-char)
+
+    (define-key map "o"  'open-next-line)
+    (define-key map "O"  'open-previous-line)
 ))
     
 

@@ -6,7 +6,7 @@
 
 (autoload 'espresso-mode "espresso" nil t)
 
-(if (>= emacs-major-version 24)
+(if (<= emacs-major-version 24)
     (add-to-list 'auto-mode-alist '("\\.js\\'" . espresso-mode)))
 
 ;;** code folding
@@ -55,15 +55,13 @@
   (let ( (compile-command (concat "jslint-node " buffer-file-name)) )
     (call-interactively 'compile)))
 
-;;*** rhino (powered by jsdb intepreter)
-;;    https://github.com/spytheman/jshint-cli-with-jsdb
+;;*** rhino + jslint
+;;TODO: implement this
 (defun jslint-with-rhino ()
   (interactive)
   (let ( (compile-command (concat "jslint-rhino " buffer-file-name)) )
     (call-interactively 'compile)))
 
-;;*** rhino + jslint
-;;.....
 
 ;;*** keybindings
 (eval-after-load "espresso"

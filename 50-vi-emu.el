@@ -16,6 +16,7 @@
 
 ;;;_. Ex commands without entering viper-mode
 ;;; from http://www.advogato.org/person/chalst/diary/277.html
+;;for ex commands supported by viper, refer `ex-token-alist'
 
 (require 'viper-ex)
 (require 'viper-keym)

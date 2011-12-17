@@ -2,6 +2,11 @@
 ;; (for minibuffer completion, see 25-minibuffer.el)
 
 ;;** hideshow
+(global-set-key (kbd "C-c +")  'hs-toggle-hiding)
+
+(eval-after-load "hideshow"
+  `(define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
+
 
 ;;*** hideshowvis add +/- symbol in left fringe
 (autoload 'hideshowvis-enable "hideshowvis" "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
@@ -14,8 +19,6 @@
 ;;(eval-after-load 'python
 ;;  (add-hook 'python-mode-hook 'hideshowvis-enable))
 
-;(eval-after-load "hideshow"
-;  (define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
 
 ;;**** fix compatibility between hideshowvis & transpose-words
 (if nil
@@ -106,12 +109,13 @@
   (if (null foldout-fold-list)
       (foldout-zoom-subtree 1)
     (foldout-exit-fold 1)))
+
 (eval-after-load "outline"
   `(progn
      (define-key outline-mode-prefix-map [C-return] 'foldout-zoom-or-exit)
      (define-key outline-mode-prefix-map [C-z]      nil)
-     (define-key outline-mode-prefix-map ">"        foldout-zoom-subtree)
-     (define-key outline-mode-prefix-map "<"        foldout-exit-fold)
+     (define-key outline-mode-prefix-map ">"        'foldout-zoom-subtree)
+     (define-key outline-mode-prefix-map "<"        'foldout-exit-fold)
      ))
      
 
@@ -135,14 +139,14 @@
      (define-key outline-mode-prefix-map (kbd "<M-right>") 'outline-demote)))
 
 ;;*** org-mode style headings in comment
-(autoload 'outline-org/outline-cycle               "outline-org" nil t)
-(autoload 'outline-org/outline-command-dispatcher  "outline-org" nil t)
+(autoload 'outline-org/outline-cycle               "outline-org-like" nil t)
+(autoload 'outline-org/outline-command-dispatcher  "outline-org-like" nil t)
 
 (global-set-key (kbd "<H-tab>") 'outline-org/outline-cycle)
 (global-set-key (kbd "C-z C-z") 'outline-org/outline-command-dispatcher)
 
-(autoload 'outline-org-heading-mode               "outline-org" nil t)
-(autoload 'outline-org-mode                       "outline-org" nil t)
+(autoload 'outline-org-heading-mode               "outline-org-like" nil t)
+(autoload 'outline-org-mode                       "outline-org-like" nil t)
 
 ;;*** outline settings for my init files
 (defun bmz/turn-on-outline-settings ()
@@ -237,6 +241,10 @@
 
 
 ;;** hide-region: manually hide
+(autoload 'hide-region-hide  "hide-region"
+  "Hides a region by making an invisible overlay over it and save the" t)
+(autoload 'hide-region-unhide  "hide-region"
+  "Unhide a region at a time, starting with the last one hidden and" t)
 ;;TODO: sfafa
 
 

@@ -62,22 +62,24 @@
 ;;(ad-enable-advice 'split-window 'around 'make-new-win-one-third)
 
 ;;**** this one is safer
-(defun split-window-vertically+ ()
+(defun bmz/split-window-vertically ()
   (interactive)
   (let ( (old-window (selected-window))
 	 (old-size (window-height (selected-window))) )
     (split-window old-window nil nil)
-    (window-resize old-window (/ old-size 6) nil)))
+    (with-selected-window old-window
+      (enlarge-window (/ old-size 6) nil))))
 
-(defun split-window-horizontally+ ()
+(defun bmz/split-window-horizontally ()
   (interactive)
   (let ( (old-window (selected-window))
 	 (old-size (window-height (selected-window))) )
     (split-window old-window nil 'horizontal)
-    (window-resize old-window (/ old-size 6) nil)))
+    (with-selected-window old-window
+      (enlarge-window (/ old-size 6) 'horizontal))))
 
-(global-set-key [remap split-window-vertically]   'split-window-vertically+)
-(global-set-key [remap split-window-horizontally] 'split-window-horizontally+)
+(global-set-key [remap split-window-vertically]   'bmz/split-window-vertically)
+(global-set-key [remap split-window-horizontally] 'bmz/split-window-horizontally)
 
 
 ;;*** misc

@@ -1,4 +1,6 @@
-;;** recentf
+
+;;** find the files to open
+;;*** recentf
 (require 'recentf)
 (setq recentf-max-saved-items 100)
 (setq recentf-max-menu-items 20)
@@ -6,15 +8,35 @@
 (setq recentf-save-file "~/.emacs.d/recentf")
 (recentf-mode t)
 
-;;** Open File
+;;*** bookmarks
 ;;(define-key search-key (kbd "C-f") 'ffap-other-window)
 
-;;*** archive
-;;....
 
+;;** Open methods
+;;TIP: C-x C-r - find-file-read-only
+
+;;*** auto-compress-mode
+;;TIP: emacs would open .gz, .Z,
+;;TIP: emacs 24 supports .7z
+
+;;*** archive
+;;TIP: emacs would open .tar, .zip/.xpi
 
 ;;*** tramp
 ;;...
+;;**** sudo
+(defun revert-buffer-with-sudo ()
+  (interactive)
+  (let ( (filename (buffer-file-name)) )
+    (if filename
+        (let ( (trampfilename (concat "sudo::" filename)) )
+          (find-alternate-file trampfilename))
+      (message "buffer not saved yet."))))
+
+(defun save-buffer-with-sudo ()
+  (interactive)
+  (message "TODO: not implemented yet."))
+
 
 ;;** Save File
 ;;...
@@ -58,17 +80,20 @@ Otherwise, call the original `dired-jump'."
     (if window
         (set-window-dedicated-p window t))))
 
-(defun bmz/nav-goto-dir ()
-  (interactive)
-  (let ( (dir (if buffer-file-name
-                  (file-name-directory buffer-file-name)
-                default-directory)) )
+(defun bmz/nav-goto-dir (dir)
+  (interactive
+   (list (read-directory-name
+          "NAV to dir"
+          nil
+          (if buffer-file-name
+              (file-name-directory buffer-file-name)
+            default-directory)) ))
     (unless (get-buffer "*nav*")
       (nav))
     (let ( (window (get-buffer-window "*nav*")) )
       (set-window-dedicated-p window t))
     (with-current-buffer "*nav*"
-      (nav-jump-to-dir dir))))
+      (nav-jump-to-dir dir)))
 
 (define-key goto-map "D" 'bmz/nav-goto-dir)
 

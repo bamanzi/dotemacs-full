@@ -10,8 +10,8 @@
 (if (string< "23.1.99" emacs-version) ;; emacs >= 23.2
    (setq tab-always-indent 'complete))
 
-(global-set-key (kbd "M-/")      'hippie-expand)
-(global-set-key (kbd "ESC M-/")  'dabbrev-expand)
+(global-set-key (kbd "M-/")  'dabbrev-expand)
+(global-set-key (kbd "ESC M-/")      'hippie-expand)
 
 
 ;;** auto-compelte
