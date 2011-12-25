@@ -128,6 +128,15 @@
 (define-key help-map "V" 'show-variable-value)
 
 
+(defun describe-this-file ()
+  (interactive)
+  (require 'help-fns+)
+  (if buffer-file-name
+      (describe-file buffer-file-name)
+    (message "file not saved. ")))
+
+;;help-fns+:  C-h M-f - describe-file
+(define-key help-map (kbd "M-F") 'describe-this-file)
 
 ;;** info
 (define-key help-map "i"  nil)
@@ -188,3 +197,8 @@
 (global-set-key (kbd "<f12> S") 'shell)
 
 
+;;;_. "some aliases"
+(defalias 'fl 'find-library)
+(defalias 'll 'load-library)
+(defalias 'eb 'eval-buffer)
+(defalias 'er 'eval-region)

@@ -9,11 +9,42 @@
 (recentf-mode t)
 
 ;;*** bookmarks
+;;DOC: (info "(emacs) Bookmarks")
+;;It supports: file, dired, info node
+;; `C-x r m <RET>'              Set the bookmark for the visited file, at point.
+;; `C-x r m BOOKMARK <RET>'     Set the bookmark named BOOKMARK at point (`bookmark-set').
+;; `C-x r b BOOKMARK <RET>'     Jump to the bookmark named BOOKMARK (`bookmark-jump').
+;; `C-x r l'                    List all bookmarks (`list-bookmarks').
+;; `M-x bookmark-save'          Save all the current bookmark values in the default bookmark file.
+
+
+(global-set-key (kbd "<f5> B") 'anything-bookmarks)
+
+;;*** others
 ;;(define-key search-key (kbd "C-f") 'ffap-other-window)
-
-
 ;;** Open methods
+
+;;*** read-only
 ;;TIP: C-x C-r - find-file-read-only
+
+;;*** different encoding
+;;TIP: `revert-buffer-with-coding-system'
+
+;;TIP: open file with specific encoding: C-x RET c utf-8 C-x C-f
+(defun find-file-with-coding-system (coding-system)
+  (interactive (let ((default (and buffer-file-coding-system
+                                   (not (eq (coding-system-type buffer-file-coding-system)
+                                            'undecided))
+                                   buffer-file-coding-system)))
+                 (list (read-coding-system
+                        (if default
+                            (format "Coding system for find-file (default %s): " default)
+                          "Coding system for find-file: ")
+                        default))))
+  (let ((coding-system-for-read coding-system)
+        (coding-system-for-write coding-system)
+        (coding-system-require-warning t))
+    (call-interactively 'find-file)))
 
 ;;*** auto-compress-mode
 ;;TIP: emacs would open .gz, .Z,
@@ -24,6 +55,7 @@
 
 ;;*** tramp
 ;;...
+
 ;;**** sudo
 (defun revert-buffer-with-sudo ()
   (interactive)
@@ -32,6 +64,7 @@
         (let ( (trampfilename (concat "sudo::" filename)) )
           (find-alternate-file trampfilename))
       (message "buffer not saved yet."))))
+
 
 (defun save-buffer-with-sudo ()
   (interactive)
@@ -128,7 +161,7 @@ Otherwise, call the original `dired-jump'."
     (with-current-buffer nc-active-nc-buffer
       (nc-display-new-dir dir))))
 
-(define-key goto-map "c" 'nc-goto-dir)
+(define-key goto-map "\M-n" 'nc-goto-dir)
 
 
 

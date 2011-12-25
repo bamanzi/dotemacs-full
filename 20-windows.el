@@ -7,19 +7,38 @@
 
 ;;*** winner-mode
 (setq winner-dont-bind-my-keys t)
+(setq winner-ring-size 20)
 (winner-mode t)
 ;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
 ;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
 
 ;;*** common used layouts
-;;TODO
+;;DOC: http://www.emacswiki.org/emacs/ThreeWindows
 
-;;*** layout transformation
-;;(require 'transpose-frame nil t) ;; flip window layout within a frame
-(autoload 'transpose-frame "transpose-frame"  "Transpose windows arrangement at FRAME." t)
-(autoload 'flip-frame "transpose-frame" "Flip windows arrangement vertically at FRAME." t)
-(autoload 'flop-frame "transpose-framer" "Flop windows arrangement horizontally at FRAME." t)
-(autoload 'rotate-frame "transpose-frame" "Rotate windows arrangement 180 degrees at FRAME." t)
+;;*** my default layout
+;; 窗口缺省布局
+
+(defun bmz/default-frame-layout (&optional frame)
+   "+---------+------------+ 
+    |         |            | 
+    |         |            | 
+    |         |            |
+    |         |------------+
+    |         |            |
+    |         |            | 
+    +---------+------------+  "
+  (interactive (list (selected-frame)))
+  (with-selected-frame frame
+    (delete-other-windows)
+    (split-window-horizontally)
+    ;;(enlarge-window (/ (window-width) 5) 'horizontal)
+    (other-window 1)
+    (split-window-vertically)
+    (enlarge-window (/ (window-height) 3) nil)
+    ))
+
+(add-hook 'window-setup-hook 'bmz/default-frame-layout)
+(add-hook 'after-make-frame-functions 'bmz/default-frame-layout)
 
 
 ;;** resizing windows
@@ -270,6 +289,13 @@ an error is signaled."
      (global-set-key (kbd "<f11> M-s") 'swap-buffer-with-numbered-window)
       
      ))
+
+;;*** layout transformation
+;;(require 'transpose-frame nil t) ;; flip window layout within a frame
+(autoload 'transpose-frame "transpose-frame"  "Transpose windows arrangement at FRAME." t)
+(autoload 'flip-frame "transpose-frame" "Flip windows arrangement vertically at FRAME." t)
+(autoload 'flop-frame "transpose-framer" "Flop windows arrangement horizontally at FRAME." t)
+(autoload 'rotate-frame "transpose-frame" "Rotate windows arrangement 180 degrees at FRAME." t)
 
 ;;*** rotate
 ;; https://github.com/banister/window-rotate-for-emacs

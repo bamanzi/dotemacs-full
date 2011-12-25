@@ -157,3 +157,25 @@ current line instead."
 (autoload 'title-case-string-region-or-line  "xeu_elisp_util"
   "Capitalize the current line or text selection, following title conventions." t)
 (global-set-key (kbd "ESC M-c") 'title-case-string-region-or-line)
+
+;;*** go-to-char
+(defun go-to-char (arg char)
+  (interactive "p\ncGo to char: ")
+  (forward-char 1)
+  (if (if arg
+          (search-forward (char-to-string char) nil nil arg)
+        (search-forward (char-to-string char)))
+      (backward-char 1))
+  )
+
+(defun go-back-to-char (arg char)
+  (interactive "p\ncGo back to char: ")
+  (forward-char -1)
+  (if arg
+      (search-backward (char-to-string char) nil nil arg)
+    (search-backward (char-to-string char)))
+  )
+
+(global-set-key (kbd "M-g c")      'go-to-char)
+(global-set-key (kbd "ESC M-g c")  'go-back-to-char)
+

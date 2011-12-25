@@ -1,3 +1,42 @@
+
+;;* shell
+;;** which shell?
+
+
+(autoload 'msys-shell    "w32shell" "Run `shell' with MSYS as the shell." t)
+(autoload 'cygwin-shell  "w32shell" "Run `shell' with Cygwin as the shell." t)
+(autoload 'cmd-shell     "w32shell" "Run `shell' with Windows Command Prompt as the shell." t)
+
+(defun w32-toggle-gnu-shell ()
+  "Toggle shell between `cmdproxy' and `bash'"
+  (interactive)
+  (if (string-match "cmdproxy" shell-file-name)
+      (progn
+        (setq shell-file-name "bash")
+        (setq explicit-shell-file-name shell-file-name
+              explicit-bash-args "-c")
+;;        (setq shell-quote-argument
+        )
+    (progn
+      (setq shell-file-name "cmdproxy")
+      (setq explicit-shell-file-name shell-file-name
+            explicit-bash-args "-c")
+      ))
+  (message "`shell-file-name' now set to %s" shell-file-name)
+  )
+            
+        
+
+;;** shell-mode
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+;;*** show current dir in mode-line
+(defun add-mode-line-dirtrack ()
+  (add-to-list 'mode-line-buffer-identification 
+               '(:propertize (" " default-directory " ") face dired-directory)))
+;;(add-hook 'shell-mode-hook 'add-mode-line-dirtrack)
+
+
 ;;** eshell
 (setq eshell-cp-interactive-query t
       eshell-mv-interactive-query t
@@ -59,12 +98,6 @@
 
 (defalias 'eshell/vi 'eshell/vim)
 
-;;** shell
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-(autoload 'msys-shell    "w32shell" "Run `shell' with MSYS as the shell." t)
-(autoload 'cygwin-shell  "w32shell" "Run `shell' with Cygwin as the shell." t)
-(autoload 'cmd-shell     "w32shell" "Run `shell' with Windows Command Prompt as the shell." t)
 
 ;;** misc
 ;;*** oneliner: a special shell supporing piping to/from buffer

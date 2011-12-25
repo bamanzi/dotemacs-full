@@ -16,14 +16,20 @@
 (line-number-mode t)
 (column-number-mode t)
 
+;;*** hl-line-mode
+;;Avaialbe in GNU Emacs 23.2+
+
+
+;;*** marks
 (global-set-key (kbd "C-`")    'set-mark-command)
 (global-set-key (kbd "M-`")    'exchange-point-and-mark)
 (global-set-key (kbd "C-M-`")  'pop-to-mark-command)
 
-(autoload 'visible-mark-mode "visible-mark.el" "A mode to make the mark visible." t)
+(autoload 'visible-mark-mode "visible-mark" "A mode to make the mark visible." t)
 (global-set-key (kbd "<f10> vm") 'visible-mark-mode)
 (eval-after-load "visible-mark"
   `(global-visible-mark-mode))
+
 
 ;;*** goto last change
 (autoload 'goto-last-change  "goto-chg" "Go to the point where the last edit was made in the current buffer." t)
@@ -38,6 +44,8 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
+(setq tab-stop-list
+      (loop for i from 4 to 120 by tab-width collect i))
 
 ;;** parens
 (setq show-paren-style 'mixed)
@@ -64,7 +72,7 @@ vi style of % jumping to matching brace."
                  (point)
                  ))))
 
-(define-key global-map (kbd "C-c m (") 'select-parened-expression)
+(define-key global-map (kbd "C-c (") 'select-parened-expression)
 
 ;;*** autopair
 (autoload 'autopair-mode "autopair" "Automagically pair braces and quotes like in TextMate." t)

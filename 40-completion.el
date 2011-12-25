@@ -76,13 +76,15 @@
         (find-file-noselect "~/.emacs.d/etc/words")))
   (call-interactively 'ac-complete-words-in-all-buffer))
 
+(global-set-key (kbd "ESC C-M-/") 'ac-expand-english-words)
 (global-set-key (kbd "C-, w") 'ac-expand-english-words)
-
 
 ;;** completion-ui
 (autoload 'complete-dabbrev "completion-ui" nil t)
 (autoload 'complete-etags   "completion-ui" nil t)
 (autoload 'complete-files   "completion-ui" nil t)
+
+;; NOTE: `C-,' couldn't be recognized on terminal
 (global-set-key (kbd "C-, d") 'complete-dabbrev)
 (global-set-key (kbd "C-, t") 'complete-etags)
 (global-set-key (kbd "C-, f") 'complete-files)

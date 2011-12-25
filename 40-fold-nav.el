@@ -185,8 +185,11 @@
      (define-key outline-minor-mode-map [left-fringe mouse-1] nil)
      (define-key outline-minor-mode-map [left-fringe C-mouse-1] 'qtmstr-outline-fringe-click)
 
+     (define-key qtmstr-outline-header-map [mouse-1]  'outline-cycle)
      (define-key qtmstr-outline-header-map [mouse-2]  'hide-leaves)
      (define-key qtmstr-outline-header-map [mouse-3]  'show-all)
+     (define-key qtmstr-outline-header-map (kbd "TAB") 'outline-toggle-children)
+     
      ))
 
 ;;** allout

@@ -1,15 +1,15 @@
 ;; toggle minor modes
-(global-set-key (kbd "<f10> c") 'highlight-changes-visible-mode)
-(global-set-key (kbd "<f10> f") 'auto-fill-mode)
-(global-set-key (kbd "<f10> p") 'show-paren-mode)
-(global-set-key (kbd "<f10> w") 'whitespace-mode)
-(global-set-key (kbd "<f10> h") 'hs-minor-mode)
-(global-set-key (kbd "<f10> o") 'outline-minor-mode)
-(global-set-key (kbd "<f10> r") 'ruler-mode)
-(global-set-key (kbd "<f10> t") 'toggle-truncate-lines)
+(global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
+(global-set-key (kbd "<f10> af") 'auto-fill-mode)
+(global-set-key (kbd "<f10> sp") 'show-paren-mode)
+(global-set-key (kbd "<f10> W") 'whitespace-mode)
+(global-set-key (kbd "<f10> hs") 'hs-minor-mode)
+(global-set-key (kbd "<f10> O") 'outline-minor-mode)
+(global-set-key (kbd "<f10> R") 'ruler-mode)
+(global-set-key (kbd "<f10> tl") 'toggle-truncate-lines)
 (global-set-key (kbd "<f10> C-w") 'visual-line-mode)
-(global-set-key (kbd "<f10> l") 'linum-mode)
-(global-set-key (kbd "<f10> v") 'toggle-viper-mode)
+(global-set-key (kbd "<f10> L") 'linum-mode)
+(global-set-key (kbd "<f10> V") 'toggle-viper-mode)
 
 
 ;;;_. hyper keys

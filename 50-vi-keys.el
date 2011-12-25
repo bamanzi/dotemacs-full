@@ -133,6 +133,14 @@ whitespaces of the next line. Otherwise it would kill current word."
     (search-backward (char-to-string char)))
   )
 
+(autoload 'ex-set-visited-file-name "viper-ex" nil nil)
+(defun viper-describe-file ()
+  (interactive)
+  (ex-set-visited-file-name))
+ 
+;;(global-set-key (kbd "<f6> C-g") 'viper-describe-file)
+ 
+
 
 
 

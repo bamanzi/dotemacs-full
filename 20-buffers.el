@@ -76,8 +76,8 @@
 
 ;;*** Kills live buffers, leaves some emacs work buffers
 ;; optained from http://www.chrislott.org/geek/emacs/dotemacs.html
-(defun nuke-some-buffers (&optional list)
-  "For each buffer in LIST, kill it silently if unmodified. Otherwise ask.
+(defun nuke-speicial-buffers (&optional list)
+  "For each buffer in LIST, kill it silently if unmodified, Otherwise ask.
 LIST defaults to all existing live buffers."
   (interactive)
   (if (null list)
@@ -88,12 +88,11 @@ LIST defaults to all existing live buffers."
       (and (not (string-equal name ""))
 	   (not (string-equal name "*Messages*"))
 	  ;; (not (string-equal name "*Buffer List*"))
-	   (not (string-equal name "*buffer-selection*"))
 	   (not (string-equal name "*Shell Command Output*"))
 	   (not (string-equal name "*scratch*"))
 	   (not (string-equal name "*nav*"))
-	   (not (string-equal name "*imenu-tree*"))       
-	   (/= (aref name 0) ? )
+	   (not (string-equal name "*imenu-tree*"))
+	   (= (aref name 0) ?*)
 	   (if (buffer-modified-p buffer)
 	       (if (yes-or-no-p
 		    (format "Buffer %s has been edited. Kill? " name))

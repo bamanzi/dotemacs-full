@@ -13,6 +13,9 @@
                                       (format " - [%s]" buffer-file-name)
                                     ""))))
 
+;;(set-frame-parameter (car (frame-list)) 'icon-type "~/.emacs.d/emacs_07.ico")
+;;(set-frame-parameter (car (frame-list)) 'icon-type "~/.emacs.d/emacs_07.png")
+
 (when (eq window-system 'x)
     (setq x-select-enable-clipboard t)
 ;;  (setq x-select-enable-primary t)

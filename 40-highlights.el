@@ -1,5 +1,11 @@
 ;;* some special highlights & overlay
 
+;;** highlight changes
+(setq highlight-changes-visibility-initial-state t)
+(global-highlight-changes-mode t)
+
+(copy-face 'highlight-changes 'fringe)  ;;use background to show changes rather than foreground
+(global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
 
 ;;** whitespaces
 (global-set-key (kbd "<f10> ws") 'whitespace-mode)
@@ -7,11 +13,23 @@
 ;;*** develock: programmers whitespace-mode
 (autoload 'develock-mode  "develock" "Toggle Develock mode." t)
 
-;;** highlight mark
-;;visible-mark-mode
+
 
 ;;** highlight current position
+;;*** mark
+(autoload 'visible-mark-mode  "visible-mark"
+  "A mode to make the mark visible." t)
+
+(global-set-key (kbd "<f10> vm") 'visible-mark-mode)
+
 ;;*** current line
+;;TIP: `hl-line-mode' available in GNU Emacs since 23.2
+
+(autoload 'flash-line-highlight          "hl-line+"
+  "Highlight the current line for `hl-line-flash-show-period' seconds." t)
+(autoload 'toggle-hl-line-when-idle     "hl-line+"
+  "Turn on or off using `global-hl-line-mode' when Emacs is idle." t)
+
 
 (autoload 'highline-mode "highline"
   "minor mode to highlight current line in buffer" t)
@@ -19,17 +37,18 @@
 (autoload 'hl-spotlight-mode "hl-spotlight" "spotlight current few lines." t)
 
 ;;*** current column
-(autoload 'column-marker-1 "column-marker"
-  "Highlight a column." t)
-
-;;*** target column
-(autoload 'highlight-beyond-fill-column "highlight-beyond-fill-column"
-  "Setup this buffer to highlight beyond the `fill-column'." t)
-
-(autoload 'fci-mode "fill-column-indicator" "Undocumented." t)
+(autoload 'column-highlight-mode              "col-highlight"
+  "Toggle highlighting the current column." t)
+(autoload 'toggle-highlight-column-when-idle  "col-highlight"
+  "Turn on or off highlighting the current column when Emacs is idle." t)
 
 ;;*** both
-;; crosshair
+(autoload 'crosshairs        "crosshairs"
+  "Highlight current position with crosshairs." t)
+(autoload 'crosshairs-flash  "crosshairs"
+  "Highlight the current line and column temporarily." t)
+(autoload 'crosshairs-mode    "crosshairs"
+  "Toggle highlighting the current line and column." t)
 
 
 ;;** highlight matching paren/pair
@@ -51,12 +70,13 @@
 (global-set-key (kbd "<f10> rd") 'rainbow-delimiters)
 
 ;;** highlight symbol
+;;*** Emacs built-in
 (autoload 'highlight-regexp  "hi-lock" "Set face of each match of REGEXP to FACE." t)
 (autoload 'highlight-phrase  "hi-lock" "Set face of each match of phrase REGEXP to FACE." t)
 (autoload 'highlight-lines-matching-regexp  "hi-lock" "Set face of all lines containing a match of REGEXP to FACE." t)
 (autoload 'unhighlight-regexp  "hi-lock" "Remove highlighting of each match to REGEXP set by hi-lock." t)
 
-;;*** manually
+;;*** manually: `highlight-symbol'
 (autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
 (autoload 'highlight-symbol-next       "highlight-symbol" nil t)
 (autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
@@ -72,6 +92,8 @@
 (global-set-key (kbd "<double-mouse-1>")  'highlight-symbol-at-point)
 (global-set-key (kbd "<S-wheel-up>")      'highlight-symbol-prev)
 (global-set-key (kbd "<S-wheel-down>")    'highlight-symbol-next)
+(global-set-key (kbd "C-#")      'highlight-symbol-prev) ;;NOTE: key not work on terminal
+(global-set-key (kbd "C-*")    'highlight-symbol-next)   ;;NOTE: key not work on terminal
 
 ;;*** automatically highlight symbol at point for a short time
 (autoload 'idle-highlight "idle-highlight" nil t)
@@ -118,9 +140,24 @@
      (define-key global-map (kbd "<f2> <f2>") 'viss-bookmark-next-buffer)
      ))
 
-(autoload 'highlight-indentation "highlight-indentation" "Toggle highlight indentation." t)
-(global-set-key (kbd "<f10> hi") 'highlight-indentation)
 
+
+;;** highlight columns
+;;*** border (fill-column)
+(autoload 'highlight-beyond-fill-column "highlight-beyond-fill-column"
+  "Setup this buffer to highlight beyond the `fill-column'." t)
+
+(autoload 'fci-mode "fill-column-indicator" "Undocumented." t)
+
+;;*** manual highlight a column
+;;highlight current column or specific column (C-u 70 M-x column-marker-1)
+;;to turn of, C-u M-x column-marker-1
+(autoload 'column-marker-1  "column-marker"
+  "Highlight a column." t)
+(autoload 'column-marker-2  "column-marker"
+  "Highlight a column." t)
+(autoload 'column-marker-3  "column-marker"
+  "Highlight a column." t)
 
 ;;** linkd : links to file/man/info/url
 ;; e.g. (@url :file-name "http://www.emacswiki.org/emacs/LinkdMode" :display "LinkdMode - EmacsWiki")
@@ -192,15 +229,31 @@
 (idle-require 'pulse)
 (unless (fboundp 'cedet-called-interactively-p)
   (defalias 'cedet-called-interactively-p 'called-interactively-p))
+
+;;(setq pulse-command-advice-flag (if window-system 1 nil))
 (setq pulse-command-advice-flag t)
 
-(defadvice imenu (after pulse-advice activate)
-  "Cause the line that is `imenu'd to pulse when the cursor gets there."
-  (when (and pulse-command-advice-flag (cedet-called-interactively-p))
-    (pulse-momentary-highlight-one-line (point))))
+(eval-after-load "pulse"
+  `(progn
+     (defadvice imenu (after pulse-advice activate)
+       "Cause the line that is `imenu'd to pulse when the cursor gets there."
+       (when (and pulse-command-advice-flag (cedet-called-interactively-p))
+         (pulse-momentary-highlight-one-line (point))))
 
+     (defadvice cua-exchange-point-and-mark (after pulse-advice activate)
+       "Cause the line that is `goto'd to pulse when the cursor gets there."
+       (when (and pulse-command-advice-flag (interactive-p)
+                  (> (abs (- (point) (mark))) 400))
+                   (pulse-momentary-highlight-one-line (point))))
+     ))
+         
 
 ;;** misc
+;;*** higlight-indentation
+;;very useful for indentation sensit
+(autoload 'highlight-indentation "highlight-indentation" "Toggle highlight indentation." t)
+(global-set-key (kbd "<f10> hi") 'highlight-indentation)
+
 ;;*** rainbow-mode: colorize strings like 'red', "#3303c4"
 (autoload 'rainbow-mode "rainbow-mode" "Colorize strings that represent colors." t)
 (global-set-key (kbd "<f10> rb") 'rainbow-mode)
