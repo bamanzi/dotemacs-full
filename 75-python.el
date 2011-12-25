@@ -3,10 +3,11 @@
   `(progn
 
 ;;;_ epy
-     (require 'epy-setup)
-     (require 'epy-python)
-     (require 'epy-completion)
-
+     ;; (require 'eepy-menu)
+     ;; (require 'eepy-completion)
+     ;; (require 'eepy-ropemacs)
+     ;; (require 'eepy-pymisc)
+     ;; (require 'eepy-misc)
 
 ;;;_ my enhancement for epy
 ;;;_. code folding
