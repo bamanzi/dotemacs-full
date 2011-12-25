@@ -9,7 +9,7 @@
       (select-window win)
       (switch-to-buffer "*scratch*"))))
 
-(global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
+;;(global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
 
 
 

@@ -4,7 +4,7 @@
 (setq highlight-changes-visibility-initial-state t)
 (global-highlight-changes-mode t)
 
-(copy-face 'highlight-changes 'fringe)  ;;use background to show changes rather than foreground
+(copy-face 'fringe 'highlight-changes)  ;;use background to show changes rather than foreground
 (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
 
 ;;** whitespaces

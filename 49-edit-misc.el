@@ -34,7 +34,7 @@
 ;; http://www.emacswiki.org/emacs-en/CopyFromAbove
 (autoload 'copy-from-above-command "misc"
     "Copy characters from previous nonblank line, starting just above point." t)
-(global-set-key (kbd "C-c c <down>") 'copy-from-above-command)
+(global-set-key (kbd "C-c <down>") 'copy-from-above-command)
 
 (defun copy-char-from-above ()
   (interactive)

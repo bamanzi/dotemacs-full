@@ -1,13 +1,36 @@
 ;;* JavaScript
 ;;** major modes
 
+(autoload 'espresso-mode "espresso" nil t)
+;;espresso-mode entered GNU Emacs 23.2
+(if (string< emacs-version "23.2")
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . espresso-mode)))
+
 ;; js2-mode has better imenu support for extjs style object method
 (autoload 'js2-mode      "js2-mode" nil t)
 
-(autoload 'espresso-mode "espresso" nil t)
+(autoload 'javascript-mode  "javascript"
+  "Major mode for editing JavaScript source text." t)
 
-(if (<= emacs-major-version 24)
-    (add-to-list 'auto-mode-alist '("\\.js\\'" . espresso-mode)))
+;;*** keybindings
+(defvar bmz-js-mode-map (make-sparse-keymap)
+  "My keybindings for all javascript major modes.")
+
+(eval-after-load "espresso"
+  `(add-hook 'espresso-mode-hook #'(lambda ()
+                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+(eval-after-load "js"
+  `(add-hook 'js-mode-hook #'(lambda ()
+                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+(eval-after-load "js2-mode"
+  `(add-hook 'js2-mode-hook #'(lambda ()
+                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+
+(eval-after-load "javascript"
+  `(add-hook 'javascript-mode-hook #'(lambda ()
+                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+
+
 
 ;;** code folding
 (defun js-mode-init-fold ()
@@ -64,10 +87,26 @@
 
 
 ;;*** keybindings
-(eval-after-load "espresso"
-  '(define-key espresso-mode (kbd "<M-f9>")  'jslint-with-node))
+(define-key bmz-js-mode-map (kbd "<M-f9>")  'jslint-with-v8)
 
 
+;;** comint (interactive shell)
+;; http://js-comint-el.sourceforge.net/
+
+(setq inferior-js-program-command "/usr/bin/java org.mozilla.javascript.tools.shell.Main")
+(if (eq system-type 'windows-nt)
+    (setq inferior-js-program-command "jsdb")
+  (setq inferior-js-program-command "/usr/bin/node"))
+
+;;FIXME: only works with js2-mode?
+(define-key bmz-js-mode-map (kbd "C-x C-e") 'js-send-last-sexp)
+(define-key bmz-js-mode-map (kbd "C-x C-E") 'js-send-last-sexp-and-go)
+;;(define-key bmz-js-mode-map "\C-cb" 'js-send-buffer)
+;;(define-key bmz-js-mode-map "\C-c\C-b" 'js-send-buffer-and-go)
+;;(define-key bmz-js-mode-map "\C-cl" 'js-load-file-and-go)
+(define-key bmz-js-mode-map (kbd "C-c C-r") 'js-send-region)
+(define-key bmz-js-mode-map (kbd "C-c C-R") 'js-send-region-and-go)
+			    
 
 ;;** misc
 ;;*** which-func-mode
