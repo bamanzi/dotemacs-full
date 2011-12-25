@@ -9,7 +9,16 @@
   (point)
   )
 
-(defun copy-thing (begin-of-thing end-of-thing &optional arg)
+(defun mark-between (begin-of-thing end-of-thing &optional arg)
+  "Mark thing between begin & end.
+A second call would expand the mark region."
+  (if mark-active
+      (funcall end-of-thing (+ arg 1))
+   (progn
+     (push-mark (get-point begin-of-thing 1) 'nomsg 'activate)
+     (funcall end-of-thing arg))))
+  
+(defun copy-between (begin-of-thing end-of-thing &optional arg)
   "copy thing between beg & end into kill ring"
   (save-excursion
     (let ((beg (get-point begin-of-thing 1))
@@ -20,7 +29,8 @@
   )
 
 (defun paste-to-mark(&optional arg)
-  "Paste things to mark, or to the prompt in shell-mode"
+  "Paste things to mark.
+When used in shell-mode, it will paste to the shell prompt."
   (let ((pasteMe 
      	 (lambda()
      	   (if (string= "shell-mode" major-mode)
@@ -33,22 +43,28 @@
       (funcall pasteMe))
     ))
 
-;;;_. copy word
-(defun copy-word (&optional arg)
+;;;_. word
+(defun mark-whole-word (&optional arg)
+  "Mark whole word.
+Different from `mark-word', this would mark from beginning of the word."
+  (interactive "p")
+  (mark-between 'backward-word 'forward-word arg))
+  
+(defun copy-whole-word (&optional arg)
   "Copy words at point into kill-ring"
-  (interactive "P")
-  (copy-thing 'backward-word 'forward-word arg)
+  (interactive "p")
+  (copy-between 'backward-word 'forward-word arg)
   )
 
-(defun copy-word-to-mark (&optional arg)
-  (interactive "P")
+(defun copy-whole-word-to-mark (&optional arg)
+  (interactive "p")
   (copy-word arg)
   (paste-to-mark arg))
 
 ;;;_. big word (i.e. identifier in most languages)
 ;;; (but in Emacs, nearly any char is valid in symbol. thus we can't use \s_)
 (defun beginning-of-big-word (&optional arg)
-  (interactive "P")
+  (interactive "p")
   (re-search-backward "[^a-z0-9_-]" nil 'noerror 1)
   (if (looking-at "[^a-z0-9_-]")  (goto-char (+ (point) 1)))
   )
@@ -63,10 +79,15 @@
         (re-search-forward "[a-z0-9-_]" nil 'noerror 1)))
   )
 
+(defun mark-big-word (&optional arg)
+  "Mark whole identifier."
+  (interactive "p")
+  (mark-between 'begging-of-big-word 'end-of-big-word arg))
+
 (defun copy-big-word (&optional arg)
   "Copy big word at point"
   (interactive "p")
-  (copy-thing 'beginning-of-big-word 'end-of-big-word arg)
+  (copy-between 'beginning-of-big-word 'end-of-big-word arg)
   )
 
 (defun copy-big-word-to-mark (&optional arg)
@@ -76,37 +97,47 @@
   (paste-to-mark arg)
   )
 
-;;;_. copy line
+;;;_. line
+(defun mark-line (&optional arg)
+  "Mark current line(s)."
+  (interactive "p")
+  (mark-between 'beginning-of-line 'end-of-line arg))
+  
 (defun copy-line (&optional arg)
   "Save current line into Kill-Ring without mark the line "
-  (interactive "P")
-  (copy-thing 'beginning-of-line 'end-of-line arg)
+  (interactive "p")
+  (copy-between 'beginning-of-line 'end-of-line arg)
   )
 
 (defun copy-line-to-mark (&optional arg)
-  (interactive "P")
+  (interactive "p")
   (copy-line arg)
   (paste-to-mark arg))
 
 
-;;;_. copy paragraph
+;;;_. paragraph
+;; (defun mark-paragraph (&optional arg)
+;;   "Copy paragraphes at point"
+;;   (interactive "p")
+;;   (mark-between 'backward-paragraph 'forward-paragraph arg)
+;;   )
+
 (defun copy-paragraph (&optional arg)
   "Copy paragraphes at point"
-  (interactive "P")
-  (copy-thing 'backward-paragraph 'forward-paragraph arg)
+  (interactive "p")
+  (copy-between 'backward-paragraph 'forward-paragraph arg)
   )
 
 (defun copy-paragraph-to-mark (&optional arg)
   "Try to copy current paragraph and paste it to the mark.
 When used in shell-mode, it will paste string on shell prompt by default "
-  (interactive "P")
+  (interactive "p")
   (copy-paragraph arg)
   (paste-to-mark arg))
   
 
-;;;_. copy string
+;;;_. string
 (defun beginning-of-string(&optional arg)
-  "  "
   (re-search-backward "\\s\"" nil 'noerror 1)
   (if (looking-at "\\s\"")  (goto-char (point)))
   )
@@ -117,19 +148,27 @@ When used in shell-mode, it will paste string on shell prompt by default "
 ;;   (if (looking-back "\\s\"") (goto-char (- (point) 1)) )
 ;;   )
 
-(defun copy-string (&optional arg)
-  "Try to copy a string and put it into kill-ring & clipboard."
-  (interactive "P")
+(defun mark-string (&optional arg)
+  "Try to mark a string"
+  (interactive "p")
   (if (not (memq (face-at-point) '(font-lock-string-face font-lock-doc-face)))
       (message "Current point is not on a STRING.")
-    (copy-thing 'beginning-of-string 'forward-sexp arg) ;;use sexp to go to the matching quote mark
+    (mark-between 'beginning-of-string 'forward-sexp arg) ;;use sexp to go to the matching quote mark
+    )
+  )
+
+(defun copy-string (&optional arg)
+  "Copy a string."
+  (interactive "p")
+  (if (not (memq (face-at-point) '(font-lock-string-face font-lock-doc-face)))
+      (message "Current point is not on a STRING.")
+    (copy-between 'beginning-of-string 'forward-sexp arg) ;;use sexp to go to the matching quote mark
     )
   )
 
 (defun copy-string-to-mark (&optional arg)
-  "Try to copy a string and paste it to the mark.
-When used in shell-mode, it will paste string on shell prompt by default "
-  (interactive "P")
+  "Try to copy a string and paste it to the mark."
+  (interactive "p")
   (if (not (memq (face-at-point) '(font-lock-string-face font-lock-doc-face)))
       (message "Current point is not on a STRING.")
     (copy-string arg)
@@ -138,11 +177,12 @@ When used in shell-mode, it will paste string on shell prompt by default "
   )
 
 
-;;;_. copy parenthesis
+;;;_. parenthesis
 (defun beginning-of-parenthesis(&optional arg)
-  "  "
-  (re-search-backward "[\\[<({]" nil 'noerror 1)
-  (if (looking-at "[\\[<({]")  (goto-char (point)))
+  (let* ((event-char (format "%c" last-command-event))
+         (paren      (if (string-match event-char "[{(") event-char "(")))
+    (search-backward paren nil 'noerror 1)
+    (if (looking-at "[\\[<({]")  (goto-char (point))))
   )
 
 ;; (defun end-of-parenthesis(&optional arg)
@@ -151,59 +191,102 @@ When used in shell-mode, it will paste string on shell prompt by default "
 ;;   (if (looking-back "]>)}") (goto-char (- (point) 1)) )
 ;;   )
 
+(defun mark-parenthesis (&optional arg)
+  " Try to mark content between a pair of parenthesis."
+  (interactive "p")
+  (mark-between 'beginning-of-parenthesis 'forward-list arg) ;;use list to find the matching bracket
+  )
+
 (defun copy-parenthesis (&optional arg)
-  " Try to copy a parenthesis and paste it to the mark
-     When used in shell-mode, it will paste parenthesis on shell prompt by default "
-  (interactive "P")
-  (copy-thing 'beginning-of-parenthesis 'forward-list arg) ;;use list to find the matching bracket
+  "Try to copy a parenthesis.
+When used in shell-mode, it will paste parenthesis on shell prompt by default "
+  (interactive "p")
+  (copy-between 'beginning-of-parenthesis 'forward-list arg) ;;use list to find the matching bracket
   )
 
 (defun copy-parenthesis-to-mark (&optional arg)
   " Try to copy a parenthesis and paste it to the mark.
 When used in shell-mode, it will paste parenthesis on shell prompt by default "
-  (interactive "P")
+  (interactive "p")
   (copy-parenthesis arg)
   (paste-to-mark arg)
   )
 
 
 ;;;_. sexp
+(defun mark-whole-sexp (&optional arg)
+  "Mark the whole expression."
+  (interactive "p")
+  (mark-between 'backward-sexp 'forward-sexp arg))  
+
 (defun copy-sexp (&optional arg)
-  " "
-  (interactive "P")
-  (copy-thing 'backward-sexp 'forward-sexp arg))  ;;FIXME: not I want
+  "Copy the expression at point "
+  (interactive "p")
+  (copy-between 'backward-sexp 'forward-sexp arg))  ;;FIXME: not I want
 
 (defun copy-sexp-to-mark (&optional arg)
-  (interactive "P")
+  (interactive "p")
   (copy-sexp arg)
   (paste-to-mark arg))
 
+;;;_. defun
+;;;`mark-defun' already provided by Emacs
+
 
 ;;;_. key bindings
-(defvar copy-map (make-sparse-keymap "Copy without selection"))
-(global-set-key (kbd "C-c c") copy-map)
 
-(define-key copy-map "w" 'copy-word)
-(define-key copy-map "W" 'copy-big-word)
-(define-key copy-map "l" 'copy-line)
-(define-key copy-map "p" 'copy-paragraph)
-(define-key copy-map "s" 'copy-string)
-(define-key copy-map "(" 'copy-parenthesis)
-(define-key copy-map "{" 'copy-parenthesis)  ;;FIXME: copy between {}
-(define-key copy-map "e" 'copy-sexp)
+(defun copy-without-sel--bind-keys ()
+  (defvar mark-map (make-sparse-keymap "Copy without selection"))
+  (global-set-key (kbd "C-c m") mark-map)
 
-(defvar copy-to-mark-map (make-sparse-keymap "Copy to mark without selection"))
-(global-set-key (kbd "C-c p") copy-to-mark-map)
+  (define-key mark-map "w" 'mark-whole-word)
+  (define-key mark-map "W" 'mark-big-word)
+  (define-key mark-map "l" 'mark-line)
+  (define-key mark-map "p" 'mark-paragraph)  ;;Emacs built-in
+  (define-key mark-map "s" 'mark-string)
+  (define-key mark-map "(" 'mark-parenthesis)
+  (define-key mark-map "[" 'mark-parenthesis)
+  (define-key mark-map "{" 'mark-parenthesis) 
+  (define-key mark-map "e" 'mark-sexp)       ;;Emacs built-in
+  (define-key mark-map "f" 'mark-defun)      ;;Emacs built-in
 
-;;Hint: press C-SPC twice to set a mark without activate the region 
-(define-key copy-to-mark-map "w" 'copy-word-to-mark)
-(define-key copy-to-mark-map "W" 'copy-big-word-to-mark)
-(define-key copy-to-mark-map "l" 'copy-line-to-mark)
-(define-key copy-to-mark-map "p" 'copy-paragraph-to-mark)
-(define-key copy-to-mark-map "s" 'copy-string-to-mark)
-(define-key copy-to-mark-map "(" 'copy-parenthesis-to-mark)
-(define-key copy-to-mark-map "{" 'copy-parenthesis-to-mark)
-(define-key copy-to-mark-map "e" 'copy-sexp-to-mark)
+  (defvar copy-map (make-sparse-keymap "Copy without selection"))
+  (global-set-key (kbd "C-c c") copy-map)
+
+  (define-key copy-map "w" 'copy-whole-word)
+  (define-key copy-map "W" 'copy-big-word)
+  (define-key copy-map "l" 'copy-line)
+  (define-key copy-map "p" 'copy-paragraph)
+  (define-key copy-map "s" 'copy-string)
+  (define-key copy-map "(" 'copy-parenthesis)
+  (define-key copy-map "[" 'copy-parenthesis)
+  (define-key copy-map "{" 'copy-parenthesis) 
+  (define-key copy-map "e" 'copy-sexp)
+
+  (defvar copy-to-mark-map (make-sparse-keymap "Copy to mark without selection"))
+  (global-set-key (kbd "C-c p") copy-to-mark-map)
+
+  ;;Hint: press C-SPC twice to set a mark without activate the region 
+  (define-key copy-to-mark-map "w" 'copy-whole-word-to-mark)
+  (define-key copy-to-mark-map "W" 'copy-big-word-to-mark)
+  (define-key copy-to-mark-map "l" 'copy-line-to-mark)
+  (define-key copy-to-mark-map "p" 'copy-paragraph-to-mark)
+  (define-key copy-to-mark-map "s" 'copy-string-to-mark)
+  (define-key copy-to-mark-map "(" 'copy-parenthesis-to-mark)
+  (define-key copy-to-mark-map "{" 'copy-parenthesis-to-mark)
+  (define-key copy-to-mark-map "e" 'copy-sexp-to-mark)
+
+  t
+  )
+
+(defvar copy-without-sel--bind-keys t
+  "Whether to use key bindings provided in this file.")
+
+(if copy-without-sel--bind-keys
+    (copy-without-sel--bind-keys))
+
+(provide 'copy-without-sel)
+
 
 
 

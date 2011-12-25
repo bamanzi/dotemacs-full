@@ -16,11 +16,12 @@ Useful when writing autoload spec."
 	       fn (intern val)))))
   (if (null function)
       (message "You didn't specify a function")
-    (insert-string (format " \"%s\" \"%s\" t)"
+    (insert-string (format " \"%s\"\n  \"%s\" t)"
                            (replace-regexp-in-string ".elc?$" "" (file-name-nondirectory (symbol-file function 'defun)))
                            (or (eldoc-docstring-first-line (documentation function t))
                                "Undocumented.")    ))))
 
+(defalias 'ifas 'insert-function-autoload-spec)
 
 (defun mode-line-install-element (element &optional position)
   "Install an ELEMENT to mode-line.
