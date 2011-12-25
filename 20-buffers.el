@@ -1,6 +1,9 @@
 ;;* buffer settings
 
-(global-set-key (kbd "<C-f4>") 'kill-buffer)
+;;(global-set-key (kbd "<C-f4>") 'kill-buffer)
+(autoload 'close-current-buffer "ergoemacs-functions" "Close the current buffer." t)
+(global-set-key (kbd "<C-f4>") 'close-current-buffer)
+
 
 ;;** buffer navigation
 (global-set-key (kbd "<C-tab>")   'previous-buffer)
