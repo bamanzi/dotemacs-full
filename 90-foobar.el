@@ -1,4 +1,26 @@
-;;;_. go to scratch buffer
+;;* Misc stuff
+
+;;** misc enhancement libraries
+(idle-require 'menu-bar+)
+;(idle-require 'info+)
+(idle-require 'help-fns+)
+(idle-require 'dired+)
+(idle-require 'buff-menu+)
+;;(idle-require 'facemenu+)
+
+;;(idle-require 'mouse3)
+;;(idle-require 'second-sel)
+
+(idle-require 'scratch-log)
+
+;;*** copy without sel
+(load "copy-without-sel" 'noerror)
+
+;;*** language help
+(if (eq window-system 'windows-nt)
+    (load "keyword-help" 'noerror))
+
+;;** go to scratch buffer
 (defun goto-scratch-buffer-on-botton-window ()
   (interactive)
   (require 'windmove)
@@ -12,9 +34,7 @@
 ;;(global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
 
 
-
-
-;;;_. block movement
+;;** block movement
 ;;stolen from http://xahlee.org/emacs/xah_emacs_cursor_movement.el
 ;;(modified: now it move to next occurrence of 3rd newline char)
 (defun forward-block ()
@@ -42,7 +62,7 @@ See: `forward-block'"
 (global-set-key (kbd "C-c p") 'backward-block)
 
 
-;;;_. count region
+;;**  count region
 ;; http://xahlee.org/emacs/elisp_count-region.html
 ;; see also: M-= (M-x count-lines-region)
 (defun count-region (begin end)
@@ -64,19 +84,7 @@ See: `forward-block'"
 
 
 
-
-;;;_. misc enhancement libraries
-(idle-require 'menu-bar+)
-;(idle-require 'info+)
-(idle-require 'help-fns+)
-(idle-require 'dired+)
-(idle-require 'buff-menu+)
-;;(idle-require 'facemenu+)
-
-;;(idle-require 'mouse3)
-;;(idle-require 'second-sel)
-
-;;;_. color-theme
+;;** color-theme
 (if (< emacs-major-version 24)
     ;; if we not loaded color-theme yet (load your faviourite theme in customize.el)
     (if (not (featurep 'color-theme))
@@ -84,24 +92,56 @@ See: `forward-block'"
              (require 'color-theme-tangotango nil t)
              (color-theme-tangotango))))
 
-;; code folding for my init scripts
-;; (add-hook 'find-file-hook '(lambda ()
-;;                              (when (string-match "/.emacs.d/init.d" buffer-file-name)
-;;                                  (if (load "outline-org-like" t)
-;;                                      (outline-org-mode t))
-;;                                  (if (require 'qtmstr-outline nil t)
-;;                                      (qtmstr-outline-mode-hook)))))
 
-
-
-         
-;;;_. copy without sel
-(load "copy-without-sel" 'noerror)
-
-;;;_. language help
-(if (eq window-system 'windows-nt)
-    (load "keyword-help" 'noerror))
-
-(idle-require 'scratch-log)
-
+;;** force `info' showing in another frame
+(defvar special-display-buffer-other-frame-regexps
+  '("*info*")
+  "The buffer names that would be forced to display in another frame.")
+ 
+(defvar display-buffer-function-orig nil
+  "Old value of `display-buffer-function'.")
+   
+(defun display-buffer-use-other-frame-first  (buffer &optional other-window frame)
+  "A `display-buffer-function' implementation.
+This one would force using other frame (if none, this would create a new one)
+to display some special buffers specified in `. For non-special"
+  (let* ((buffer-name (buffer-name buffer))
+         (use-other-frame   (catch 'found
+                              (dolist (regexp special-display-buffer-other-frame-regexps)
+                                (cond
+                                 ((stringp regexp)
+                                  (when (string-match-p regexp buffer-name)
+                                    (throw 'found t)))
+                                 ((and (consp regexp) (stringp (car regexp))
+                                       (string-match-p (car regexp) buffer-name))
+                                  (throw 'found (cdr regexp)))))))
+         frame
+         window)
+    ;;(message "use-other-frame=%s" use-other-frame)
+    (if (and use-other-frame (display-graphic-p))
+        (progn
+          (setq frame (if (eq (selected-frame) (next-frame))
+                          (make-frame)
+                        (next-frame)))
+          (setq window (car (window-list frame)))
+          (set-window-buffer window buffer)
+          window)
+      (let ((display-buffer-function display-buffer-function-orig)) ;;Emacs default
+        (display-buffer buffer other-window frame)))))
+ 
+   
+(defadvice info (around info-other-frame activate)
+  ;;In current Emacs's implementation of `display-buffer',
+  ;;`special-display-function' is too late for special buffers.
+  ;;I have to override `display-buffer' temporarily.
+  (setq display-buffer-function-orig  display-buffer-function)
+  (let ((display-buffer-function      'display-buffer-use-other-frame-first)
+        (after-make-frame-functions   '()))
+    ad-do-it
+    ))
+ 
+;;for testing
+;;(ad-deactivate 'info)
+;;(ad-activate 'info)
+;; (info "(emacs)Top")
 
