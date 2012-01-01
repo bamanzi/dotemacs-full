@@ -42,7 +42,6 @@
 
 
 ;;** misc
-(define-key global-map (kbd "<C-f4>") 'kill-buffer)
 
 ;;*** mode-line
 ;;(setq mouse-buffer-menu-maxlen 20)

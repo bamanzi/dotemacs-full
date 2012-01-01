@@ -1,33 +1,59 @@
 ;;* buffer completion
 ;; (for minibuffer completion, see 25-minibuffer.el)
 
-;;** built-in mach
+;;** built-in mechanism
 ;; Emacs default:
-;;   M-TAB - lisp-complete-symbol(<24)/completion-at-point(v24)
-;;   M-/ - dabbrev-expand
+;; M-TAB    complete-symbol     (< 23.2)
+;;          completion-at-point (>=23.2)
 
-;; tab completion
+;; use TAB for completion
 (if (string< "23.1.99" emacs-version) ;; emacs >= 23.2
-   (setq tab-always-indent 'complete))
+   (setq tab-always-indent 'complete)
+  (require 'smart-tab nil t)
+  )
 
-(global-set-key (kbd "M-/")  'dabbrev-expand)
-(global-set-key (kbd "ESC M-/")      'hippie-expand)
+;;*** dabbrev
+;;   M-/ - dabbrev-expand
+(define-key global-map (kbd "M-/")  'dabbrev-expand)
 
+;;*** hippie-expand 
+(define-key global-map (kbd "ESC M-/")      'hippie-expand)
+
+(defun hippie-expand-filename ()
+  (interactive)
+  (let ((hippie-expand-try-functions-list '(try-complete-file-name-partially
+                                            try-complete-file-name)))
+    (call-interactively 'hippie-expand)))
+
+(if (boundp 'undo-tree-map)
+    (define-key undo-tree-map (kbd "C-/") nil))
+
+(define-key global-map (kbd "C-/") 'hippie-expand-filename)
+
+;;*** words
+(define-key global-map (kbd "ESC M-$") 'ispell-complete-word)
 
 ;;** auto-compelte
-(if (and (load "auto-complete" t)
-         (load "auto-complete-config" t))
-    (progn
-      
-      (ac-config-default)
-      (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
-      
-      ;;(add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
+(autoload 'auto-complete-mode  "auto-complete"
+  "AutoComplete mode" t)
+(global-key-binding (kbd "<f10> ac") 'auto-complete-mode)
 
-      (if (load "auto-complete-scite-api" t)
-          (add-to-list 'ac-sources 'ac-source-scite-api)
-        (message "%s: failed to load `auto-complete-scite-api'." load-file-name)))
-  (message "%s: failed to load `auto-complete'." load-file-name))
+(idle-require 'auto-complete)
+(eval-after-load "auto-complete"
+  `(progn
+     (if (require "auto-complete-config" t)
+         (progn      
+           (ac-config-default)
+           (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
+           
+           ;;(add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
+
+           (if (load "auto-complete-scite-api" t)
+               (add-to-list 'ac-sources 'ac-source-scite-api)
+             (message "%s: failed to load `auto-complete-scite-api'." load-file-name))
+           )
+       (message "%s: failed to load `auto-complete'." load-file-name))
+  ))
 
 ;;*** use `pos-tip' to fix the popup window position issue
 ;; `auto-complete' 1.4 already use `pos-tip'
@@ -44,9 +70,8 @@
   (let ( (ac-sources '(ac-source-filename ac-source-files-in-current-dir)) )
     (call-interactively 'ac-start)))
 
-(if (boundp 'undo-tree-map)
-    (define-key undo-tree-map (kbd "C-/") nil))
-(global-set-key (kbd "C-/") 'ac-expand-filename)
+(eval-after-load "auto-complete-config"
+  `(define-key global-map (kbd "C-/") 'ac-expand-filename))
 
 ;;*** complete english words
 ;; (defun ac-expand-dabbrev ()
@@ -59,8 +84,8 @@
 ;;            )
 ;;       (call-interactively 'ac-start))))
 
-;;(global-set-key (kbd "C-M-/") 'ac-expand-dabbrev)
-(global-set-key (kbd "C-M-/") 'ac-complete-words-in-all-buffer)
+;;(define-key global-map (kbd "C-M-/") 'ac-expand-dabbrev)
+(define-key global-map (kbd "C-M-/") 'ac-complete-words-in-all-buffer)
 
 ;; (defun ac-expand-english-words ()
 ;;   "complete english words."
@@ -76,8 +101,8 @@
         (find-file-noselect "~/.emacs.d/etc/words")))
   (call-interactively 'ac-complete-words-in-all-buffer))
 
-(global-set-key (kbd "ESC C-M-/") 'ac-expand-english-words)
-(global-set-key (kbd "C-, w") 'ac-expand-english-words)
+(define-key global-map (kbd "ESC C-M-/") 'ac-expand-english-words)
+(define-key global-map (kbd "C-, w") 'ac-expand-english-words)
 
 ;;** completion-ui
 (autoload 'complete-dabbrev "completion-ui" nil t)
@@ -85,17 +110,18 @@
 (autoload 'complete-files   "completion-ui" nil t)
 
 ;; NOTE: `C-,' couldn't be recognized on terminal
-(global-set-key (kbd "C-, d") 'complete-dabbrev)
-(global-set-key (kbd "C-, t") 'complete-etags)
-(global-set-key (kbd "C-, f") 'complete-files)
-;;(global-set-key (kbd "C-, s") 'complete-symbol) ;;elisp
-;;(global-set-key (kbd "C-, >") 'complete-nxml)
-;;(global-set-key (kbd "C-, <") 'complete-nxml)
-(global-set-key (kbd "C-, $") 'complete-ispell)
+(define-key global-map (kbd "C-, d") 'complete-dabbrev)
+(define-key global-map (kbd "C-, t") 'complete-etags)
+(define-key global-map (kbd "C-, f") 'complete-files)
+;;(define-key global-map (kbd "C-, s") 'complete-symbol) ;;elisp
+;;(define-key global-map (kbd "C-, >") 'complete-nxml)
+;;(define-key global-map (kbd "C-, <") 'complete-nxml)
+(define-key global-map (kbd "C-, $") 'complete-ispell)
 
 (autoload 'complete-ispell-lookup "completion-ui-more-source")
-(global-set-key (kbd "C-, $") 'complete-ispell-lookup)
+(define-key global-map (kbd "C-, $") 'complete-ispell-lookup)
 
 
 ;;** pabbrev ...
 ;;TODO: pabbrev...
+

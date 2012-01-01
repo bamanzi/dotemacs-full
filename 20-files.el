@@ -20,6 +20,17 @@
 
 (global-set-key (kbd "<f5> B") 'anything-bookmarks)
 
+;;*** locate
+;; Emacs built-in: M-x locate
+
+
+(if (eq system-type 'windows-nt)
+    (setq anything-c-locate-command "locate %s")    ;;Use Locate32
+  ;;(setq anything-c-locate-command "es -i -r %s")  ;;Use Everything
+  ;;otherwise, use platform specific default
+  )
+(global-set-key (kbd "<f5> l") 'anything-locate)
+
 ;;*** others
 ;;(define-key search-key (kbd "C-f") 'ffap-other-window)
 ;;** Open methods
@@ -56,7 +67,7 @@
 ;;*** tramp
 ;;...
 
-;;**** sudo
+;;**** open file with sudo
 (defun revert-buffer-with-sudo ()
   (interactive)
   (let ( (filename (buffer-file-name)) )
@@ -66,26 +77,65 @@
       (message "buffer not saved yet."))))
 
 
-(defun save-buffer-with-sudo ()
-  (interactive)
-  (message "TODO: not implemented yet."))
+;;*** sudo without tramp
+(autoload 'sudo-find-file  "sudo"
+  "Open a file, which may or may not be readable. If we can't" t)
 
+(autoload 'sudo-save-current-buffer  "sudo"
+  "Save current buffer, running sudo if necessary." t)
+
+(defalias 'save-buffer-with-sudo 'sudo-save-current-buffer)
+
+
+(autoload 'sudoedit  "sudo-ext"
+  "Run `sudoedit FILE' to edit FILE as root." t)
+;;`sudo-ext' also has sudo support in shell execution in Emacs
 
 ;;** Save File
 ;;...
-;;*** backup rules
+;;*** Emacs built-in backup rules
 ;;(setq make-backup-files t) ;;to disable backup, set it to nil
 
 ;;(setq backup-directory-alist `(("." . "~/.saves")))
 
-(setq backup-by-copying t)
+(setq backup-by-copying t
+      backup-by-copying-when-linked nil)
 
 ;; (setq version-control t
 ;;   delete-old-versions t
 ;;   kept-new-versions 6
 ;;   kept-old-versions 2)
 
-;;*** TODO: backup-each-save.el
+;;*** backup-each-save.el: tree structure mirrored in backup dir
+
+;;(setq backup-each-save-mirror-location "~/.backups")
+
+(idle-require 'backup-each-save)
+
+(eval-after-load "backup-each-save"
+  `(progn
+     (add-hook 'after-save-hook 'backup-each-save)
+
+     (if (eq system-type 'windows-nt)
+
+         ;; for windows, remove ':' in backup filename 
+         (defun backup-each-save-compute-location (filename)
+           ;;(let* ((containing-dir (file-name-directory filename))
+           (let* ((containing-dir (replace-regexp-in-string ":" "" (file-name-directory filename)))
+                  (basename (file-name-nondirectory filename))
+                  (backup-container
+                   (format "%s/%s"
+                           backup-each-save-mirror-location
+                           containing-dir)))
+             (when (not (file-exists-p backup-container))
+               (make-directory backup-container t))
+             (format "%s/%s-%s" backup-container basename
+                     (format-time-string backup-each-save-time-format))))
+       )
+     ))
+
+
+
 
 ;;** filesystem navigation & management
 ;;*** dired

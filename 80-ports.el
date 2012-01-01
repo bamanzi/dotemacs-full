@@ -63,6 +63,7 @@
   (define-key key-translation-map (kbd "<menu>") 'event-apply-hyper-modifier)
 
 ;;  (define-key key-translation-map (kbd "<super>") (kbd "<f11>"))
+  (define-key key-translation-map (kbd "<backtab>")         (kbd "<S-tab>"))
   (define-key key-translation-map (kbd "<C-S-iso-lefttab>") (kbd "<C-S-tab>"))
 
 

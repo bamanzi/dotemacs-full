@@ -1,3 +1,5 @@
+;;* CEDET (and ECB
+
 (defun find-dir-in-load-path-and-add-it (dirname recursively)
   "Try to find a dir named DIRNAME along all the paths in `load-path', and add it into `load-path'."
   (mapc #'(lambda(path)
@@ -12,7 +14,6 @@
         load-path)
   t
   )
-
 
 ;;** CEDET
 
@@ -96,15 +97,12 @@
 
 ;;** ECB
 
-
 (if (string< emacs-version "23.2")
     (find-dir-in-load-path-and-add-it "ecb-2.40" nil)
   (if (find-dir-in-load-path-and-add-it "ecb-snap" nil)
       t
     (if bmz/always-use-cedet-from-sf.net
         (message "NOTE: ecb-2.40 can't be used with emacs' built-in cedet."))))
-
-
 
 ;; workaround for emacs >= 23.2
 (unless (string< emacs-version "23.2")

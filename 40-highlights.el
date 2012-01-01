@@ -4,16 +4,34 @@
 (setq highlight-changes-visibility-initial-state t)
 (global-highlight-changes-mode t)
 
-(copy-face 'fringe 'highlight-changes)  ;;use background to show changes rather than foreground
 (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
+
+;;*** use background to show changes rather than foreground
+;;(copy-face 'fringe 'highlight-changes)
+(progn ;;NOTE: you need to call this each time you change your color-theme
+  (set-face-background 'highlight-changes (face-background 'fringe nil t))
+  (set-face-foreground 'highlight-changes 'unspecified)
+)
 
 ;;** whitespaces
 (global-set-key (kbd "<f10> ws") 'whitespace-mode)
+;; (setq whitespace-style '(tabs spaces trailing lines
+;;                               space-before-tab newline
+;;                               indentation empty space-after-tab
+;;                               space-mark tab-mark newline-mark))
 
 ;;*** develock: programmers whitespace-mode
 (autoload 'develock-mode  "develock" "Toggle Develock mode." t)
+(setq develock-auto-enable t)
 
+(idle-require 'develock)
 
+;;FIXME: now develock-mode would make `lisp-indent-line' behavior strangely
+(eval-after-load "develock"
+  `(progn
+     (ad-disable-advice 'lisp-indent-line 'around 'remove-useless-whitespace)
+     (ad-deactivate 'lisp-indent-line)
+     )
 
 ;;** highlight current position
 ;;*** mark
@@ -228,7 +246,12 @@
 ;;** pulse: temperarily highlight a line/region, to draw user's attension
 (idle-require 'pulse)
 (unless (fboundp 'cedet-called-interactively-p)
-  (defalias 'cedet-called-interactively-p 'called-interactively-p))
+  ;;(defalias 'cedet-called-interactively-p 'called-interactively-p)
+  (defun cedet-called-interactively-p ()
+    (if (string< emacs-version "23.2")
+        (called-interactively-p)
+      (called-interactively-p 'any)))
+    )
 
 ;;(setq pulse-command-advice-flag (if window-system 1 nil))
 (setq pulse-command-advice-flag t)

@@ -1,11 +1,13 @@
 ;;* General settings for programming
 
-;;(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
-
 
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
 
+(defun comment-or-uncomment-line (arg)
+  (interactive "*P")
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position) arg))
 
+(define-key global-map (kbd "ESC M-;") 'comment-or-uncomment-line)
 
 ;;** compilation
 (setq compilation-error-regexp-alist '(gnu java))

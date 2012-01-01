@@ -9,18 +9,25 @@
 
 
 ;;*** hideshowvis add +/- symbol in left fringe
-(autoload 'hideshowvis-enable "hideshowvis" "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
-(autoload 'hideshowvis-minor-mode "hideshowvis" "Will indicate regions foldable with hideshow in the fringe." 'interactive)
+(autoload 'hideshowvis-enable "hideshowvis"
+  "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
+(autoload 'hideshowvis-minor-mode "hideshowvis"
+  "Will indicate regions foldable with hideshow in the fringe." 'interactive)
 
-(eval-after-load "hideshowvis" '(load "hideshow-fringe" t))
+(eval-after-load "hideshowvis"
+  `(progn
+     (load "hideshow-fringe" t)
 
-;;(add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
+     ;;(add-hook 'emacs-lisp-mode-hook 'hideshowvis-enable)
 
-;;(eval-after-load 'python
-;;  (add-hook 'python-mode-hook 'hideshowvis-enable))
-
+     ;;(eval-after-load 'python
+     ;;  (add-hook 'python-mode-hook 'hideshowvis-enable))
+     ))
 
 ;;**** fix compatibility between hideshowvis & transpose-words
+;; The problem: if hideshowvis-minor-mode enabled,  `transpose-words' on "this-is',
+;; you'll get 'isthis-',  rather than 'is-this'.
+
 (if nil
 ;; Because confliction with `transpose-words', we'll removed
 ;; `hideshowvis-highlight-hs-regions-in-fringe' `after-change-functions'.
@@ -69,6 +76,7 @@
      (define-key outline-mode-prefix-map (kbd "<down>")   'outline-next-visible-heading)
      (define-key outline-mode-prefix-map (kbd "<C-up>")   'outline-backward-same-level)
      (define-key outline-mode-prefix-map (kbd "<C-down>") 'outline-next-visible-heading)
+     (define-key outline-mode-prefix-map (kbd "<tab>")    'outline-toggle-children)
      ))
 
 (progn
@@ -148,14 +156,6 @@
 (autoload 'outline-org-heading-mode               "outline-org-like" nil t)
 (autoload 'outline-org-mode                       "outline-org-like" nil t)
 
-;;*** outline settings for my init files
-(defun bmz/turn-on-outline-settings ()
-  (if (string-match "/.emacs.d/init.d/.*.el$" buffer-file-name)
-      (ignore-errors
-        (outline-org-mode t)
-        (qtmstr-outline-mode t))))
-
-;;(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
 
 ;;*** qtmstr-outline
 ;; with this package, we have another set of left-fringe icons to fold/unfold sections
@@ -188,8 +188,13 @@
      (define-key qtmstr-outline-header-map [mouse-1]  'outline-cycle)
      (define-key qtmstr-outline-header-map [mouse-2]  'hide-leaves)
      (define-key qtmstr-outline-header-map [mouse-3]  'show-all)
+
      (define-key qtmstr-outline-header-map (kbd "TAB") 'outline-toggle-children)
-     
+     (define-key qtmstr-outline-header-map (kbd "RET") nil)
+
+     (set-face-underline 'qtmstr-outline-header-face t)
+     (set-face-bold-p    'qtmstr-outline-header-face t)
+;;     (set-face-background 'qtmstr-outline-header-face 
      ))
 
 ;;** allout
@@ -277,3 +282,16 @@ See: `forward-block'"
 
 ;;(global-set-key (kbd "C-c n") 'forward-block)
 ;;(global-set-key (kbd "C-c p") 'backward-block)
+;;** outline settings for my init files
+
+(defun bmz/turn-on-outline-settings ()
+  (if (string-match "/.emacs.d/init.d/.*.el$" buffer-file-name)
+      (ignore-errors
+        (if (require 'outline-org-like nil t)
+            (outline-org-mode t))
+        (if (require 'qtmstr-outline nil t)
+            (qtmstr-outline-mode-hook)))))
+
+
+(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
+

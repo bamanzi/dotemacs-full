@@ -2,15 +2,6 @@
 ;;See also (linkd-follow '(@file :file-name "25-win-fns.el" :to "init-win-fns-keys" :display "window-related keybindings"))
 
 ;;** window layout
-;;TIP: C-x r w  window-configuration-to-register
-;;TIP: C-x r j  jump-to-register (could be used to restore window layout)
-
-;;*** winner-mode
-(setq winner-dont-bind-my-keys t)
-(setq winner-ring-size 20)
-(winner-mode t)
-;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
-;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
 
 ;;*** common used layouts
 ;;DOC: http://www.emacswiki.org/emacs/ThreeWindows
@@ -19,26 +10,40 @@
 ;; 窗口缺省布局
 
 (defun bmz/default-frame-layout (&optional frame)
-   "+---------+------------+ 
-    |         |            | 
-    |         |            | 
-    |         |            |
-    |         |------------+
-    |         |            |
-    |         |            | 
-    +---------+------------+  "
-  (interactive (list (selected-frame)))
-  (with-selected-frame frame
-    (delete-other-windows)
-    (split-window-horizontally)
-    ;;(enlarge-window (/ (window-width) 5) 'horizontal)
-    (other-window 1)
-    (split-window-vertically)
-    (enlarge-window (/ (window-height) 3) nil)
-    ))
+   "
++---------+------------+ 
+|         |            | 
+|         |            | 
+|         |            |
+|         |------------+
+|         |            |
+|         |            | 
++---------+------------+  "
+   (interactive (list (selected-frame)))
+   (unless frame (setq frame (selected-frame)))
+   (with-selected-frame frame
+     (delete-other-windows)
+     (split-window-horizontally)
+     ;;(enlarge-window (/ (window-width) 5) 'horizontal)
+     (other-window 1)
+     (split-window-vertically)
+     (enlarge-window (/ (window-height) 3) nil)
+     (switch-to-buffer "*scratch*")
+     ))
 
 (add-hook 'window-setup-hook 'bmz/default-frame-layout)
-(add-hook 'after-make-frame-functions 'bmz/default-frame-layout)
+;;(add-hook 'after-make-frame-functions 'bmz/default-frame-layout)
+
+;;*** layout save & restore
+;;TIP: C-x r w  window-configuration-to-register
+;;TIP: C-x r j  jump-to-register (could be used to restore window layout)
+
+;;*** winner-mode: history of your window laytous
+(setq winner-dont-bind-my-keys t)
+(setq winner-ring-size 20)
+(winner-mode t)
+;;(global-set-key (kbd "<f11> C-z") 'winner-undo)
+;;(global-set-key (kbd "<f11> C-y") 'winner-redo)
 
 
 ;;** resizing windows
@@ -290,12 +295,20 @@ an error is signaled."
       
      ))
 
-;;*** layout transformation
+;;*** layout transformation (including window buffer)
 ;;(require 'transpose-frame nil t) ;; flip window layout within a frame
-(autoload 'transpose-frame "transpose-frame"  "Transpose windows arrangement at FRAME." t)
-(autoload 'flip-frame "transpose-frame" "Flip windows arrangement vertically at FRAME." t)
-(autoload 'flop-frame "transpose-framer" "Flop windows arrangement horizontally at FRAME." t)
-(autoload 'rotate-frame "transpose-frame" "Rotate windows arrangement 180 degrees at FRAME." t)
+(autoload 'transpose-frame "transpose-frame"
+  "Transpose windows arrangement at FRAME." t)
+(autoload 'flip-frame      "transpose-frame"
+  "Flip windows arrangement vertically at FRAME." t)
+(autoload 'flop-frame      "transpose-framer"
+  "Flop windows arrangement horizontally at FRAME." t)
+(autoload 'rotate-frame    "transpose-frame"
+  "Rotate windows arrangement 180 degrees at FRAME." t)
+(autoload 'rotate-frame-clockwise      "transpose-frame"
+  "Rotate windows arrangement 90 degrees clockwise at FRAME." t)
+(autoload 'rotate-frame-anticlockwise  "transpose-frame"
+  "Rotate windows arrangement 90 degrees anti-clockwise at FRAME." t)
 
 ;;*** rotate
 ;; https://github.com/banister/window-rotate-for-emacs
