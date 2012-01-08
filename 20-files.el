@@ -139,7 +139,7 @@
 
 ;;** filesystem navigation & management
 ;;*** dired
-;;(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
+(global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
 
 (defun bmz/dired-jump ()
   "If current buffer is in an archive(zip/tar), jump to it.

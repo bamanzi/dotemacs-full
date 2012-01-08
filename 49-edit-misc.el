@@ -87,6 +87,7 @@ current line instead."
 (define-key search-map (kbd "1") 'secondary-to-primary)
 (define-key search-map (kbd "`") 'secondary-swap-region)
 
+;;*** swap contents
 ;; http://www.cnblogs.com/bamanzi/archive/2011/06/04/emacs-secondary-selection.html
 (defun transpose-selections ()
   "Transpose the content of the primary region and of the secondary."
@@ -129,6 +130,12 @@ current line instead."
 
 (define-key search-map (kbd "~") 'transpose-selections)
 (global-set-key (kbd "C-x M-t") 'transpose-selections)
+
+*** swap contents (method 2)
+(autoload 'anchored-transpose "anchored-transpose"
+  "Transpose portions of the region around an anchor phrase." t)
+
+(global-set-key (kbd "C-x t") 'anchored-transpose)
 
 ;;** misc
 ;;*** extend selection incrementally (ergoemacs-functions.el)

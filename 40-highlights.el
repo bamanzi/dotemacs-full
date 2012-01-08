@@ -7,11 +7,13 @@
 (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
 
 ;;*** use background to show changes rather than foreground
-;;(copy-face 'fringe 'highlight-changes)
-(progn ;;NOTE: you need to call this each time you change your color-theme
+(defun bmz/fix-highlight-chnages-face ()
+  (interactive)
+  ;;(copy-face 'fringe 'highlight-changes)
+  ;;NOTE: you need to call this each time you change your color-theme
   (set-face-background 'highlight-changes (face-background 'fringe nil t))
   (set-face-foreground 'highlight-changes 'unspecified)
-)
+  )
 
 ;;** whitespaces
 (global-set-key (kbd "<f10> ws") 'whitespace-mode)
@@ -31,7 +33,7 @@
   `(progn
      (ad-disable-advice 'lisp-indent-line 'around 'remove-useless-whitespace)
      (ad-deactivate 'lisp-indent-line)
-     )
+     ))
 
 ;;** highlight current position
 ;;*** mark
@@ -125,8 +127,8 @@
 
 (idle-require 'bm)
 
+(global-set-key (kbd "<C-f2>") 'bm-toggle)
 (progn
-  (global-set-key (kbd "<C-f2>") 'bm-toggle)
   (global-set-key (kbd "<M-f2>") 'bm-next)
   (global-set-key (kbd "<S-f2>") 'bm-previous)
   (global-set-key (kbd "<f2> r") 'bm-bookmark-regexp)
@@ -240,8 +242,10 @@
                 ("\\<\\(and\\|or\\|not\\)\\>" . font-lock-keyword-face)))))
 
 ;;*** fixme-mode 
-(autoload 'fixme-mode "fixme-mode" "A minor mode for making FIXME and other warnings stand out" t)
-(autoload 'fic-ext-mode "fic-ext-mode"  "minor mode for highlighting FIXME/TODO in comments" t)
+(autoload 'fixme-mode "fixme-mode"
+  "A minor mode for making FIXME and other warnings stand out" t)
+(autoload 'fic-ext-mode "fic-ext-mode"
+  "minor mode for highlighting FIXME/TODO in comments" t)
   
 ;;** pulse: temperarily highlight a line/region, to draw user's attension
 (idle-require 'pulse)

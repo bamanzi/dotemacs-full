@@ -1,4 +1,4 @@
-;;;_ S(@* "gui options")
+;;** gui options
 (setq use-dialog-box nil
       menu-prompting nil)
 
@@ -22,16 +22,30 @@
 ;;    (set-scroll-bar-mode 'right)
     )
 
+;;** session
+(require 'desktop)
+(desktop-save-mode t)
 
-;;;_. key modifiers and prefix keys
+;;*** save & load desktop session to/from bookmarks
+;;(idle-require 'bookmark+)
+(autoload 'bmkp-set-desktop-bookmark "bookmark+"
+  "Save the desktop as a bookmark." t)
+(autoload 'bmkp-desktop-jump "bookmark+"
+  "Jump to a desktop bookmark." t)
+
+(global-set-key (kbd "C-x r K") 'bmkp-set-desktop-bookmark)
+(global-set-key (kbd "C-x j K") 'bmkp-desktop-jump)
+
+
+;;** key modifiers and prefix keys
 
 (when (eq window-system 'w32)
   ;;(setq w32-lwindow-modifier 'super)
   
-  (setq w32-lwindow-modifier 'super) 
+  (setq w32-lwindow-modifier 'super)
   (setq w32-pass-lwindow-to-system nil) ;;if set to nil, a single press <lwindow> would prevent Start Menu
 
-  (setq w32-rwindow-modifier 'alt)      
+  (setq w32-rwindow-modifier 'alt)
   (setq w32-pass-rwindow-to-system nil)
   
   (setq w32-apps-modifier 'hyper)
@@ -43,12 +57,12 @@
 ;;FIXME: not work
 (when (eq window-system 'x)
   (global-unset-key (kbd "<menu>"))
-  (define-key key-translation-map (kbd "<menu>") 'event-apply-hyper-modifier)  
+  (define-key key-translation-map (kbd "<menu>") 'event-apply-hyper-modifier)
   )
 
 
 
-;;;_. anything
+;;** anything
 (if (and (load "anything" t)
          (load "anything-config" t))
     (progn
@@ -69,7 +83,7 @@
   (message "%s: failed to load `anything'." load-file-name))
 
 
-;;;_. recent-jump
+;;** recent-jump
 (setq rj-column-threshold 100)
 (if (load "recent-jump" t)
     (recent-jump-mode t)
@@ -82,8 +96,3 @@
 
 
 
-;;;_. utils
-(define-key goto-map "d" 'dired-jump) ;;C-x C-j
-
-	 
-  

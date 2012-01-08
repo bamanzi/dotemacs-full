@@ -13,22 +13,31 @@
   "Major mode for editing JavaScript source text." t)
 
 ;;*** keybindings
-(defvar bmz-js-mode-map (make-sparse-keymap)
+(defvar bmz-js-keys-mode-map (make-sparse-keymap)
   "My keybindings for all javascript major modes.")
 
+(define-minor-mode bmz-js-keys-mode
+  "A dummy minor mode, just to inject my keybindigs into different JavaScript
+major modes."
+  nil
+  nil
+  bmz-js-keys-mode-map)
+
+(defun turn-on-bmz-js-keys-mode ()
+  (interactive)
+  (bmz-js-keys-mode t))
+
 (eval-after-load "espresso"
-  `(add-hook 'espresso-mode-hook #'(lambda ()
-                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+  `(add-hook 'espresso-mode-hook    'turn-on-bmz-js-keys-mode))
+  
 (eval-after-load "js"
-  `(add-hook 'js-mode-hook #'(lambda ()
-                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+  `(add-hook 'js-mode-hook          'turn-on-bmz-js-keys-mode))
+
 (eval-after-load "js2-mode"
-  `(add-hook 'js2-mode-hook #'(lambda ()
-                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+  `(add-hook 'js2-mode-hook         'turn-on-bmz-js-keys-mode))
 
 (eval-after-load "javascript"
-  `(add-hook 'javascript-mode-hook #'(lambda ()
-                                  (copy-keymap-to-major-mode bmz-js-mode-map))))
+  `(add-hook 'javascript-mode-hook  'turn-on-bmz-js-keys-mode))
 
 
 
@@ -87,11 +96,13 @@
 
 
 ;;*** keybindings
-(define-key bmz-js-mode-map (kbd "<M-f9>")  'jslint-with-v8)
+(define-key bmz-js-keys-mode-map (kbd "<M-f9>")  'jslint-with-v8)
 
 
 ;;** comint (interactive shell)
 ;; http://js-comint-el.sourceforge.net/
+(autoload 'run-js "js-comint"
+  "Run an inferior Javascript process, input and output via buffer `*js*'." t)
 
 (setq inferior-js-program-command "/usr/bin/java org.mozilla.javascript.tools.shell.Main")
 (if (eq system-type 'windows-nt)
@@ -99,13 +110,13 @@
   (setq inferior-js-program-command "/usr/bin/node"))
 
 ;;FIXME: only works with js2-mode?
-(define-key bmz-js-mode-map (kbd "C-x C-e") 'js-send-last-sexp)
-(define-key bmz-js-mode-map (kbd "C-x C-E") 'js-send-last-sexp-and-go)
-;;(define-key bmz-js-mode-map "\C-cb" 'js-send-buffer)
-;;(define-key bmz-js-mode-map "\C-c\C-b" 'js-send-buffer-and-go)
-;;(define-key bmz-js-mode-map "\C-cl" 'js-load-file-and-go)
-(define-key bmz-js-mode-map (kbd "C-c C-r") 'js-send-region)
-(define-key bmz-js-mode-map (kbd "C-c C-R") 'js-send-region-and-go)
+(define-key bmz-js-keys-mode-map (kbd "C-x C-e") 'js-send-last-sexp)
+(define-key bmz-js-keys-mode-map (kbd "C-x C-E") 'js-send-last-sexp-and-go)
+;;(define-key bmz-js-keys-mode-map "\C-cb" 'js-send-buffer)
+;;(define-key bmz-js-keys-mode-map "\C-c\C-b" 'js-send-buffer-and-go)
+;;(define-key bmz-js-keys-mode-map "\C-cl" 'js-load-file-and-go)
+(define-key bmz-js-keys-mode-map (kbd "C-c C-r") 'js-send-region)
+(define-key bmz-js-keys-mode-map (kbd "C-c C-R") 'js-send-region-and-go)
 			    
 
 ;;** misc

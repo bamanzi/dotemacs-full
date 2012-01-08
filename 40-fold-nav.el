@@ -293,5 +293,5 @@ See: `forward-block'"
             (qtmstr-outline-mode-hook)))))
 
 
-(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
+;;(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
 

@@ -44,7 +44,12 @@
   ;;       (message "No suitable font found for org-mode. ")))
   
   (set (make-variable-buffer-local 'line-spacing) 2) 
-  (buffer-face-mode t))
+  (buffer-face-mode t)
+
+  (set-face-attribute 'org-level-1 nil :height 1.5 :bold t)
+  (set-face-attribute 'org-level-2 nil :height 1.3 :bold t)
+  (set-face-attribute 'org-level-3 nil :height 1.1)
+  )
 
 ;;FIXME: not work?
 ;;(add-hook 'org-mode-hook 'org-mode-init-face)

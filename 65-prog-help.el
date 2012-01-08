@@ -40,7 +40,7 @@
 ;; Examples:
 ;;
 ;; Bind F7 to start devhelp and search for the word at the point.
-(global-set-key [f11] 'devhelp-word-at-point)
+;;(global-set-key [f11] 'devhelp-word-at-point)
 ;;
 ;; Bind F6 to enable the automatic assistant.
 ;; (global-set-key [f6] 'devhelp-toggle-automatic-assistant)
