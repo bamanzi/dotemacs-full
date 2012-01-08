@@ -77,15 +77,6 @@ or just:
     (setq-default mode-line-format (nreverse res)))
   (force-mode-line-update t))
 
-(defun copy-keymap-to-local (keymap)
-  "Copy all keybindings in keymap to current buffer."
-  (map-keymap #'(lambda (event  binding)
-                  (if (listp binding)
-                      (copy-keymap-to-major-mode binding)
-                    (message "event:%s  binding:%s" event binding)
-                    (local-set-key event binding))
-                  )
-              keymap))
 
 (provide 'bmz-misc)
 
