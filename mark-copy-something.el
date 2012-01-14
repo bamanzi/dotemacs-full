@@ -1,4 +1,4 @@
-;;; make-something.el --- mark (and copy) something
+;;; mark-copy-something.el --- mark (and copy) something
 
 ;; Maintainer: BaManzi <bamanzi@gmail.com>
 ;; Keywords: mark, copy
@@ -29,7 +29,7 @@
 ;; Upone the mark-xx commands, here also provides the corresponding
 ;; copy-xx and copy-xx-to-mark commands.
 
-;; Refer function `copy-without-sel--bind-keys' for default keybindings.
+;; Refer function `mark-copy-something--bind-keys' for default keybindings.
 
 ;; Note: The code was not based on `thing-at-point', because `thing' depends
 ;; heavily on syntax table, which make it hard to implement these.
@@ -302,8 +302,9 @@ the PATTERN is included."
 
 ;;;_. key bindings
 
-(defun copy-without-sel--bind-keys ()
-  (defvar mark-map (make-sparse-keymap "Copy without selection"))
+(defun mark-copy-something--bind-keys ()
+  (unless (boundp 'mark-map)
+    (defvar mark-map (make-sparse-keymap "Mark...")))
   (global-set-key (kbd "C-c m") mark-map)
 
   (define-key mark-map "w" 'mark-whole-word)
@@ -323,7 +324,8 @@ the PATTERN is included."
   (define-key mark-map "-"  'mark-between-char)
   (define-key mark-map "P"  'mark-between-pattern)
 
-  (defvar copy-map (make-sparse-keymap "Copy without selection"))
+  (unless (boundp 'copy-map)
+    (defvar copy-map (make-sparse-keymap "Copy...")))
   (global-set-key (kbd "C-c c") copy-map)
 
   (define-key copy-map "w" 'copy-whole-word)
@@ -342,7 +344,8 @@ the PATTERN is included."
   (define-key copy-map "-"  'copy-between-char)
   (define-key copy-map "P"  'copy-between-pattern)
 
-  (defvar copy-to-mark-map (make-sparse-keymap "Copy to mark without selection"))
+  (unless (boundp 'copy-to-mark-map)
+    (defvar copy-to-mark-map (make-sparse-keymap "Copy to mark...")))
   (global-set-key (kbd "C-c p") copy-to-mark-map)
 
   ;;Hint: press C-SPC twice to set a mark without activate the region
@@ -358,12 +361,12 @@ the PATTERN is included."
   t
   )
 
-(defvar copy-without-sel--dont-bind-keys nil
+(defvar mark-copy-something--dont-bind-keys nil
   "Whether to use key bindings provided in this file.")
 
-(unless copy-without-sel--dont-bind-keys
-    (copy-without-sel--bind-keys))
+(unless mark-copy-something--dont-bind-keys
+    (mark-copy-something--bind-keys))
 
-(provide 'copy-without-sel)
+(provide 'mark-copy-something)
 
-;;;mark-something.el ends here
+;;;mark-copy-something.el ends here
