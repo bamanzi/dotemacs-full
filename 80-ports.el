@@ -79,12 +79,10 @@
   )
 
 
-;;;_ xterm & console
-(when (eq system-type 'gnu/linux)
-  (if (not window-system)
-      (xterm-mouse-mode t))
-  ;;(gpm-mouse-mode t) ;;for Linux console
-
+(defun map-mintty-keys ()
+  ;; Mintty supports most combo keys (even telnet/ssh to another server)
+  ;; such as C-%, C-&, C-(, C-., C-f1, M-f1, S-f1... while putty doesn't
+  ;; http://code.google.com/p/mintty/wiki/Keycodes
   (define-key key-translation-map (kbd "M-[ 1;5l") (kbd "C-,"))
   (define-key key-translation-map (kbd "M-[ 1;5n") (kbd "C-."))
 
@@ -92,7 +90,26 @@
   (define-key input-decode-map "\e[1;10A" [M-S-up])
   (define-key input-decode-map "\e[1;10B" [M-S-down])
   (define-key input-decode-map "\e[1;10C" [M-S-right])
-  (define-key input-decode-map "\e[1;10D" [M-S-left])
+  (define-key input-decode-map "\e[1;10D" [M-S-left])  
+  )
+
+(defun config-for-linux-console ()
+  (gpm-mouse-mode t) ;;for Linux console  
+  )
+
+(defun config-for-linux-xterm ()
+  (xterm-mouse-mode t)
+  (require 'ext-mouse nil t)
+  )
+
+;;;_ xterm & console
+(when (eq system-type 'gnu/linux)
+  (if (not window-system)
+      ;;FIXME: if xterm ?
+      (config-for-linux-xterm)
+      ;;(config-for-linux-console)
+    )
+
 
   (load-library "help-mode")  ;; to avoid the error message "Symbol's value as variable is void: help-xref-following"
   )

@@ -46,13 +46,18 @@
   (set (make-variable-buffer-local 'line-spacing) 2) 
   (buffer-face-mode t)
 
-  (set-face-attribute 'org-level-1 nil :height 1.5 :bold t)
-  (set-face-attribute 'org-level-2 nil :height 1.3 :bold t)
-  (set-face-attribute 'org-level-3 nil :height 1.1)
+  (bmz/init-org-level-faces (selected-frame))
   )
 
+(defun bmz/init-org-level-faces (frame)
+  (interactive (list (selected-frame)))
+  (set-face-attribute 'org-level-1 frame :height 1.5 :bold t)
+  (set-face-attribute 'org-level-2 frame :height 1.3 :bold t)
+  (set-face-attribute 'org-level-3 frame :height 1.1))
+
 ;;FIXME: not work?
-;;(add-hook 'org-mode-hook 'org-mode-init-face)
+(add-hook 'org-mode-hook 'org-mode-init-face)
+(add-hook 'after-make-frame-functions 'bmz/init-org-level-faces)
 
 ;;*** misc
 ;;FIXME: '<s' template

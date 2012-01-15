@@ -7,13 +7,15 @@
 (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
 
 ;;*** use background to show changes rather than foreground
-(defun bmz/fix-highlight-chnages-face ()
-  (interactive)
+(defun bmz/fix-highlight-chnages-face (frame)
+  (interactive (list (selected-frame)))
   ;;(copy-face 'fringe 'highlight-changes)
   ;;NOTE: you need to call this each time you change your color-theme
   (set-face-background 'highlight-changes (face-background 'fringe nil t))
   (set-face-foreground 'highlight-changes 'unspecified)
   )
+
+(add-hook 'after-make-frame-functions 'bmz/fix-highlight-chnages-face)
 
 ;;** whitespaces
 (global-set-key (kbd "<f10> ws") 'whitespace-mode)

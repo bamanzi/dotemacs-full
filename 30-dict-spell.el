@@ -1,7 +1,9 @@
 
 ;;** DICT protocol
 ;;*** dictionary.el
-;;    (setq dictionary-server "localhost")
+;;(setq dictionary-server "localhost")
+;;(setq dictionary-default-dictionary "xdict")
+;;(setq dictionary-default-dictionary "stardict")
 (autoload 'dictionary-search "dictionary" "Ask for a word and search it in all dictionaries" t)
 (autoload 'dictionary-match-words "dictionary" "Ask for a word and search all matching words in the dictionaries" t)
 

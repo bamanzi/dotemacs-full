@@ -118,8 +118,10 @@
           (that-window (next-window this-window nil)) )
     (while (and that-window
                 (not (eq this-window that-window)))
-      (if (or (member (buffer-name (window-buffer that-window)) special-display-buffer-names)
-              (window-dedicated-p that-window))
+      (if (or (window-dedicated-p that-window)
+              (let ((bufname (buffer-name (window-buffer that-window))))
+                (or (member bufname  special-display-buffer-names)
+                    (eq (aref bufname 0) ?*))))
           (setq that-window (next-window that-window nil))
         (progn
           (message "%s" that-window)
