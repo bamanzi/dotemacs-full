@@ -39,21 +39,19 @@
 (global-key-binding (kbd "<f10> ac") 'auto-complete-mode)
 
 (idle-require 'auto-complete)
-(eval-after-load "auto-complete"
+(idle-require 'auto-complete-config)
+(eval-after-load "auto-complete-config"
   `(progn
-     (if (require "auto-complete-config" t)
-         (progn      
-           (ac-config-default)
-           (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
-           
-           ;;(add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
+     (ac-config-default)
+     (define-key ac-completing-map (kbd "ESC ESC") 'ac-stop)
 
-           (if (load "auto-complete-scite-api" t)
-               (add-to-list 'ac-sources 'ac-source-scite-api)
-             (message "%s: failed to load `auto-complete-scite-api'." load-file-name))
-           )
-       (message "%s: failed to load `auto-complete'." load-file-name))
-  ))
+     ;;(add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup)
+
+     (if (require 'auto-complete-scite-api nil t)
+         (add-to-list 'ac-sources 'ac-source-scite-api)
+       (message "%s: failed to load `auto-complete-scite-api'." load-file-name))
+     )
+  )
 
 ;;*** use `pos-tip' to fix the popup window position issue
 ;; `auto-complete' 1.4 already use `pos-tip'
@@ -71,7 +69,9 @@
     (call-interactively 'ac-start)))
 
 (eval-after-load "auto-complete-config"
-  `(define-key global-map (kbd "C-/") 'ac-expand-filename))
+  `(progn
+     (define-key global-map (kbd "C-. f") 'ac-expand-filename)
+     (define-key global-map (kbd "C-. /") 'ac-expand-filename)
 
 ;;*** complete english words
 ;; (defun ac-expand-dabbrev ()
@@ -85,7 +85,7 @@
 ;;       (call-interactively 'ac-start))))
 
 ;;(define-key global-map (kbd "C-M-/") 'ac-expand-dabbrev)
-(define-key global-map (kbd "C-M-/") 'ac-complete-words-in-all-buffer)
+(define-key global-map (kbd "C-. w") 'ac-complete-words-in-all-buffer)
 
 ;; (defun ac-expand-english-words ()
 ;;   "complete english words."
@@ -102,7 +102,32 @@
   (call-interactively 'ac-complete-words-in-all-buffer))
 
 (define-key global-map (kbd "ESC C-M-/") 'ac-expand-english-words)
-(define-key global-map (kbd "C-, w") 'ac-expand-english-words)
+(define-key global-map (kbd "C-. W") 'ac-expand-english-words)
+
+;;*** ispell
+(defun ac-ispell-get-candidates ()
+  (let ((word (car (ispell-get-word nil "\\*")))
+        (interior-frag nil))
+    (lookup-words (concat (and interior-frag "*") word
+                    (if (or interior-frag (null ispell-look-p))
+                    "*"))
+                  ispell-complete-word-dict)))
+ 
+(ac-define-source ispell
+  '((symbol . "i")
+    (candidates . ac-ispell-get-candidates)))
+ 
+(defun ac-expand-ispell-word ()
+  (interactive)
+  (let ((ac-sources '(ac-source-ispell)))
+    (call-interactively 'ac-start)))
+ 
+(define-key global-map (kbd "C-. $") 'ac-expand-ispell-word)
+
+;;*** misc
+(define-key global-map (kbd "C-. i") 'ac-complete-imenu)
+(
+
 
 ;;** completion-ui
 (autoload 'complete-dabbrev "completion-ui" nil t)

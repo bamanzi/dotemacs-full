@@ -131,7 +131,9 @@ current line instead."
 (define-key search-map (kbd "~") 'transpose-selections)
 (global-set-key (kbd "C-x M-t") 'transpose-selections)
 
-*** swap contents (method 2)
+;;*** swap contents (method 2)
+;; transpose portions of a region around an anchor phrase.  In other
+;; words it swaps two regions.
 (autoload 'anchored-transpose "anchored-transpose"
   "Transpose portions of the region around an anchor phrase." t)
 
@@ -141,7 +143,7 @@ current line instead."
 ;;*** extend selection incrementally (ergoemacs-functions.el)
 ;; http://xahlee.org/emacs/syntax_tree_walk.html
 (autoload 'extend-selection "ergoemacs-functions" nil t)
-(global-set-key (kbd "C-.") 'extend-selection)
+(global-set-key (kbd "M-#") 'extend-selection)
 ;; see also: mark-sexp (C-M-SPC), mark-word (M-@)
 
 

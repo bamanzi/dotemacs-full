@@ -79,7 +79,7 @@ If DIR is non-nill, shift right. Otherwise, shift left."
 
 ;; (global-set-key (kbd "<f6> <<") 'shift-left)
 ;; (global-set-key (kbd "<f6> >>") 'shift-right)
-      
+
 
 (defun kill-forward-whitespaces ()
   "Kill the whitespaces from the current position until the next
@@ -143,7 +143,6 @@ whitespaces of the next line. Otherwise it would kill current word."
 
 
 
-
 ;;---
 (defun init-vi-style-keys (prefix-key)
   (let ( (map (make-sparse-keymap "Vi-style operation")) )
@@ -193,13 +192,15 @@ whitespaces of the next line. Otherwise it would kill current word."
     (define-key map (kbd "M") 'bookmark-set)
 
     (define-key map (kbd "g g") 'beginning-of-buffer)
-    (define-key map (kbd "G") 'end-of-buffer)
+    (define-key map (kbd "G")   'end-of-buffer)
 
     (define-key map (kbd "f")   'go-to-char)
 ;;    (define-key map (kbd "B")   'go-back-to-char)
 
     (define-key map "o"  'open-next-line)
     (define-key map "O"  'open-previous-line)
+
+    (define-key map (kbd "C-g") 'viper-describe-file)
 ))
     
 

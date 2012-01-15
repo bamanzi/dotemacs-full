@@ -56,6 +56,7 @@
     ))
 
 (init-cua-keys "<f4>")
-    
-      
-    
+
+(global-set-key (kbd "<C-f4>") 'close-current-buffer)
+(global-set-key (kbd "<M-f4>") 'kill-buffer-and-window)
+

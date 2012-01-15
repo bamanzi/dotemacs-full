@@ -70,6 +70,7 @@
 (autoload 'crosshairs-mode    "crosshairs"
   "Toggle highlighting the current line and column." t)
 
+(define-key global-map (kbd "M-+") 'crosshairs-flash)
 
 ;;** highlight matching paren/pair
 

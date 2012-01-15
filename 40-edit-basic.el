@@ -22,7 +22,7 @@
 
 ;;*** marks
 (global-set-key (kbd "C-`")    'set-mark-command)
-(global-set-key (kbd "M-`")    'exchange-point-and-mark)
+;;(global-set-key (kbd "M-`")    'exchange-point-and-mark)
 (global-set-key (kbd "C-M-`")  'pop-to-mark-command)
 
 (autoload 'visible-mark-mode "visible-mark" "A mode to make the mark visible." t)
@@ -105,7 +105,22 @@
           (back-to-indentation)
           (backward-delete-char-untabify (min tab-width (current-column))))))))
  
- 
+ (defvar abs-indent-mode-map
+  (let ( (map (make-sparse-keymap)) )
+    (define-key map "\t"        'abs-indent) 
+    (define-key map [S-tab]     'abs-unindent)
+    map)
+  "keymap for `abs-indent-mode'.")
+
+(define-minor-mode abs-indent-mode
+  "simple indent just like other editors."
+  nil
+  " ai"
+  abs-indent-mode-map
+  (if abs-indent-mode
+      t
+    t))
+
 ;; to used it
 ;; (add-hook 'ahk-mode-hook #'(lambda ()
 ;;                            (local-set-key (kbd "<TAB>")    'abs-indent)
@@ -141,9 +156,18 @@ vi style of % jumping to matching brace."
 (define-key global-map (kbd "C-c (") 'select-parened-expression)
 
 ;;*** autopair
-(autoload 'autopair-mode "autopair" "Automagically pair braces and quotes like in TextMate." t)
+(autoload 'autopair-mode "autopair"
+  "Automagically pair braces and quotes like in TextMate." t)
 (autoload 'autopair-on   "autopair" "Undocumented." t)
 (global-set-key (kbd "<f10> ap") 'autopair-mode)
+
+(global-set-key (kbd "<f10> hp") 'highlight-parentheses-mode)
+(autoload 'highlight-parentheses-mode "highlight-parentheses" nil t)
+(global-set-key (kbd "<f10> hp") 'highlight-parentheses-mode)
+
+(autoload 'rainbow-delimiters "rainbow-delimiters" nil t)
+(global-set-key (kbd "<f10> rd") 'rainbow-delimiters)
+
 
 ;;** newline & line-wrap
 (setq-default truncate-lines t)
@@ -181,8 +205,12 @@ vi style of % jumping to matching brace."
   (message "%s: failed to load `undo-tree'."  load-file-name))
 
 
-;;** kill & yank
+;;** mark, kill & yank
 (setq mouse-yank-at-point t) ;;rather than the click point
+(when (eq window-system 'x)
+    (setq x-select-enable-clipboard t)
+;;  (setq x-select-enable-primary t)
+    )
 
 ;; C-y is too far for single-palm 
 (if cua-mode
@@ -190,6 +218,14 @@ vi style of % jumping to matching brace."
   (define-key global-map (kbd "C-c C-v") 'yank))
   
 
+(unless (boundp 'mark-map)
+  (defvar mark-map (make-sparse-keymap "Mark...")))
+(define-key global-map (kbd "M-`") mark-map)
+
+(unless (boundp 'copy-map)
+  (defvar copy-map (make-sparse-keymap "Copy...")))
+
+ 
 ;;*** anything-show-kill-ring を使うように修正した
 ;; http://dev.ariel-networks.com/articles/emacs/part4/
 (defadvice yank-pop (around anything-kill-ring-maybe activate)
@@ -205,22 +241,39 @@ vi style of % jumping to matching brace."
     ad-do-it))
 
 ;;*** kill/yank a line
-;;TIP: C-o C-k would backward kill to the beginning of line
 
-;;(setq kill-whole-line t) ;;ensure the newline char deleted, avoid two C-k
 
-(defun copy-line (arg)
+(defun mark-current-line (arg)
+  "Mark current line."
+  (interactive "p")
+  (let ( (beg (progn (beginning-of-line) (point)))
+         (end (progn (end-of-line arg)   (point))) )
+    (push-mark beg 'nomsg 'activate)
+    (goto-char (point))))
+
+(define-key mark-map "l" 'mark-current-line)
+
+
+(defun copy-current-line (arg)
   "Copy current line."
   (interactive "p")
   (save-excursion
-	(let ( (beg (progn (beginning-of-line) (point)))
-		   (end (progn (end-of-line arg)   (point))) )
-	  (if (fboundp 'pulse-momentary-highlight-region)
-		  (pulse-momentary-highlight-region beg end))
-	  (kill-ring-save beg end)
-	  )))
+    (let ( (beg (progn (beginning-of-line) (point)))
+           (end (progn (end-of-line arg)   (point))) )
+      (if (fboundp 'pulse-momentary-highlight-region)
+          (pulse-momentary-highlight-region beg end))
+      (kill-ring-save beg end)
+      )))
 
-(global-set-key (kbd "C-c c l") 'copy-line)
+(define-key copy-map "l" 'copy-current-line)
+
+;;kill current line
+;;TIP: C-u C-k would backward kill to the beginning of line
+;;(setq kill-whole-line t) ;;ensure the newline char deleted, avoid two C-k
+
+
+;;*** other 
+(idle-require 'mark-copy-something)
 
 
 ;;** misc

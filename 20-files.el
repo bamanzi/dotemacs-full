@@ -164,18 +164,12 @@ Otherwise, call the original `dired-jump'."
         (set-window-dedicated-p window t))))
 
 (defun bmz/nav-goto-dir (dir)
-  (interactive
-   (list (read-directory-name
-          "NAV to dir"
-          nil
-          (if buffer-file-name
-              (file-name-directory buffer-file-name)
-            default-directory)) ))
-    (unless (get-buffer "*nav*")
-      (nav))
-    (let ( (window (get-buffer-window "*nav*")) )
-      (set-window-dedicated-p window t))
-    (with-current-buffer "*nav*"
+  (interactive "Dnav to: ")
+  (unless (get-buffer "*nav*")
+    (nav))
+  (let ( (window (get-buffer-window "*nav*")) )
+    (set-window-dedicated-p window t))
+  (with-current-buffer "*nav*"
       (nav-jump-to-dir dir)))
 
 (define-key goto-map "D" 'bmz/nav-goto-dir)
@@ -199,19 +193,13 @@ Otherwise, call the original `dired-jump'."
            (frame-configuration-to-register ?n))))
      ))
 
-(defun nc-goto-dir (arg)
-  (interactive "P")
-  (let* ( (curdir (if buffer-file-name
-                     (file-name-directory buffer-file-name)
-                   default-directory))
-         (dir (if current-prefix-arg
-                  (read-directory-name "nc to: " nil curdir)
-                curdir)) )
-    (nc)
-    (with-current-buffer nc-active-nc-buffer
-      (nc-display-new-dir dir))))
+(defun nc-goto-dir (dir)
+  (interactive "Dnc to: ")
+  (nc)
+  (with-current-buffer nc-active-nc-buffer
+    (nc-display-new-dir dir)))
 
-(define-key goto-map "\M-n" 'nc-goto-dir)
+;;(define-key goto-map "\M-n" 'nc-goto-dir)
 
 
 
@@ -238,3 +226,13 @@ Otherwise, call the original `dired-jump'."
                                         (split-window-horizontally arg)
                                       (split-window-vertically arg))))
 
+
+;;** misc
+(defun describe-this-file ()
+  (interactive)
+  (require 'help-fns+)
+  (if buffer-file-name
+      (describe-file buffer-file-name)
+    (message "file not saved. ")))
+     
+(global-set-key (kbd "<f6> M-g") 'describe-this-file)

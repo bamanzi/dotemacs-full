@@ -125,7 +125,7 @@
      (define-key outline-mode-prefix-map ">"        'foldout-zoom-subtree)
      (define-key outline-mode-prefix-map "<"        'foldout-exit-fold)
      ))
-     
+
 
 
 ;;*** outline-cycle: org-mode like operations
@@ -136,16 +136,23 @@
 (autoload 'outline-move-subtree-up   "outline-magic" "Move the currrent subtree up past ARG headlines of the same level." t)
 (autoload 'outline-move-subtree-down "outline-magic" "Move the currrent subtree down past ARG headlines of the same level. " t)
 
+(defun outline-cycle-whole-buffer ()
+  (interactive)
+  (outline-cycle 4))
+
 (eval-after-load "outline"
   `(progn
-     (global-set-key (kbd "<f2> <tab>")   'outline-cycle)
+     (define-key outline-mode-prefix-map (kbd "<tab>") 'outline-cycle)
+     (define-key outline-mode-prefix-map (kbd "<backtab>") 'outline-cycle-whole-buffer)   ;;on Linux, it's <backtab> but not <S-tab>
+     (define-key outline-mode-prefix-map (kbd "<S-tab>") 'outline-cycle-whole-buffer)
      
-     (define-key outline-mode-prefix-map (kbd "<backtab>") 'outline-cycle) ;;on Linux, it's <backtab> but not <S-tab>
      (define-key outline-mode-prefix-map (kbd "<M-up>"   ) 'outline-move-subtree-up)
      (define-key outline-mode-prefix-map (kbd "<M-down>" ) 'outline-move-subtree-down)
      (define-key outline-mode-prefix-map (kbd "<M-left>" ) 'outline-promote)
      (define-key outline-mode-prefix-map (kbd "<M-right>") 'outline-demote)))
 
+
+  
 ;;*** org-mode style headings in comment
 (autoload 'outline-org/outline-cycle               "outline-org-like" nil t)
 (autoload 'outline-org/outline-command-dispatcher  "outline-org-like" nil t)
@@ -282,6 +289,8 @@ See: `forward-block'"
 
 ;;(global-set-key (kbd "C-c n") 'forward-block)
 ;;(global-set-key (kbd "C-c p") 'backward-block)
+
+
 ;;** outline settings for my init files
 
 (defun bmz/turn-on-outline-settings ()
@@ -289,9 +298,12 @@ See: `forward-block'"
       (ignore-errors
         (if (require 'outline-org-like nil t)
             (outline-org-mode t))
-        (if (require 'qtmstr-outline nil t)
-            (qtmstr-outline-mode-hook)))))
+        ;; (if (require 'qtmstr-outline nil t)
+        ;;     (qtmstr-outline-mode-hook))
+        )))
 
 
-;;(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
+(add-hook 'find-file-hook 'bmz/turn-on-outline-settings)
+
+(global-set-key (kbd "<M-f2>") 'outline-cycle)
 

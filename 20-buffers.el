@@ -27,6 +27,14 @@
 ;;*** ibuffer
 (global-set-key (kbd "C-c C-b") 'ibuffer)
 
+;;**** ibuffer-vc
+;;Group ibuffer's list by VC project, or show VC status
+(add-hook 'ibuffer-hook
+          (lambda ()
+            (when (require 'ibuffer-vc nil t)
+              (ibuffer-vc-set-filter-groups-by-vc-root)
+              (ibuffer-do-sort-by-alphabetic))))
+
 
 ;;** temporary buffers
 ;;*** midnight-mode
@@ -71,9 +79,11 @@
 (defun bmz/revert-buffer ()
   "revert bufer with close & reopen the file, so local variable would be re-inited."
   (interactive)
-  (let ( (file-name (buffer-file-name)) )
-    (if (kill-buffer (current-buffer))
-        (find-file file-name))))
+  (let ( (file-name (buffer-file-name))
+         (pt        (point)) )
+    (when (kill-buffer (current-buffer))
+        (find-file file-name)
+        (goto-char pt))))
 
 (global-set-key (kbd "C-x M-r") 'bmz/revert-buffer)
 

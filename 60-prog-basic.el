@@ -1,6 +1,6 @@
 ;;* General settings for programming
 
-
+;;** comment
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
 
 (defun comment-or-uncomment-line (arg)
@@ -8,6 +8,16 @@
   (comment-or-uncomment-region (line-beginning-position) (line-end-position) arg))
 
 (define-key global-map (kbd "ESC M-;") 'comment-or-uncomment-line)
+
+;;*** another implementation of comment-line
+;; if nothing marked, use current line as region
+;;http://pastebin.com/G7N4F4eE
+(if (require 'bmz-misc nil t)
+    (when (fboundp 'allow-line-as-region-for-function)
+      (allow-line-as-region-for-function comment-region)
+      (allow-line-as-region-for-function uncomment-region)
+      (allow-line-as-region-for-function comment-or-uncomment-region)
+    ))
 
 ;;** compilation
 (setq compilation-error-regexp-alist '(gnu java))

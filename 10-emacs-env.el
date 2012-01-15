@@ -83,15 +83,25 @@
 
 ;;** helps
 (idle-require 'help-mode)  ;;on linux sometime C-h v/f would complain 'help-setup-xref is void'
-(idle-require 'help-fns+) 
 (add-hook 'help-mode-hook 'visual-line-mode)
-
+(define-key help-map "F"  'describe-face)
 (define-key help-map "\C-h" nil) ;;force '<f1> C-h' to list keymap of `help-map'
+
+(idle-require 'help-fns+)
+(autoload 'describe-keymap  "help-fns+"
+  "Describe bindings in KEYMAP, a variable whose value is a keymap." t)
+(autoload 'describe-file  "help-fns+"
+  "Describe the file named FILENAME." t)
+(autoload 'describe-command  "help-fns+"
+  "Describe an Emacs command (interactive function)." t)
+(define-key help-map "K"   'describe-key-briefly)
+(define-key help-map "M-k" 'describe-keymap)
+(define-key help-map "M-f" 'describe-file)
+(define-key help-map "c"   'describe-command)
+
 (define-key help-map " "  #'(lambda ()
                               (interactive)
                               (describe-keymap help-map)))  ;;help-fns+ needed?
-(define-key help-map "K"  'describe-key-briefly)
-(define-key help-map "F"  'describe-face)
 
 
 (defun describe-major-mode ()
@@ -202,3 +212,4 @@
 (defalias 'll 'load-library)
 (defalias 'eb 'eval-buffer)
 (defalias 'er 'eval-region)
+

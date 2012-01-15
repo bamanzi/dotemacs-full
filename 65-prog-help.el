@@ -1,6 +1,21 @@
 ;;* Query Documents
+(if (eq window-system 'windows-nt)
+    (load "keyword-help" 'noerror))
 
-;;** `info-lookup-symbol'
+;;** `info'
+;;*** `info-lookup-symbol'
+
+;;*** anything-info
+(defun anything-info-emacs ()
+  (interactive)
+    (anything
+      :prompt "Info about: "
+      :candidate-number-limit 10
+      :sources
+      '( anything-c-source-info-emacs
+         anything-c-source-info-elisp
+        ;; anything-c-source-info-emacs-lisp-intro
+         )))
 
 
 ;;** devhelp
@@ -47,3 +62,24 @@
 ;;
 ;; Bind F6 to search with the assistant window.
 ;; (global-set-key [f6] 'devhelp-assistant-word-at-point)
+
+
+;;** Emacs: Perl PHP Dictionary Wikipedia Google … Reference lookup -
+;; http://xahlee.org/emacs/emacs_lookup_ref.html
+
+(defun lookup-wikipedia ()
+  "Look up the word under cursor in Wikipedia.
+If there is a text selection (a phrase), use that.
+
+This command switches you to your browser."
+ (interactive)
+ (let (myWord myUrl)
+   (setq myWord
+         (if (region-active-p)
+             (buffer-substring-no-properties (region-beginning) (region-end))
+           (thing-at-point 'symbol)))
+
+  (setq myWord (replace-regexp-in-string " " "_" myWord))
+  (setq myUrl (concat "http://en.wikipedia.org/wiki/" myWord))
+  (browse-url myUrl)
+   ))

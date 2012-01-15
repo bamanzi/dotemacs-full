@@ -111,6 +111,23 @@
 
 
 ;;** window switching
+(defun other-window+ ()
+  "similar to `other-window', but ignore special buffer."
+  (interactive)
+  (let* ( (this-window (selected-window))
+          (that-window (next-window this-window nil)) )
+    (while (and that-window
+                (not (eq this-window that-window)))
+      (if (or (member (buffer-name (window-buffer that-window)) special-display-buffer-names)
+              (window-dedicated-p that-window))
+          (setq that-window (next-window that-window nil))
+        (progn
+          (message "%s" that-window)
+          (select-window that-window)
+          (setq that-window nil))))))
+
+(global-set-key (kbd "C-x O") 'other-window+)
+
 ;;*** windmove: move by direction
 (idle-require 'windmove)
 (windmove-default-keybindings 'super)

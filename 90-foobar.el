@@ -11,14 +11,21 @@
 ;;(idle-require 'mouse3)
 ;;(idle-require 'second-sel)
 
+
+;;** misc
+;;*** append scratch buffer into a file automatically
+;;https://github.com/wakaran/scratch-log
 (idle-require 'scratch-log)
 
-;;*** copy without sel
-(load "copy-without-sel" 'noerror)
+;; another implementation: How to Make Emacs' Scratch Buffer Persistent Across Sessions 
+;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
 
-;;*** language help
-(if (eq window-system 'windows-nt)
-    (load "keyword-help" 'noerror))
+;;*** command log
+;; http://www.foldr.org/~michaelw/emacs/mwe-log-commands.el
+;;(idle-require 'mwe-log-commands)
+
+;;*** command frequency
+;;http://xahlee.org/emacs/command-frequency.html
 
 ;;** go to scratch buffer
 (defun goto-scratch-buffer-on-botton-window ()
@@ -34,35 +41,8 @@
 ;;(global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
 
 
-;;** block movement
-;;stolen from http://xahlee.org/emacs/xah_emacs_cursor_movement.el
-;;(modified: now it move to next occurrence of 3rd newline char)
-(defun forward-block ()
-  "Move cursor forward to next occurrence of double newline char.
-In most major modes, this is the same as `forward-paragraph', however,
-this function behaves the same in any mode.
-forward-paragraph is mode dependent, because it depends on
-syntax table that has different meaning for ¡°paragraph¡±."
-  (interactive)
-  (skip-chars-forward "\n")
-  (when (not (search-forward-regexp "\n[[:blank:]]*\n[[:blank:]]*\n" nil t))
-    (goto-char (point-max)) ) )
 
-(defun backward-block ()
-  "Move cursor backward to previous occurrence of double newline char.
-See: `forward-block'"
-  (interactive)
-  (skip-chars-backward "\n")
-  (when (not (search-backward-regexp "\n[[:blank:]]*\n[[:blank:]]*\n" nil t))
-    (goto-char (point-min))
-    )
-  )
-
-(global-set-key (kbd "C-c n") 'forward-block)
-(global-set-key (kbd "C-c p") 'backward-block)
-
-
-;;**  count region
+;;** count region
 ;; http://xahlee.org/emacs/elisp_count-region.html
 ;; see also: M-= (M-x count-lines-region)
 (defun count-region (begin end)
