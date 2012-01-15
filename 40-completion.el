@@ -71,7 +71,7 @@
 (eval-after-load "auto-complete-config"
   `(progn
      (define-key global-map (kbd "C-. f") 'ac-expand-filename)
-     (define-key global-map (kbd "C-. /") 'ac-expand-filename)
+     (define-key global-map (kbd "C-. /") 'ac-expand-filename)))
 
 ;;*** complete english words
 ;; (defun ac-expand-dabbrev ()
@@ -126,7 +126,7 @@
 
 ;;*** misc
 (define-key global-map (kbd "C-. i") 'ac-complete-imenu)
-(
+(define-key global-map (kbd "C-. y") 'ac-complete-yasnippet)
 
 
 ;;** completion-ui

@@ -135,8 +135,10 @@
 (windmove-default-keybindings 'super)
 
 
-;;*** M-1, M-2 to go to different window
-(autoload 'window-numbering-mode "window-numbering" "A minor mode that assigns a number to each window" t)
+;;*** jump by number: M-1, M-2 to go to different window
+(autoload 'window-numbering-mode "window-numbering"
+  "A minor mode that assigns a number to each window" t)
+
 (autoload 'window-number-mode "window-number"
   "A global minor mode that enables selection of windows according to
 numbers with the C-x C-j prefix. "
@@ -151,7 +153,7 @@ the mode-line."
   (window-numbering-mode t)
   (window-numer-meta-mode t))
 
-
+;;*** jump by buffer name
 (defun ido-jump-to-window ()
   "Jump to window by current buffer name."
   (interactive)

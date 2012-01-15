@@ -67,10 +67,16 @@
 ;;** color-theme
 (if (< emacs-major-version 24)
     ;; if we not loaded color-theme yet (load your faviourite theme in customize.el)
-    (if (not (featurep 'color-theme))
-        (and (require 'color-theme nil t)
-             (require 'color-theme-tangotango nil t)
-             (color-theme-tangotango))))
+    (when (not (featurep 'color-theme))
+      (when (require 'color-theme nil t)
+        (require 'color-theme-tangotango nil t)
+        (when (featurep 'color-theme-tangotango)
+           (color-theme-tangotango))
+        
+        (idle-require 'color-theme-solarized)
+        (idle-require 'color-theme-zenburn)
+        )))
+          
 
 
 ;;** if no region marked, taken current line as region

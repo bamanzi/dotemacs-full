@@ -13,9 +13,11 @@
   ;;NOTE: you need to call this each time you change your color-theme
   (set-face-background 'highlight-changes (face-background 'fringe nil t))
   (set-face-foreground 'highlight-changes 'unspecified)
-  )
+  ;;(set-face-attribute  'highlight-changes nil :inherit 'fringe)
+)
 
 (add-hook 'after-make-frame-functions 'bmz/fix-highlight-chnages-face)
+
 
 ;;** whitespaces
 (global-set-key (kbd "<f10> ws") 'whitespace-mode)
@@ -291,5 +293,5 @@
 ;;*** markerpen / himark
 ;;TODO: foo
 
-;;***
+
 

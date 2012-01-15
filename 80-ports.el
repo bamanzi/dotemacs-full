@@ -8,7 +8,7 @@
   (setq w32-pass-rwindow-to-system nil)
 
   (setq w32-apps-modifier 'hyper)
-  
+
   (setq w32-scroll-lock-modifier nil)
 
 
@@ -31,17 +31,23 @@
   (if (file-directory-p cygwin-root-path)
       (progn
         ;;(add-to-list 'exec-path (expand-file-name "bin" cygwin-root-path)) ;;NOT recommended!!
-        
-        (add-to-list 'Info-default-directory-list (expand-file-name "usr/share/info" cygwin-root-path))
-        (add-to-list 'Info-default-directory-list (expand-file-name "usr/local/share/info"  cygwin-root-path))
+
+        (add-to-list 'Info-default-directory-list
+                     (expand-file-name "usr/share/info" cygwin-root-path))
+        (add-to-list 'Info-default-directory-list
+                     (expand-file-name "usr/local/share/info"  cygwin-root-path))
 
         (require 'woman)
-        (add-to-list 'woman-manpath (expand-file-name "usr/share/man" cygwin-root-path))
-        (add-to-list 'woman-manpath (expand-file-name "usr/local/share/man" cygwin-root-path))
-        (add-to-list 'woman-manpath (expand-file-name "usr/local/man" cygwin-root-path))
+        (add-to-list 'woman-manpath
+                     (expand-file-name "usr/share/man" cygwin-root-path))
+        (add-to-list 'woman-manpath
+                     (expand-file-name "usr/local/share/man" cygwin-root-path))
+        (add-to-list 'woman-manpath
+                     (expand-file-name "usr/local/man" cygwin-root-path))
 
         ;;  (if (not (locate-file ispell-program-name) ;;FIXME:
-        (setq ispell-program-name (expand-file-name "bin/aspell.exe" cygwin-root-path))
+        (setq ispell-program-name
+              (expand-file-name "bin/aspell.exe" cygwin-root-path))
         )
     (message "Path not exist or not a directory: %s" cygwin-root-path)))
 
@@ -82,24 +88,30 @@
 (defun map-mintty-keys ()
   ;; Mintty supports most combo keys (even telnet/ssh to another server)
   ;; such as C-%, C-&, C-(, C-., C-f1, M-f1, S-f1... while putty doesn't
-  ;; http://code.google.com/p/mintty/wiki/Keycodes
+  ;;   http://code.google.com/p/mintty/wiki/Keycodes
   (define-key key-translation-map (kbd "M-[ 1;5l") (kbd "C-,"))
   (define-key key-translation-map (kbd "M-[ 1;5n") (kbd "C-."))
 
+  ;; The following are not recognizable on xterm:
+  ;;   C-[, C-], C-{, C-}, C-\, C-|, C-/, C-?
+  ;; The following are ambigious
+  ;;   C-RET, C-backspace
+  
   ;; iTerm meta-shift-<arrows> fix
   (define-key input-decode-map "\e[1;10A" [M-S-up])
   (define-key input-decode-map "\e[1;10B" [M-S-down])
   (define-key input-decode-map "\e[1;10C" [M-S-right])
-  (define-key input-decode-map "\e[1;10D" [M-S-left])  
+  (define-key input-decode-map "\e[1;10D" [M-S-left])
   )
 
 (defun config-for-linux-console ()
-  (gpm-mouse-mode t) ;;for Linux console  
+  (gpm-mouse-mode t) ;;for Linux console
   )
 
 (defun config-for-linux-xterm ()
   (xterm-mouse-mode t)
   (require 'ext-mouse nil t)
+  
   )
 
 ;;;_ xterm & console
@@ -111,6 +123,7 @@
     )
 
 
-  (load-library "help-mode")  ;; to avoid the error message "Symbol's value as variable is void: help-xref-following"
+  (load-library "help-mode")  ;; to avoid the error message:
+                              ;;; "Symbol's value as variable is void: help-xref-following"
   )
-               
+

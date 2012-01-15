@@ -28,6 +28,7 @@
   (start-process-shell-command "devhelp" nil "devhelp" "-s" (current-word))
   (set-process-query-on-exit-flag (get-process "devhelp") nil)
   )
+
 (defun devhelp-assistant-word-at-point ()
   "Searches for the current work in the Devhelp assistant"
   (interactive)
@@ -64,6 +65,50 @@
 ;; (global-set-key [f6] 'devhelp-assistant-word-at-point)
 
 
+;;** Qt Assistant
+;; http://blog.morpheuz.cc/01/07/2008/qt-assistant-emacs/
+;; FIXME: not verified. maybe some patches on qtassistant needed?
+(defun keyword-help-lookup-qtassit (placeholder keyword)
+  "runs qt assistant"
+  (interactive)
+  (start-process-shell-command "assistant" nil "assistant" "-search" keyword))
+
+
+;;** chm
+;;You need to install `keyhh' utility
+;;  http://www.keyworks.net/keyhh.htm
+;;The command line:
+;;  KeyHH -MyHelp -#klink "ActiveX Control Wizard" htmlhelp.chm
+(defun chm-keyword-lookup (typeid help-file symbol)
+  "lookup a keyword in a CHM file and display it"
+  (interactive)
+  (start-process "CHM keyword lookup" nil
+                 "keyhh.exe"
+                 (concat "-" typeid) "-#klink"
+                 (format "'%s'" symbol)
+                 help-file ))
+
+;;** hlp
+
+;;** MS Help 2 (MSDN)
+;; http://www.emacswiki.org/emacs/MsdnHelp
+;; You need `h2viewer' utility from
+;;   http://www.helpware.net/mshelp2/h2viewer.htm
+;; invoke it as this:
+;;   h2viewer /helpcol MS.PSDK.1033 /keyword K$CreateWindowEx
+(defun keyword-help-lookup-msdn (helpcol keyword)
+  "Open a window showing the MSDN documentation for the word under the point"
+  (interactive)
+  (start-process "h2viewer" nil
+                 "h2viewer.exe"
+                 "/appID" "MSDN-Viewer"
+                 "/helpcol" helpcol
+                 ;; "/filtername" "Visual C++"
+                 "/keyword" (concat "K$" (current-word))))
+
+;;(keyword-help-lookup-hh2 "embarcadero.rs2010" "TListView")
+
+
 ;;** Emacs: Perl PHP Dictionary Wikipedia Google … Reference lookup -
 ;; http://xahlee.org/emacs/emacs_lookup_ref.html
 
@@ -83,3 +128,4 @@ This command switches you to your browser."
   (setq myUrl (concat "http://en.wikipedia.org/wiki/" myWord))
   (browse-url myUrl)
    ))
+

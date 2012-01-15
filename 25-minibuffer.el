@@ -33,9 +33,11 @@
       (smex-initialize)))
 
 
+;;** history
+(define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
+
 ;;** misc
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)
 
-(define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
 
 
