@@ -1,23 +1,64 @@
+;;; pasca-mode+.el -- Make pascal-mode supports object pascal (fpc & delphi) better
+
+;; Author: Ba Manzi <bamanzi@gmail.com>
+;;
+;; This is not part of GNU Emacs
+
+;;; Commentary:
+
+;; This package enhanced `pascal-mode' in some aspects, to make it
+;; supports object pascal (delphi & freepascal) better.
+
+;; As `delphi-mode' is implemented in a weired way, which prevent use
+;; adding more font-lock keywords (such as `highlight-regexp',
+;; `hightlight-symbol'), thus I turned to pascal-mode.
+
+
 (require 'pascal)
 (require 'delphi)
 
 ;;;_. highlight more - pascal-mode
-;;; for better supporting Object Pascal 
-(font-lock-add-keywords 'pascal-mode              
-    '( ("\\<\\(class\\|uses\\|as\\|is\\|while\\|until\\|unit\\|try\\|except\\|finally\\|private\\|public\\|protected\\|interface\\|implementation\\|initialization\\|finalization\\|resourcestring\\)\\>"  
-        1 font-lock-keyword-face)  
-       ("\\<\\(integer\\|string\\|char\\|shortint\\|smallint\\|longint\\|longword|\\|int64\\|byte\\|word\\|cardinal\\|dword\\|qword\\|null\\|variant\\|pointer\\|set\\|tdatetime\\)\\>"
-        1 font-lock-type-face)  
-       ("\\<\\(exit\\|break\\|continue\\|assert\\|inc\\|dec\\|copy\\|length\\|setlength\\|sizeof\\|assigned\\|ord\\|pred\\|succ\\|new\\|dispose\\|allocmem\\|getmem\\|freemem\\|low\\|high\\|lo\\|hi\\|include\\|exclude\\)\\>"
-        1 font-lock-function-name-face)  
-       ("\\<\\(true\\|false\\|nil\\)\\>"
-        1 font-lock-constant-face)  
-       ("\\<\\(FIXME\\|TODO\\):"
-        1 font-lock-warning-face prepend))) 
+;;; for better supporting Object Pascal
+(defconst object-pascal-keywords
+  '("class" "interface" "uses" "as" "is" "while" "unit" "try" "except" "finally"
+    "private" "public" "protected" "resourcestring"
+    "implementation" "initialization" "finalization")
+  "Object Pascal keywords not supported by pascal.el.")
+
+(defconst pascal-plus-types
+  '("integer" "string" "char" "shortint" "smallint" "longint" "longword|"
+    "int64" "byte" "word" "cardinal" "dword" "qword" "null" "variant" "pointer"
+    "set" "tdatetime")
+  "Some base data types of freepascal/delphi.")
+
+(defconst pascal-plus-functions
+  '("exit" "break" "continue" "assert" "inc" "dec" "copy" "length" "setlength"
+    "sizeof" "assigned" "ord" "pred" "succ" "new" "dispose" "allocmem" "getmem"
+    "freemem" "low" "high" "lo" "hi" "include" "exclude")
+  "Some base function/procedure of freepascal/delphi.")
+
+(defconst pascal-plus-constants
+  '("true", "false" "nil")
+  "Some constants.")
+
+(defconst pascal-plus-todos
+  '("TODO" "FIXME" "NOTE")
+  "ToDo marks.")
+
+(let ( (object-pascal-keywords-re (regexp-opt object-pascal-keywords 'words))
+       (pascal-plus-data-types-re (regexp-opt pascal-plus-data-types 'words))
+       (pascal-plus-functions-re  (regexp-opt pascal-plus-functions  'words))
+       (pascal-plus-constants-re  (regexp-opt pascal-plus-constants  'words))
+       (pascal-plus-todos-re      (regexp-opt pascal-plus-todos      'words)) )
+  (font-lock-add-keywords 'pascal-mode             
+                          `( (,object-pascal-keywords-re  1 font-lock-keyword-face) 
+                             (,pascal-plus-data-types-re  1 font-lock-type-face)
+                             (,pascal-plus-functions-re   1 font-lock-function-name-face)
+                             (,pascal-plus-constants-re   1 font-lock-constant-face)
+                             (,pascal-plus-todos-re       1 font-lock-warning-face prepend))))
 
 
 ;;;_. use pascal-mode for object pascal
-;;; as delphi-mode is implemented in a weired way, which prevent hightlight-symbol, highlight-indentation working
 (defun pascal-mode-for-objpas-init ()
   ;; make // starts the comment line
   (modify-syntax-entry ?/   ". 12b" pascal-mode-syntax-table)
@@ -25,6 +66,12 @@
 
   (setq comment-start "// "
         comment-end "")
+
+  ;; make `mark-defun' works like other major-modes
+  (set (make-variable-buffer-local 'beginning-of-defun-function) 'pascal-beg-of-defun)
+  (set (make-variable-buffer-local 'end-of-defun-function)       'pascal-end-of-defun)
+  (define-key pascal-mode-map (kbd "C-M-h") nil)
+  
   ;;add try/except/finally
   (defconst pascal-beg-block-re "\\<\\(begin\\|case\\|record\\|repeat\\|try\\|except\\finally\\)\\>")
   ;; add finally
@@ -34,6 +81,15 @@
 
 (add-hook 'pascal-mode-hook 'pascal-mode-for-objpas-init)
 
+;;redefine pascal-mark-defun, to activate the region
+(defun pascal-mark-defun ()
+  "Mark the current pascal function (or procedure).
+This puts the mark at the end, and point at the beginning."
+  (interactive)
+  (push-mark (point))
+  (pascal-beg-of-defun)
+  (push-mark (point) t t)
+  (pascal-end-of-defun))
 
 
 ;;;_. highlight more - delphi-mode
