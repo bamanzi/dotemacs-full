@@ -112,13 +112,17 @@
                     (if (or interior-frag (null ispell-look-p))
                     "*"))
                   ispell-complete-word-dict)))
- 
-(ac-define-source ispell
-  '((symbol . "i")
-    (candidates . ac-ispell-get-candidates)))
+
+(eval-after-load "auto-complete"
+  `(progn
+     (ac-define-source ispell
+       '((symbol . "i")
+         (candidates . ac-ispell-get-candidates)))
+     ))
  
 (defun ac-expand-ispell-word ()
   (interactive)
+  (require 'auto-complete-config)
   (let ((ac-sources '(ac-source-ispell)))
     (call-interactively 'ac-start)))
  

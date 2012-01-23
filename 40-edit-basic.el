@@ -193,6 +193,36 @@ vi style of % jumping to matching brace."
 
 (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
 
+;;** search (within buffer)
+
+;;make the keybinding more natural
+(eval-after-load "isearch"
+  `(progn
+     (define-key isearch-map (kbd "C-y") 'isearch-yank-kill) ;;before emacs-24: `isearch-yank-line'
+     (define-key isearch-map (kbd "M-y") 'isearch-yank-pop)  ;;before emacs-24: `isearch-yank-kill'
+     (define-key isearch-map (kbd "M-s C-e") 'isearch-yank-line)
+     (define-key isearch-map (kbd "M-s M-f") 'isearch-yank-word)
+     ))
+
+;;*** search current symbol
+(autoload 'highlight-symbol-next  "highlight-symbol"
+  "Jump to the next location of the symbol at point within the function." t)
+(autoload 'highlight-symbol-prev  "highlight-symbol"
+  "Jump to the previous location of the symbol at point within the function." t)
+
+(define-key search-map (kbd "*") 'highlight-symbol-next)
+(define-key search-map (kbd "#") 'highlight-symbol-prev)
+
+;;*** ace-jump-mode
+(autoload 'ace-jump-line-mode  "ace-jump-mode"
+  "AceJump line mode." t)
+(autoload 'ace-jump-char-mode "ace-jump-mode"
+  "AceJump char mode" t)
+
+(define-key goto-map "l"  'ace-jump-line-mode)
+(define-key goto-map " "  'ace-jump-mode)
+
+
 ;;*** undo
 (if (require 'undo-tree nil 'noerror)
     (progn

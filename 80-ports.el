@@ -1,4 +1,4 @@
-;;;_ win32
+;;** win32
 (when (eq window-system 'w32)
   (setq w32-lwindow-modifier nil)
   (setq w32-pass-lwindow-to-system nil)
@@ -26,7 +26,7 @@
   (global-set-key (kbd "<scroll>") 'toggle-w32-alt-is-meta)
   )
 
-;;;_. cygwin
+;;** cygwin
 (defun cygwin-init-paths (cygwin-root-path)
   (if (file-directory-p cygwin-root-path)
       (progn
@@ -61,7 +61,7 @@
 
   )
 
-;;;_ x window
+;;** x window
 (when (eq window-system 'x)
   (setq x-select-enable-clipboard t)
 
@@ -85,6 +85,17 @@
   )
 
 
+;;** xterm & console
+(when (eq system-type 'gnu/linux)
+  (if (not window-system)
+      ;;FIXME: if xterm ?
+      (config-for-linux-xterm)
+      ;;(config-for-linux-console)
+    )
+
+  (load-library "help-mode")  ;; to avoid the error message:
+                              ;;; "Symbol's value as variable is void: help-xref-following"
+  )
 (defun map-mintty-keys ()
   ;; Mintty supports most combo keys (even telnet/ssh to another server)
   ;; such as C-%, C-&, C-(, C-., C-f1, M-f1, S-f1... while putty doesn't
@@ -114,16 +125,5 @@
   
   )
 
-;;;_ xterm & console
-(when (eq system-type 'gnu/linux)
-  (if (not window-system)
-      ;;FIXME: if xterm ?
-      (config-for-linux-xterm)
-      ;;(config-for-linux-console)
-    )
 
-
-  (load-library "help-mode")  ;; to avoid the error message:
-                              ;;; "Symbol's value as variable is void: help-xref-following"
-  )
 

@@ -228,11 +228,20 @@ Otherwise, call the original `dired-jump'."
 
 
 ;;** misc
+;;*** describe file
 (defun describe-this-file ()
   (interactive)
   (require 'help-fns+)
   (if buffer-file-name
       (describe-file buffer-file-name)
     (message "file not saved. ")))
-     
+
 (global-set-key (kbd "<f6> M-g") 'describe-this-file)
+
+;;*** make built-in lisp file read-only
+(defun find-file-on-built-in-lisp-file ()
+  (let ((lisp-dir (file-name-directory (locate-library "subr"))))
+    (if (string-match lisp-dir buffer-file-name)
+        (toggle-read-only t))))
+
+(add-hook 'find-file-hook 'find-file-on-built-in-lisp-file)

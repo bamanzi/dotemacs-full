@@ -47,9 +47,21 @@
 
 
 ;;** resizing windows
-;;*** windresize.el
+;;*** windresize.el: manual resizing
 (autoload 'windresize "windresize" "Resize windows interactively." t)
 (global-set-key (kbd "<f11> RET") 'windresize)
+
+;;*** widen-window: automatically widen
+(autoload 'widen-window-mode "widen-window"
+  "Widen Window mode" t)
+(autoload 'global-widen-window-mode  "widen-window"
+  "Toggle Widen-Window mode in every possible buffer." t)
+
+;;(idle-require 'widen-window)
+;; (eval-after-load "widen-window"
+;;   `(global-widen-window-mode t)
+;;   )
+
 
 ;;*** adjust `split-window', so that new window not 1/2 in size, but 1/3
 
