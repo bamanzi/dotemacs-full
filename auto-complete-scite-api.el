@@ -229,4 +229,5 @@ called on each completion"
 ;;  (clrhash ac-scite-api--cache) 
 ;;  (setq ac-scite-api--last-major-mode ""))
 
+(provide 'auto-complete-scite-api)
 ;;; auto-complete-scite-api.el ends here
