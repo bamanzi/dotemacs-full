@@ -1,4 +1,5 @@
-;;** tabbar
+;;** tabbar & perspetive: grouping buffers & windows
+
 ;; (find-library "tabbar")
 
 ;;*** ide-skel
@@ -95,14 +96,60 @@
     (idle-require 'tabbar-ruler))
 
 ;;*** show tabbar group on modeline
-(setq mode-line-tabbar-group  '(:eval (when (tabbar-mode-on-p)
-                                        (concat (propertize (car (funcall tabbar-buffer-groups-function)) 
-                                                            'face 'tabbar-selected
-                                                            'help-echo "tabbar group")
-                                                " > "))))
+(setq mode-line-tabbar-group
+      '(:eval (when (tabbar-mode-on-p)
+                (concat (propertize (car (funcall tabbar-buffer-groups-function)) 
+                                    'face 'tabbar-selected
+                                    'help-echo "tabbar group")
+                        " > "))))
 ;;FIXME: not work?
 (eval-after-load "tabbar"
   `(progn
      (if (require 'bmz-misc nil t)
          (mode-line-install-element 'mode-line-tabbar-group 'mode-line-frame-identification))
+     ))
+
+
+;;*** perspective
+;;`perspective' is more than window layout manager such as elscreen/escreen/workgroups.
+;;it also manages buffers: you can add buffers to a perpective, `C-x b' switches among them.
+
+;;DOC: Putting it in Perspective - http://nex-3.com/posts/72-putting-it-in-perspective
+;;DOC: Workspaces EmacsRookie (about perspective.el) - http://emacsrookie.com/2011/09/25/workspaces/
+(autoload 'persp-mode "perspective"
+  "Toggle perspective mode." t)
+
+;;(idle-require 'perspective)
+
+(defun bmz/persp-mode-init ()
+  (setq frame-title-format
+        '((:eval (format "[%s]" (persp-name persp-curr)))
+          " - Emacs "
+          (:eval emacs-version)))
+
+  ;; modify tabbar-mode settings
+  (when (and (featurep 'tabbar) tabbar-mode)
+    ;;hide buffers not in current perspecitve
+    (defun tabbar-buffer-groups-only-current-persp ()
+      (if (or (string= (persp-name persp-curr) "main")  ;;perspective `main' unhide all buffers
+              (memq (current-buffer) (persp-buffers persp-curr)))
+          (if (eq tabbar-buffer-groups-function-before-persp
+                  'tabbar-buffer-groups-only-current-persp)
+              (tabbar-buffer-groups) ;;default one in tabbar.el
+            (funcall tabbar-buffer-groups-function-orig))
+        nil))
+
+    ;;change `tabbar-buffer-groups
+    (defvar tabbar-buffer-groups-function-before-persp nil)
+    (when (or (not tabbar-buffer-groups-function-before-persp)
+              (not (eq tabbar-buffer-groups-function-before-persp
+                        tabbar-buffer-groups-function)))
+        (setq tabbar-buffer-groups-function-before-persp tabbar-buffer-groups-function)
+        (setq tabbar-buffer-groups-function 'tabbar-buffer-groups-only-current-persp))
+    ))
+
+(eval-after-load "perspective"
+  `(progn
+     (add-hook 'persp-mode-hook 'bmz/persp-mode-init)
+     ;;(add-hook 'persp-activated-hook 'persp-set-icon)
      ))
