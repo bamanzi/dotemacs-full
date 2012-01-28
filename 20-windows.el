@@ -3,10 +3,16 @@
 
 ;;** window layout
 
+;; if a window is narrower/lower than this number,
+;; don't split horizontally/vertically automatically (`split-window-sensibly')
+(setq split-width-threshold 60
+      split-height-threshold 20)
+
 ;;*** common used layouts
 ;;DOC: http://www.emacswiki.org/emacs/ThreeWindows
 
 ;;*** my default layout
+
 ;; 窗口缺省布局
 
 (defun bmz/default-frame-layout (&optional frame)

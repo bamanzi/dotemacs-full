@@ -8,9 +8,6 @@
 ;;** buffer navigation
 (global-set-key (kbd "<C-tab>")   'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
-;;`electric-buffer-list' derived from `buffer-menu'
-;;but you can mark multiple buffers and perform operations at a single ENTER key
-(global-set-key (kbd "C-c b")     'electric-buffer-list)
 
 ;;*** wcy-swbuffer
 (autoload 'wcy-switch-buffer-forward "wcy-swbuff" nil t)
@@ -19,22 +16,52 @@
 (global-set-key (kbd "<C-S-kp-tab>") 'wcy-switch-buffer-backward)
 ;;NOTE: if `tabbar-mode' is on, <C-tab> in `tabbar-mode-map' override this
 
+(defun ido-switch-user-buffer ()
+  "Choose and switch to another buffer, by its name. Special buffers ignored."
+  (interactive)
+  (let* ( (buffers (delq nil (mapcar #'(lambda (buf)
+                                      (if (string-match "^[ *]" (buffer-name buf))
+                                          nil
+                                        (buffer-name buf)))
+                                  (buffer-list))))
+          (choice (ido-completing-read "Switch to: " (cdr buffers))) )
+    (switch-to-buffer (get-buffer choice))))
+
+(global-key-binding (kbd "C-x B") 'ido-switch-user-buffer)
 
 ;;** buffer management
 ;;C-x C-b : buffer-menu
 (idle-require 'buff-menu+)
+
+;;`electric-buffer-list' derived from `buffer-menu'
+;;but you can mark multiple buffers and perform operations at a single ENTER key
+(global-set-key (kbd "C-c b")     'electric-buffer-list)
 
 ;;*** ibuffer
 (global-set-key (kbd "C-c C-b") 'ibuffer)
 
 ;;**** ibuffer-vc
 ;;Group ibuffer's list by VC project, or show VC status
-(add-hook 'ibuffer-hook
-          (lambda ()
-            (when (require 'ibuffer-vc nil t)
-              (ibuffer-vc-set-filter-groups-by-vc-root)
-              (ibuffer-do-sort-by-alphabetic))))
+(eval-after-load "ibuffer"
+  `(progn
+     (when (require 'ibuffer-vc nil t)
+       (add-hook 'ibuffer-hook
+                 (lambda ()
+                   (ibuffer-vc-set-filter-groups-by-vc-root)
+                   (ibuffer-do-sort-by-alphabetic)))
 
+       (setq ibuffer-formats
+             '((mark modified read-only vc-status-mini " "
+                     (name 18 18 :left :elide)
+                     " "
+                     (size 9 -1 :right)
+                     " "
+                     (mode 16 16 :left :elide)
+                     " "
+                     (vc-status 16 16 :left)
+                     " "
+                     filename-and-process)))
+     )))
 
 ;;** temporary buffers
 ;;*** midnight-mode

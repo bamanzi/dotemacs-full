@@ -198,10 +198,10 @@ vi style of % jumping to matching brace."
 ;;make the keybinding more natural
 (eval-after-load "isearch"
   `(progn
-     (define-key isearch-map (kbd "C-y") 'isearch-yank-kill) ;;before emacs-24: `isearch-yank-line'
-     (define-key isearch-map (kbd "M-y") 'isearch-yank-pop)  ;;before emacs-24: `isearch-yank-kill'
-     (define-key isearch-map (kbd "M-s C-e") 'isearch-yank-line)
-     (define-key isearch-map (kbd "M-s M-f") 'isearch-yank-word)
+     (define-key isearch-mode-map (kbd "C-y")     'isearch-yank-kill) ;;before emacs-24: `isearch-yank-line'
+     (define-key isearch-mode-map (kbd "M-y")     'isearch-yank-pop)  ;;before emacs-24: `isearch-yank-kill'
+     (define-key isearch-mode-map (kbd "M-s C-e") 'isearch-yank-line)
+     (define-key isearch-mode-map (kbd "M-s M-f") 'isearch-yank-word)
      ))
 
 ;;*** search current symbol
