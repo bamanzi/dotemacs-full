@@ -1,4 +1,4 @@
-
+;;* language tools: dictionary, translations
 ;;** DICT protocol
 ;;*** dictionary.el
 ;;(setq dictionary-server "localhost")
@@ -33,5 +33,67 @@
 ;;FIXME: problem
 
 
+;;** web dictionary
+;;from: http://xahlee.org/emacs/emacs_lookup_ref.html
+(defun lookup-word-definition (service-url)
+  "Look up the current word's definition in a browser.
+If a region is active (a phrase), lookup that phrase."
+ (interactive "sService URL:")
+ (let (myWord myUrl)
+   (setq myWord
+         (if (region-active-p)
+             (buffer-substring-no-properties (region-beginning) (region-end))
+           (thing-at-point 'symbol)))
+
+  (setq myWord (replace-regexp-in-string " " "%20" myWord))
+  ;;(setq myUrl (concat "http://www.answers.com/main/ntquery?s=" myWord))
+  ;;(setq myUrl (concat "http://www.dict.org/bin/Dict?Form=Dict2&Database=*&Query=" myWord))
+  (setq myUrl (format service-url myWord))
+
+  (if (fboundp 'w3m-browse-url)
+      (w3m-browse-url myUrl) ;; if you want to browse using w3m
+    (browse-url myUrl))
+   ))
+
+;; List of Online Dictionaries
+;; http://xahlee.org/PageTwo_dir/Vocabulary_dir/dictionary_tools.html
+
+;;dict.org provides detailed explanation
+(defun lookup-word-definition-dict.org ()
+  (interactive)
+  (lookup-word-definition "http://www.dict.org/bin/Dict?Form=Dict2&Database=*&Query=%s"))
+
+;;wiktionary provides brief explanation
+(defun lookup-word-definition-wiktionary-en ()
+  (interactive)
+  (lookup-word-definition "http://en.wiktionary.org/wiki/%s"))
+
+(defun lookup-word-definition-wiktionary-zh ()
+  (interactive)
+  (lookup-word-definition "http://zh.wiktionary.org/wiki/%s"))
+
 ;;** spell
 ;;
+
+;;** speek/synthesizer
+
+;;** translation
+;;TODO: babel.el
+(defun google-translate (tolang)
+  "Translate current word's to another language with Google Translate service.
+
+If a region is active (a phrase), lookup that phrase."
+ (let (myWord myUrl)
+   (setq myWord
+         (if (region-active-p)
+             (buffer-substring-no-properties (region-beginning) (region-end))
+           (thing-at-point 'symbol)))
+
+  (setq myWord (replace-regexp-in-string " " "%20" myWord))
+  
+  (setq myUrl (concat "http://translate.google.com/m?hl=zh-CN&sl=auto&tl=" tolang
+                      "&ie=UTF-8&q=" myWord))
+  
+  (browse-url myUrl)
+  ;; (w3m-browse-url myUrl) ;; if you want to browse using w3m
+   ))
