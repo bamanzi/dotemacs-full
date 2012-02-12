@@ -110,7 +110,7 @@ on the system \"/user@host:\"."
 	       (or (not backup-each-save-size-limit)
 		   (<= (buffer-size) backup-each-save-size-limit)))
       (if (file-exists-p bfn)  ;;to workaround for some special file (e.g. files in tar/jar)
-          (copy-file bfn (backup-each-save-compute-location bfn) t t t))))
+          (copy-file bfn (backup-each-save-compute-location bfn) t t t)))))
 
 (defun backup-each-save-compute-location (filename)
   (let* (;;(containing-dir (file-name-directory filename)) 
