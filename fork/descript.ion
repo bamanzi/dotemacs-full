@@ -1,1 +1,5 @@
 ahk-mode.el https://github.com/piyo/emacs-ahk-mode   (Another two indention fixes)
+php-mode.el https://github.com/ejmr/php-mode  This updates php-mode with features to make it more friendly to use with PHP 5.4.
+js2-mode.el https://github.com/mooz/js2-mode/wiki/Changes-from-the-original-mode
+flymake.el https://github.com/illusori/emacs-flymake
+minimap.el https://github.com/liuw/emacs-minimap
