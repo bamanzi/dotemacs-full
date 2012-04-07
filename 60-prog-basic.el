@@ -23,8 +23,12 @@
 (setq compilation-error-regexp-alist '(gnu java))
 (global-set-key (kbd "<C-f9>") 'compile)
 
+;;toggle to parse & highlight error lines in shell-mode etc
+(global-set-key (kbd "<S-f9>") 'compilation-minor-mode)
+
+
 (eval-after-load "flymake"
-  '(require 'flymake-cursor nil t))
+  `(require 'flymake-cursor nil t))
 (define-key goto-map "`" 'flymake-goto-next-error)
 (define-key goto-map "~" 'flymake-goto-prev-error)
 
@@ -77,9 +81,11 @@
 (when (require 'bmz-misc nil t)
   ;; move which-func to the front of mode-line
   (mode-line-uninstall-element 'which-func-mode)
+  (mode-line-uninstall-element 'which-func-format)
   (mode-line-install-element 'which-func-format)
 
   (define-key which-func-keymap (kbd "<mode-line> <mouse-2>") 'imenu)
+  (define-key which-func-keymap (kbd "<header-line> <mouse-2>") 'imenu)
   
   )
 
@@ -137,3 +143,21 @@
 
 (global-set-key (kbd "C-c C-o") 'bmz/select-method)
 (global-set-key (kbd "<f5> I") 'bmz/select-method)
+
+(defun bmz/go-to-symbol-within-buffer ()
+  "Go to symbol (definition) within current buffer.
+
+This would get rid of some annoyance:
+- imenu hererachy (anything flats them)
+- imenu not working because of cedet
+"
+  (interactive)
+  (anything
+   :prompt "Go to: "
+   :input (thing-at-point 'symbol)
+   :sources
+   '(anything-c-source-imenu
+     anything-c-source-browse-code)))
+
+(define-key goto-map "s" 'bmz/go-to-symbol-within-buffer)
+   

@@ -5,17 +5,16 @@
 
 ;; if a window is narrower/lower than this number,
 ;; don't split horizontally/vertically automatically (`split-window-sensibly')
-(setq split-width-threshold 60
-      split-height-threshold 20)
+(setq split-width-threshold 90
+      split-height-threshold 40)
 
 ;;*** common used layouts
 ;;DOC: http://www.emacswiki.org/emacs/ThreeWindows
 
 ;;*** my default layout
 
-;; 窗口缺省布局
 
-(defun bmz/default-frame-layout (&optional frame)
+(defun bmz/default-frame-layout-3 (&optional frame)
    "
 +---------+------------+ 
 |         |            | 
@@ -29,7 +28,7 @@
    (unless frame (setq frame (selected-frame)))
    (with-selected-frame frame
      (delete-other-windows)
-     (split-window-horizontally)
+     (split-window-horizontally)   (next-buffer)
      ;;(enlarge-window (/ (window-width) 5) 'horizontal)
      (other-window 1)
      (split-window-vertically)
@@ -37,7 +36,33 @@
      (switch-to-buffer "*scratch*")
      ))
 
-(add-hook 'window-setup-hook 'bmz/default-frame-layout)
+(defun bmz/default-frame-layout-4 (&optional frame)
+   "
++------------+--------+ 
+|            |        | 
+|            |        | 
+|            |        |
+|----------+----------+
+|          |          |
+|          |          | 
++----------+----------+  "
+   (interactive (list (selected-frame)))
+   (unless frame (setq frame (selected-frame)))
+   (with-selected-frame frame
+     (delete-other-windows)
+     (split-window-vertically)
+     (enlarge-window (/ (window-height) 3))
+     (save-selected-window
+       (split-window-horizontally) (enlarge-window 20 t)
+       (other-window 1) (next-buffer))
+     (other-window 2)
+     (progn
+       (split-window-horizontally)
+       (enlarge-window (/ (window-height) 3) t) (next-buffer)
+       (other-window 1) (switch-to-buffer "*scratch*"))
+     ))
+
+(add-hook 'window-setup-hook 'bmz/default-frame-layout-3)
 ;;(add-hook 'after-make-frame-functions 'bmz/default-frame-layout)
 
 ;;*** layout save & restore
@@ -369,7 +394,36 @@ an error is signaled."
 ;;*** framepop
 ;;;TODO: ?
 ;;*** popwin
-;;;...
+(autoload 'popwin:popup-buffer "popwin"
+  "Show BUFFER in a popup window and return the popup window." t)
+(autoload 'popwin:display-buffer  "popwin"
+  "Display BUFFER-OR-NAME, if possible, in a popup window, or as" t)
+(autoload 'popwin:messages  "popwin"
+  "Display *Messages* buffer in a popup window." t)
+
+;;(idle-require 'popwin)
+(eval-after-load "popwin"
+  `(progn
+;;     (setq display-buffer-function 'popwin:display-buffer)
+     (global-set-key (kbd "<f11> ~") popwin:keymap)
+
+     (define-key popwin:keymap "g" 'popwin:select-popup-window) ;;go to
+     (define-key popwin:keymap "*" 'popwin:stick-popup-window)
+     (define-key popwin:keymap "~" 'popwin:display-last-buffer)
+     ))
+
+(define-minor-mode popwin-mode
+  "Use `popwin:display-buffer' to manage buffer window creation.
+
+When turned on, special buffers (specified in `popwin:special-display-config')
+would be displayed in a popup window."
+  :init-value nil
+  :lighter " POP"
+  :global t
+  :require 'popwin
+  (if popwin-mode
+      (setq display-buffer-function 'popwin:display-buffer)
+    (setq display-buffer-function nil))) ;;FIXME: restore old value (rather than 'nil')
 
 ;;*** window dedicated to a buffer
 ;;TIP: 'dedicated' means this window won't be selected for displaying other buffer,

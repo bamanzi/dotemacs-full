@@ -128,7 +128,7 @@
 					      dir)
 					      "\n")))))
 
-(global-set-key (kbd "<f11> ~") 'th-shell-popup)
+(global-set-key (kbd "<f12> ~") 'th-shell-popup)
 
 ;;*** shell-toggle
 (autoload 'shell-toggle "shell-toggle" 

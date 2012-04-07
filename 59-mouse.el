@@ -149,6 +149,9 @@
 ;;** Meta on <left-fringe> : empty
 
 ;;* mode-line
+(global-unset-key (kbd "<mode-line> <mouse-2>"))
+(global-unset-key (kbd "<mode-line> <mouse-3>"))
+
 ;;** Ctrl on <mode-line>
 (global-set-key (kbd "<mode-line> <C-down-mouse-1>")    'mouse-buffer-menu)
 
@@ -160,13 +163,16 @@
 (global-set-key (kbd "<mode-line> <S-down-mouse-3>") 'facemenu-menu)
 
 ;;** mode-line parts
+
+
 ;;*** on which-func label
 ;;... (refer to prog-basic.el)
 
-;;*** on buffer-ame label
+;;*** on buffer-name label
 ;;... (refer to buffers.el)
 ;;(setq mouse-buffer-menu-maxlen (- (frame-parameter nil 'height) 10))
-;(define-key mode-line-buffer-identification-keymap (kbd "<mode-line> <down-mouse-2>") 'mouse-buffer-menu)
+(define-key mode-line-buffer-identification-keymap
+  (kbd "<mode-line> <mouse-2>") 'mouse-buffer-menu)
 
 ;;* other stuff
 
