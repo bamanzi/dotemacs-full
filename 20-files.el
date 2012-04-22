@@ -8,6 +8,10 @@
 (setq recentf-save-file "~/.emacs.d/recentf")
 (recentf-mode t)
 
+(defun ido-recentf ()
+  (interactive)
+  (find-file (ido-completing-read "Recent File: " recentf-list)))
+
 ;;*** bookmarks
 ;;DOC: (info "(emacs) Bookmarks")
 ;;It supports: file, dired, info node

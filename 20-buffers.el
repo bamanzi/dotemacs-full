@@ -65,7 +65,9 @@
 
 ;;** temporary buffers
 ;;*** midnight-mode
-;;...
+(setq midnight-mode t)
+(idle-require 'midnight)
+
 ;;*** tempbuf
 ;;(autoload 'turn-on-tempbuf-mode "tempbuf")
 (when (load "tempbuf" t)
