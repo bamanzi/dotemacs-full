@@ -1,8 +1,8 @@
-;;** tabbar & perspetive: grouping buffers & windows
+;;* tabbar & perspetive: grouping buffers & windows
 
 ;; (find-library "tabbar")
 
-;;*** ide-skel
+;;** ide-skel
 ;; ide-skel would group buffers into two: editing buffer, emacs buffer
 ;;(if window-system
 ;;    (require 'ide-skel nil t))
@@ -10,6 +10,7 @@
 ;; if you use `ide-skel', don't directly load `tabbar' after `ide-skel'
 ;; as this would mess up the tab group definition of `ide-skel'
 
+;;** tabbar
 ;;*** tabbar-mode basic
 (unless (featurep 'tabbar)
   (require 'tabbar nil t))
@@ -18,8 +19,8 @@
   `(progn
      (tabbar-mode t)
      (define-key tabbar-mode-map (kbd "<C-tab>")     'tabbar-forward-tab)
-     (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-backward-tab)
-     (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-forward-group)
+     (define-key tabbar-mode-map (kbd "<C-M-tab>")   'tabbar-backward-tab)
+     (define-key tabbar-mode-map (kbd "<C-S-tab>")   'tabbar-forward-group)
      (define-key tabbar-mode-map (kbd "<C-S-M-tab>") 'tabbar-backward-group)
      ))
 
@@ -110,6 +111,34 @@ Return a list of one element based on major mode."
      (add-hook 'first-change-hook 'ztl-on-buffer-modification)
      ))
 
+;;*** buffer grouping functions
+
+;; from Xah Lee
+ (defun tabbar-buffer-groups-simple ()
+   "Return the list of group names the current buffer belongs to.
+ This function is a custom function for tabbar-mode's tabbar-buffer-groups.
+ This function group all buffers into 3 groups:
+ Those Dired, those user buffer, and those emacs buffer.
+ Emacs buffer are those starting with “*”."
+   (list
+    (cond
+     ((string-equal "*" (substring (buffer-name) 0 1))
+      '("Emacs Buffer")
+      )
+     ((eq major-mode 'dired-mode)
+      '("Dired")
+      )
+     (t
+      '("User Buffer")
+      )
+     ))) 
+
+;;(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
+
+
+
+
+
 ;;*** tabbar-ruler: add context menu to tabs
 (if (and (not (featurep 'ide-skel))   ;;conflicting with idle-
          (display-graphic-p))   ;;won't work well in terminal(?)
@@ -138,7 +167,6 @@ Return a list of one element based on major mode."
      ))
 
 ;;*** some hacks on header-line
-
 (setq tabbar-header-line-format
               '((:propertize "[X]"
                              local-map
@@ -202,7 +230,7 @@ mouse-3, close the current buffer."
      ))
 
 
-;;*** perspective
+;;** perspective
 ;;`perspective' is more than window layout manager such as elscreen/escreen/workgroups.
 ;;it also manages buffers: you can add buffers to a perpective, `C-x b' switches among them.
 
@@ -246,3 +274,66 @@ mouse-3, close the current buffer."
      (add-hook 'persp-mode-hook 'bmz/persp-mode-init)
      ;;(add-hook 'persp-activated-hook 'persp-set-icon)
      ))
+
+
+;;*** frame-bufs: a lightweight perspective
+;; with `frame-bufs.el', we can associate buffers to frames,
+;; thus frame could be used as a perspective
+
+(autoload 'frame-bufs-mode  "frame-bufs"
+  "Toggle frame-bufs-mode on and off." t)
+
+;(idle-require 'frame-bufs)
+
+(defun frame-bufs-switch-buffer ()
+  "Switch buffer, within buffers associated with current frame (`frame-bufs-buffer-list')
+
+Other buffers are excluded."
+  (interactive)
+  (if (and (featurep 'frame-bufs)
+           frame-bufs-mode)
+      (let* ( (buffers (mapcar 'buffer-name (frame-bufs-buffer-list (selected-frame))))
+              (buffers-rotated (append (cdr buffers) (cons (car buffers) nil)))
+              (target (ido-completing-read "Buffer: " buffers-rotated)) )
+        (switch-to-buffer target))
+    (call-interactively 'ido-switch-buffer)))
+
+(eval-after-load "frame-bufs"
+  `(progn
+     (add-hook 'frame-bufs-mode-on-hook
+               #'(lambda ()
+                   (global-set-key (kbd "C-x b") 'frame-bufs-switch-buffer)
+                   (global-set-key (kbd "C-x B") 'ido-switch-buffer)))
+     (add-hook 'frame-bufs-mode-off-hook
+               #'(lambda ()
+                   (global-set-key (kbd "C-x b") 'ido-switch-buffer)))
+     ))
+
+
+;;and you need to modify your 'tabbar-buffer-groups-function'
+(defun tabbar-buffer-grouping-simple-with-frame-bufs ()
+  "Return the list of group names the current buffer belongs to.
+Return a list of one element based on major mode."
+  (setq last-tabbar-ruler-tabbar-buffer-groups
+        (list
+         (cond
+          ((= (aref (buffer-name) 0) ?*)
+           "Emacs")
+          ((or (memq major-mode '(dired-mode
+                                  eshell-mode
+                                  shell-mode
+                                  occur-mode
+                                  grep-mode
+                                  compilation-mode)))
+           "Utils")
+          (t
+           "Files"
+           ))))
+  (if (and (featurep 'frame-bufs-mode)
+           frame-bufs-mode
+           (memq (current-buffer) (frame-bufs-buffer-list (selected-frame))))
+      (symbol-value 'last-tabbar-ruler-tabbar-buffer-groups)))
+
+(setq bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple-with-frame-bufs)
+
+
