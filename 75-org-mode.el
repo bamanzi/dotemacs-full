@@ -4,13 +4,17 @@
 
 (setq org-completion-use-ido t
       ;; org-hide-leading-stars t
-      org-use-sub-superscripts nil ;;don't use `_' for subscript
+      org-use-sub-superscripts nil        ;; don't use `_' for subscript
 
+      org-src-fontify-natively t          ;; syntax highlighting the source code
+      org-return-follows-link nil             ;; RET on link woule open it (use C-j if you want newline)
+      
       org-export-with-section-numbers nil ;; no numbers in export headings
-      org-export-with-toc nil ;; no ToC in export
-      org-export-with-author-info nil ;; no author info in export
-      org-export-with-creator-info nil ;; no creator info
+      org-export-with-toc nil             ;; no ToC in export
+      org-export-with-author-info nil     ;; no author info in export
+      org-export-with-creator-info nil    ;; no creator info
       org-export-htmlize-output-type 'css ;; separate css
+      org-export-html-inline-images nil   ;; supress inline images
       )
 
 (global-set-key (kbd "C-c l") 'org-store-link)

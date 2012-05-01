@@ -12,6 +12,10 @@
 (define-key key-translation-map (kbd "<M-mouse-5>") (kbd "<M-wheel-down>"))
 (define-key key-translation-map (kbd "<S-mouse-4>") (kbd "<S-wheel-up>"))
 (define-key key-translation-map (kbd "<S-mouse-5>") (kbd "<S-wheel-down>"))
+(define-key key-translation-map (kbd "<C-M-mouse-4>") (kbd "<C-M-wheel-up>"))
+(define-key key-translation-map (kbd "<C-M-mouse-5>") (kbd "<C-M-wheel-down>"))
+
+
 (define-key key-translation-map (kbd "<s-mouse-4>") (kbd "<s-wheel-up>"))
 (define-key key-translation-map (kbd "<s-mouse-5>") (kbd "<s-wheel-down>"))
 (define-key key-translation-map (kbd "<H-mouse-4>") (kbd "<H-wheel-up>"))
@@ -95,6 +99,10 @@
 
 
 ;;* other modifiers: super/hyper/alt
+(global-set-key (kbd "<C-M-wheel-up>")        'text-scale-increase)
+(global-set-key (kbd "<C-M-wheel-down>")      'text-scale-decrease)
+
+
 ;;(global-set-key (kbd "<A-wheel-up>") 'highlight-symbol-prev)
 ;;(global-set-key (kbd "<A-wheel-down>")  'highlight-symbol-next)
 
@@ -149,9 +157,9 @@
 ;;** Meta on <left-fringe> : empty
 
 ;;* mode-line
+(global-set-key (kbd "<mode-line> <double-mouse-1>")   'widen-current-window)
 (global-unset-key (kbd "<mode-line> <mouse-2>"))
 (global-unset-key (kbd "<mode-line> <mouse-3>"))
-
 ;;** Ctrl on <mode-line>
 (global-set-key (kbd "<mode-line> <C-down-mouse-1>")    'mouse-buffer-menu)
 
@@ -163,8 +171,6 @@
 (global-set-key (kbd "<mode-line> <S-down-mouse-3>") 'facemenu-menu)
 
 ;;** mode-line parts
-
-
 ;;*** on which-func label
 ;;... (refer to prog-basic.el)
 
