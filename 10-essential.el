@@ -63,20 +63,25 @@
 
 
 ;;** anything
+(global-set-key (kbd "<f5> r") 'anything-recentf)
+(global-set-key (kbd "<f5> b") 'anything-buffers+)
+(global-set-key (kbd "<f5> B") 'anything-bookmarks)
+(global-set-key (kbd "<f5> l") 'anything-locate)
+(global-set-key (kbd "<f5> c") 'anything-browse-code)
+(global-set-key (kbd "<f5> i") 'anything-imenu)
+(global-set-key (kbd "<f5> o") 'anything-occur)
+
+
 (if (and (load "anything" t)
          (load "anything-config" t))
     (progn
       ;;enable multiple keyword/regexp match
       ;;(load "anything-match-plugin" t) ;;FIXME: would cause crash?
       ;;(global-set-key (kbd "M-x") 'anything-M-x)
-  
-      (global-set-key (kbd "<f5> r") 'anything-recentf)
-      (global-set-key (kbd "<f5> b") 'anything-buffers+)
-      (global-set-key (kbd "<f5> B") 'anything-bookmarks)
-      (global-set-key (kbd "<f5> l") 'anything-locate)
-      (global-set-key (kbd "<f5> c") 'anything-browse-code)
-      (global-set-key (kbd "<f5> i") 'anything-imenu)
-      (global-set-key (kbd "<f5> o") 'anything-occur)
+
+      ;;latest `anything-config.el' canceled "<f5> a", but I like it
+      (unless (global-key-binding "<f5> a")
+        (global-key-binding (kbd "<f5> a") 'anything-command-map))
 
       (define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
       )
