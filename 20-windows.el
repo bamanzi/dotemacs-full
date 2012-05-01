@@ -80,9 +80,12 @@
 ;;** resizing windows
 ;;*** windresize.el: manual resizing
 (autoload 'windresize "windresize" "Resize windows interactively." t)
+(setq windresize-default-increment 4)
 (global-set-key (kbd "<f11> RET") 'windresize)
 
 ;;*** widen-window: automatically widen
+(autoload 'widen-current-window "widen-window"
+  "The very function which resizes the current window." t)
 (autoload 'widen-window-mode "widen-window"
   "Widen Window mode" t)
 (autoload 'global-widen-window-mode  "widen-window"
@@ -90,9 +93,15 @@
 
 ;;(idle-require 'widen-window)
 ;; (eval-after-load "widen-window"
+(setq ww-ratio 0.75)
 ;;   `(global-widen-window-mode t)
 ;;   )
 
+(defun widen-current-window-by-mouse (event)
+  (interactive "e")
+  (mouse-set-point event)
+  (call-interactively 'widen-current-window))
+(global-set-key (kbd "<f11> <mouse-1>") 'widen-current-window-by-mouse)
 
 ;;*** adjust `split-window', so that new window not 1/2 in size, but 1/3
 
@@ -507,7 +516,14 @@ to display some special buffers specified in `. For non-special"
   ;; (setq mf-max-width 1600)  ;; Pixel width of main monitor.
   (maximize-frame)
   ;; maximize any new frame
-  (add-hook 'window-setup-hook 'maximize-frame t))
+  (add-hook 'window-setup-hook 'maximize-frame t)
+
+  ;; (add-hook 'after-make-frame-functions
+  ;;           #'(lambda (frame)
+  ;;               (unless (frame-parameter frame 'unsplittable)
+  ;;                 (with-selected-frame frame
+  ;;                   maximize-frame))))
+  )
 
 ;;*** full-screen (or maximize)
 ;;NOTE: this only works in X & Emacs > 23
