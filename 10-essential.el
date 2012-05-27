@@ -81,7 +81,7 @@
 
       ;;latest `anything-config.el' canceled "<f5> a", but I like it
       (unless (global-key-binding "<f5> a")
-        (global-key-binding (kbd "<f5> a") 'anything-command-map))
+        (global-set-key (kbd "<f5> a") anything-command-map))
 
       (define-key minibuffer-local-map (kbd "<f5>") 'anything-minibuffer-history)
       )
