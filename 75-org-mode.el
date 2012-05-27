@@ -4,11 +4,12 @@
 
 (setq org-completion-use-ido t
       ;; org-hide-leading-stars t
-      org-use-sub-superscripts nil        ;; don't use `_' for subscript
+      org-support-shift-select 'always
 
-      org-src-fontify-natively t          ;; syntax highlighting the source code
       org-return-follows-link nil             ;; RET on link woule open it (use C-j if you want newline)
+      org-src-fontify-natively t          ;; syntax highlighting the source code
       
+      org-use-sub-superscripts nil        ;; don't use `_' for subscript
       org-export-with-section-numbers nil ;; no numbers in export headings
       org-export-with-toc nil             ;; no ToC in export
       org-export-with-author-info nil     ;; no author info in export
@@ -63,7 +64,52 @@
 (add-hook 'org-mode-hook 'org-mode-init-face)
 (add-hook 'after-make-frame-functions 'bmz/init-org-level-faces)
 
-;;*** misc
+;;** export org-mode to markdown format
+(eval-after-load "org"
+  `(progn
+     (when (require 'org-export-generic nil t)
+         ;; https://github.com/alexhenning/ORGMODE-Markdown
+       (org-set-generic-type
+        "Markdown"
+        '(:file-suffix ".markdown"
+                       :key-binding ?M
+                       :title-format "%s\n"
+                       :title-suffix ?=
+                       :body-header-section-numbers t
+                       :body-header-section-number-format "%s) "
+                       :body-section-header-prefix ("\n## " "\n### " "\n#### " "\n##### " "\n###### ")
+                       :body-section-header-format "%s"
+                       :body-section-header-suffix "\n"
+                       :todo-keywords-export t
+                       :body-line-format " %s\n"
+                       :body-tags-export t
+                       :body-tags-prefix " <tags>"
+                       :body-tags-suffix "</tags>\n"
+                       ;;:body-section-prefix "<secprefix>\n"
+                       ;;:body-section-suffix "</secsuffix>\n"
+                       :body-line-export-preformated t
+                       :body-line-fixed-prefix "<pre>\n"
+                       :body-line-fixed-suffix "\n</pre>\n"
+                       :body-line-fixed-format "%s\n"
+                       :body-list-prefix "\n"
+                       :body-list-suffix "\n"
+                       :body-list-format " * %s\n"
+                       ;;:body-number-list-prefix "<ol>\n"
+                       ;;:body-number-list-suffix "</ol>\n"
+                       ;;:body-number-list-format "<li>%s</li>\n"
+                       ;;:body-number-list-leave-number t
+                       :body-list-checkbox-todo "[_] "
+                       :body-list-checkbox-todo-end ""
+                       :body-list-checkbox-done "[X] "
+                       :body-list-checkbox-done-end ""
+                       :body-line-format "%s"
+                       :body-line-wrap 75
+                       :body-text-prefix ""
+                       :body-text-suffix ""
+                       ))
+       )))
+
+;;** misc
 ;;FIXME: '<s' template
 (defun org-quote-region (begin end)
   (interactive "r")
@@ -84,3 +130,21 @@
           (insert-string (concat "\n#+END_" choice "\n"))
           (goto-char begin)
           (insert-string (concat "#+BEGIN_" choice "\n")))))))
+
+;;** markdown mode
+(autoload 'markdown-mode  "markdown-mode"
+  "Major mode for editing Markdown files." t)
+
+(setq auto-mode-alist
+      (cons '("\\.md" . markdown-mode) auto-mode-alist))
+
+(eval-after-load "markdown-mode"
+  `(progn
+     (copy-face 'org-level-1 'markdown-header-face-1)
+     (copy-face 'org-level-2 'markdown-header-face-2)
+     (copy-face 'org-level-3 'markdown-header-face-3)
+     (copy-face 'org-level-4 'markdown-header-face-4)
+     ))
+
+
+
