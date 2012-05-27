@@ -5,8 +5,8 @@
 
 ;; if a window is narrower/lower than this number,
 ;; don't split horizontally/vertically automatically (`split-window-sensibly')
-(setq split-width-threshold 90
-      split-height-threshold 40)
+(setq split-width-threshold 120
+      split-height-threshold 60)
 
 ;;*** common used layouts
 ;;DOC: http://www.emacswiki.org/emacs/ThreeWindows
@@ -232,6 +232,16 @@ the mode-line."
 
 
 ;;** window buffer swapping
+(defun buffer-move-to-largest-window()
+  "Open current buffer in largest window"
+  (interactive)
+  (let ((oldbuf (current-buffer)))
+  (select-window (get-largest-window))
+  (switch-to-buffer oldbuf))
+)
+(global-set-key (kbd "<f11> C-l") 'buffer-move-to-largest-window)
+
+
 (defun swap-or-move-buffer-between-windows (other-window swap &optional this-window)
   (let ( (window (or this-window
                      (selected-window))) )
@@ -306,7 +316,7 @@ an error is signaled."
   (interactive "P")
   (windmove-do-swap-window 'right nil arg))
 
-;;*** swap/move by window name
+;;*** move/swap by window name
 (defun ido-move-or-swap-window-buffer (justmove)
   (let (windows)
     (mapc '(lambda (window)
