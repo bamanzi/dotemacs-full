@@ -61,6 +61,62 @@
 
   )
 
+(defun cygwin-env-on ()
+  (interactive)
+
+  ;; use cygwin bash as default shell
+  ;;(w32shell-set-shell "cygwin")
+  (setq explicit-shell-file-name (concat cygwin-root-path "/bin/bash")) ;; for M-x shell
+  (setq explicit-bash-args   '("--login" "-i"))
+  ;;NOTE: edit ~/.emacs_bash or ~/.emacs.d/init_bash.sh to customize special settings
+  ;; for running bash in Emacs (refer `shell' for detail)
+;;  (setenv "SHELL" shell-file-name)  ;;TODO: for what?
+
+  (add-hook 'comint-output-filter-functions
+            'shell-strip-ctrl-m nil t)
+  (add-hook 'comint-output-filter-functions
+            'comint-watch-for-password-prompt nil t)
+
+
+  ;; use bash for executing shell commands (implicitly)  
+  (setq shell-file-name explicit-shell-file-name)  ;;for executing external programs
+  
+  (add-to-list 'exec-path (concat cygwin-root-path "/bin"))
+  (add-to-list 'exec-path (concat cygwin-root-path "/usr/local/bin"))
+  (setq env-path-before-cygwin (getenv "PATH"))
+  (setenv "PATH" (concat cygwin-root-path "/bin" path-separator
+                       cygwin-root-path "/usr/local/bin" path-separator
+                       (getenv "PATH")))
+
+;;  (setq tramp-default-method "scpx")
+  
+  (if (require 'cygwin-mount nil t)
+      (cygwin-mount-activate))
+  )
+  
+  
+(defun cygwin-env-off ()
+  (interactive)
+  (setq explicit-shell-file-name  nil)
+  (setq shell-file-name "cmdproxy.exe")
+
+  (setq exec-path
+        (remove (concat cygwin-root-path "/usr/local/bin")
+                (remove (concat cygwin-root-path "/bin") exec-path)))
+  (setenv "PATH" env-path-before-cygwin)
+
+  ;;(setq tramp-default-method "pscp")
+
+  (remove-hook 'comint-output-filter-functions
+               'shell-strip-ctrl-m t)
+  (remove-hook 'comint-output-filter-functions
+            'comint-watch-for-password-prompt t)
+
+  (if (featurep 'cygwin-mount)
+      (cygwin-mount-deactivate))
+  )
+
+
 ;;** x window
 (when (eq window-system 'x)
   (setq x-select-enable-clipboard t)
@@ -107,6 +163,20 @@
   ;;   C-[, C-], C-{, C-}, C-\, C-|, C-/, C-?
   ;; The following are ambigious
   ;;   C-RET, C-backspace
+  )
+
+(defun map-iterm-keys ()
+  ;; http://offbytwo.com/2012/01/15/emacs-plus-paredit-under-terminal.html
+
+  (define-key input-decode-map "\e[1;5A" [C-up])   
+  (define-key input-decode-map "\e[1;5B" [C-down])
+  (define-key input-decode-map "\e[1;5C" [C-right])
+  (define-key input-decode-map "\e[1;5D" [C-left])
+
+  (define-key input-decode-map "\e[1;4A" [M-up])   
+  (define-key input-decode-map "\e[1;4B" [M-down])
+  (define-key input-decode-map "\e[1;4C" [M-right])
+  (define-key input-decode-map "\e[1;4D" [M-left])
   
   ;; iTerm meta-shift-<arrows> fix
   (define-key input-decode-map "\e[1;10A" [M-S-up])
