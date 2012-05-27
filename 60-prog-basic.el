@@ -32,6 +32,14 @@
 (define-key goto-map "`" 'flymake-goto-next-error)
 (define-key goto-map "~" 'flymake-goto-prev-error)
 
+;;*** mode-compile
+(autoload 'mode-compile "mode-compile"
+  "Command to compile current buffer file based on the major mode" t)
+(global-set-key (kbd "<C-f9>") 'mode-compile)
+
+(autoload 'mode-compile-kill "mode-compile"
+   "Command to kill a compilation launched by `mode-compile'" t)
+;(global-set-key "\C-ck" 'mode-compile-kill)
 
 ;;** imenu
 (autoload 'idomenu "idomenu" "Switch to a buffer-local tag from Imenu via Ido." t)
