@@ -184,6 +184,10 @@ vi style of % jumping to matching brace."
 
 (setq require-final-newline 't)
 
+;;*** eol char
+(setq eol-mnemonic-dos   "(dos)"
+      eol-mnemonic-unix  "(unix)"
+      eol-mnemonic-mac   "(mac)")
 
 ;; Convert a buffer from dos ^M end of lines to unix end of lines
 ;; stolen from http://zhengdong.me/2012/02/05/talk-about-emacs/

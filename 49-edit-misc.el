@@ -161,6 +161,10 @@ current line instead."
   "Swap current line with the line below."
   (interactive)
   (beginning-of-line 2) (transpose-lines 1) (beginning-of-line 0))
+
+(define-key global-map (kbd "<M-up>")    'swap-line-up)
+(define-key global-map (kbd "<M-down>")  'swap-line-down)
+
 ;;*** title case
 ;; http://xahlee.blogspot.com/2011/11/emacs-lisp-example-title-case-string.html
 (autoload 'title-case-string-region-or-line  "xeu_elisp_util"
