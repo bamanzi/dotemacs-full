@@ -142,23 +142,32 @@
 
 
 ;;** xterm & console
-(when (eq system-type 'gnu/linux)
-  (if (not window-system)
-      ;;FIXME: if xterm ?
-      (config-for-linux-xterm)
-      ;;(config-for-linux-console)
-    )
-
-  (load-library "help-mode")  ;; to avoid the error message:
-                              ;;; "Symbol's value as variable is void: help-xref-following"
-  )
 (defun map-mintty-keys ()
   ;; Mintty supports most combo keys (even telnet/ssh to another server)
   ;; such as C-%, C-&, C-(, C-., C-f1, M-f1, S-f1... while putty doesn't
   ;;   http://code.google.com/p/mintty/wiki/Keycodes
-  (define-key key-translation-map (kbd "M-[ 1;5l") (kbd "C-,"))
-  (define-key key-translation-map (kbd "M-[ 1;5n") (kbd "C-."))
 
+  (define-key input-decode-map (kbd "M-[ 1;6u") (kbd "C-%"))
+  ;;C-^: recognizable on xterm & xshell, not bound
+  (define-key input-decode-map (kbd "M-[ 1;6w") (kbd "C-&"))
+  (define-key input-decode-map (kbd "M-[ 1;6x") (kbd "C-*")) ;;my: `highlight-symbol-next'
+  (define-key input-decode-map (kbd "M-[ 1;6y") (kbd "C-("))
+  (define-key input-decode-map (kbd "M-[ 1;6p") (kbd "C-)"))
+
+  (define-key input-decode-map (kbd "M-[ 1;5m") (kbd "C--")) ;; `negative-argument'
+  ;;C-_: recognizable on term, bound to `undo'
+  (define-key input-decode-map (kbd "M-[ 1;6k") (kbd "C-+")) ;;my: `hs-toggle-hiding'
+  (define-key input-decode-map (kbd "M-[ 1;5k") (kbd "C-=")) ;;my: `align-regexp'
+
+  
+  (define-key input-decode-map (kbd "M-[ 1;5l") (kbd "C-,"))
+  (define-key input-decode-map (kbd "M-[ 1;5n") (kbd "C-."))
+  (define-key input-decode-map (kbd "M-[ 1;6l") (kbd "C-<"))
+  (define-key input-decode-map (kbd "M-[ 1;6n") (kbd "C->"))
+
+  (define-key input-decode-map (kbd "M-[ 1;5i") (kbd "<C-tab>"))
+  (define-key input-decode-map (kbd "M-[ 1;6i") (kbd "<C-S-tab>"))    
+  
   ;; The following are not recognizable on xterm:
   ;;   C-[, C-], C-{, C-}, C-\, C-|, C-/, C-?
   ;; The following are ambigious
@@ -195,5 +204,55 @@
   
   )
 
+(when (eq system-type 'gnu/linux)
+  (if (not window-system)
+      (if (string= (getenv "TERM") "linux") ;;FIXME: if xterm ?
+          (config-for-linux-console)
+        (config-for-linux-xterm))
+    )
+
+  ;;(define-key key-translation-map (kbd "<select>") (kbd "<end>"))
+  
+  (load-library "help-mode")  ;; to avoid the error message:
+                              ;;; "Symbol's value as variable is void: help-xref-following"
+  )
+
+
+  ;;not bound by Emacs, but mostly recognizable (at least when ESC used as Meta)
+  ;; M-#
+  ;; M-+  
+  ;; M-_
+  ;; M-]
+  ;; M-"
+  ;; M-? 
+
+  ;;C-`: n.a. 
+  ;;C-~: n.a. 
+  ;;C-!: n.a. 
+  ;;C-@: n.a.
+  ;;C-#: n.a.
+  ;;C-$: n.a.
+
+  ;;C-[ -> esc
+  ;;C-]: bound to `abort-recursive-edit'
+
+  ;;C-\ bound to `toggle-input-method'
+  ;;C-| \234    
+
+  ;;C-{: \233
+  ;;C-}: \235
+
+  ;;C-: n.a.
+  ;;C-; n.a.
+  ;;C-' n.a.
+  ;;C-" n.a.
+
+
+  ;;C-/           -> C-_
+  ;;C-?           -> DEL
+
+  ;;C-backspace   -> C-_
+  ;;C-RET         -> C-^
+    
 
 
