@@ -226,10 +226,10 @@
     map
     )
 
-(defvar my-win-fns-keymap (make-sparse-keymap "Window operations"))
-(init-win-fns-keys my-win-fns-keymap)
+(defvar bmz/win-fns-keymap (make-sparse-keymap "Window operations"))
+(init-win-fns-keys bmz/win-fns-keymap)
 
-(global-set-key (kbd "<f11>") my-win-fns-keymap)
-(define-key global-map (kbd "C-c w") my-win-fns-keymap)
-(global-set-key (kbd "s-w")   my-win-fns-keymap)
+(global-set-key (kbd "<f11>") bmz/win-fns-keymap)
+(define-key global-map (kbd "C-c w") bmz/win-fns-keymap)
+(global-set-key (kbd "s-w")   bmz/win-fns-keymap)
  

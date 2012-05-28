@@ -1,6 +1,8 @@
 ;;* window operations
 ;;See also (linkd-follow '(@file :file-name "25-win-fns.el" :to "init-win-fns-keys" :display "window-related keybindings"))
 
+(defvar bmz/win-fns-keymap (make-sparse-keymap "Window operations"))
+
 ;;** window layout
 
 ;; if a window is narrower/lower than this number,
@@ -81,7 +83,7 @@
 ;;*** windresize.el: manual resizing
 (autoload 'windresize "windresize" "Resize windows interactively." t)
 (setq windresize-default-increment 4)
-(global-set-key (kbd "<f11> RET") 'windresize)
+(define-key bmz/win-fns-keymap (kbd "RET") 'windresize)
 
 ;;*** widen-window: automatically widen
 (autoload 'widen-current-window "widen-window"
@@ -101,7 +103,7 @@
   (interactive "e")
   (mouse-set-point event)
   (call-interactively 'widen-current-window))
-(global-set-key (kbd "<f11> <mouse-1>") 'widen-current-window-by-mouse)
+(define-key bmz/win-fns-keymap (kbd "<mouse-1>") 'widen-current-window-by-mouse)
 
 ;;*** adjust `split-window', so that new window not 1/2 in size, but 1/3
 
@@ -205,6 +207,33 @@ the mode-line."
   (window-numbering-mode t)
   (window-numer-meta-mode t))
 
+(eval-after-load "window-numbering"
+  `(progn
+    (define-key window-numbering-keymap "\M-0" nil)
+    (define-key window-numbering-keymap "\M-1" nil)
+    (define-key window-numbering-keymap "\M-2" nil)
+    (define-key window-numbering-keymap "\M-3" nil)
+    (define-key window-numbering-keymap "\M-4" nil)
+    (define-key window-numbering-keymap "\M-5" nil)
+    (define-key window-numbering-keymap "\M-6" nil)
+    (define-key window-numbering-keymap "\M-7" nil)
+    (define-key window-numbering-keymap "\M-8" nil)
+    (define-key window-numbering-keymap "\M-9" nil)
+
+    (define-key bmz/win-fns-keymap "\M-0" 'select-window-0)
+    (define-key bmz/win-fns-keymap "\M-1" 'select-window-1)
+    (define-key bmz/win-fns-keymap "\M-2" 'select-window-2)
+    (define-key bmz/win-fns-keymap "\M-3" 'select-window-3)
+    (define-key bmz/win-fns-keymap "\M-4" 'select-window-4)
+    (define-key bmz/win-fns-keymap "\M-5" 'select-window-5)
+    (define-key bmz/win-fns-keymap "\M-6" 'select-window-6)
+    (define-key bmz/win-fns-keymap "\M-7" 'select-window-7)
+    (define-key bmz/win-fns-keymap "\M-8" 'select-window-8)
+    (define-key bmz/win-fns-keymap "\M-9" 'select-window-9)
+    ))
+
+    
+
 ;;*** jump by buffer name
 (defun ido-jump-to-window ()
   "Jump to window by current buffer name."
@@ -229,17 +258,17 @@ the mode-line."
                                   (window-list))))
       (select-window (car window-of-buffer)))))
 
-
+(define-key global-map (kbd "M-g w") 'ido-jump-to-window)
 
 ;;** window buffer swapping
-(defun buffer-move-to-largest-window()
+(defun move-buffer-to-largest-window()
   "Open current buffer in largest window"
   (interactive)
   (let ((oldbuf (current-buffer)))
   (select-window (get-largest-window))
   (switch-to-buffer oldbuf))
 )
-(global-set-key (kbd "<f11> C-l") 'buffer-move-to-largest-window)
+(define-key bmz/win-fns-keymap (kbd "C-l") 'move-buffer-to-largest-window)
 
 
 (defun swap-or-move-buffer-between-windows (other-window swap &optional this-window)
@@ -345,8 +374,8 @@ an error is signaled."
   (interactive)
   (ido-move-or-swap-window-buffer 'justmove))
 
-(global-set-key (kbd "<f11> M-m") 'ido-move-window-buffer-to)
-(global-set-key (kbd "<f11> M-s") 'ido-swap-window-buffer-with)
+(define-key bmz/win-fns-keymap (kbd "M-m") 'ido-move-window-buffer-to)
+(define-key bmz/win-fns-keymap (kbd "M-s") 'ido-swap-window-buffer-with)
 
 ;;*** move/swap by window number
 ;;Seems not very useful?
@@ -373,8 +402,8 @@ an error is signaled."
        (message "Swap current window with window %s." arg)
        (move-or-swap-buffer-to-numbered-window arg 'swap))
      
-     (global-set-key (kbd "<f11> M-m") 'move-buffer-to-numbered-window)
-     (global-set-key (kbd "<f11> M-s") 'swap-buffer-with-numbered-window)
+     (define-key bmz/win-fns-keymap (kbd "M-m") 'move-buffer-to-numbered-window)
+     (define-key bmz/win-fns-keymap (kbd "M-s") 'swap-buffer-with-numbered-window)
       
      ))
 
@@ -424,7 +453,7 @@ an error is signaled."
 (eval-after-load "popwin"
   `(progn
 ;;     (setq display-buffer-function 'popwin:display-buffer)
-     (global-set-key (kbd "<f11> ~") popwin:keymap)
+     (define-key bmz/win-fns-keymap (kbd "~") popwin:keymap)
 
      (define-key popwin:keymap "g" 'popwin:select-popup-window) ;;go to
      (define-key popwin:keymap "*" 'popwin:stick-popup-window)
@@ -457,7 +486,8 @@ would be displayed in a popup window."
 ;; override C-x 0 and C-x 1, to regard window-dedicated-p
 ;;(when (or (featurep 'window-extensions)
 ;;          (featurep 'sticky-windows)))
-(global-set-key (kbd "<f11> *") 'sticky-window-keep-window-visible)
+(define-key bmz/win-fns-keymap (kbd "*") 'sticky-window-keep-window-visible)
+
 (eval-after-load "window-extension"
   `(progn
         (global-set-key (kbd "C-x 0") 'sticky-window-delete-window)
@@ -528,11 +558,13 @@ to display some special buffers specified in `. For non-special"
   ;; maximize any new frame
   (add-hook 'window-setup-hook 'maximize-frame t)
 
-  ;; (add-hook 'after-make-frame-functions
-  ;;           #'(lambda (frame)
-  ;;               (unless (frame-parameter frame 'unsplittable)
-  ;;                 (with-selected-frame frame
-  ;;                   maximize-frame))))
+  (defun maximize-frame-if-splittable (frame)
+    (interactive (list (selected-frame)))
+    (unless (frame-parameter frame 'unsplittable)
+      (with-selected-frame frame
+        maximize-frame)))
+    
+  (add-hook 'after-make-frame-functions 'maximize-frame-if-splittable)
   )
 
 ;;*** full-screen (or maximize)
@@ -572,7 +604,7 @@ to display some special buffers specified in `. For non-special"
      (scroll-bar-mode (not menu-bar-mode)))
    )
 
-(global-set-key (kbd "<f11> M-RET") 'toggle-full-screen)
+(define-key bmz/win-fns-keymap (kbd "M-RET") 'toggle-full-screen)
 
 ;;*** opening server files always in a new frame
 ;;http://www.emacswiki.org/emacs/EmacsClient#toc21
@@ -602,6 +634,19 @@ to display some special buffers specified in `. For non-special"
 
 ;;** misc
 
+(defun focus-or-switch-to-buffer (buffer)
+  "If buffer currently shows in a window of current frame, focus it.
+Otherwise call `switch-to-buffer'."
+  (interactive "bBuffer: ")
+  (let ((win (find-if (lambda (win)
+                        (string= buffer
+                                 (buffer-name (window-buffer win))))
+                      (window-list))))
+    (if win
+        (select-window win)
+      (switch-to-buffer buffer))))
+
+(define-key global-map (kbd "M-g b") 'focus-or-switch-to-buffer)
 
 ;;*** some useful extensions
 ;;- toggle-one-window
