@@ -28,9 +28,9 @@
 
 ;;*** develock: programmers whitespace-mode
 (autoload 'develock-mode  "develock" "Toggle Develock mode." t)
-(setq develock-auto-enable t)
+(setq develock-auto-enable nil)
 
-(idle-require 'develock)
+;;(idle-require 'develock)  ;;FIXME: conflict with outline-org-heading-mode
 
 ;;FIXME: now develock-mode would make `lisp-indent-line' behavior strangely
 (eval-after-load "develock"
@@ -123,6 +123,13 @@
 ;;*** automatically highlight symbol at point for a short time
 (autoload 'idle-highlight "idle-highlight" nil t)
 (global-set-key (kbd "<f10> ih") 'idle-highlight)
+
+(idle-require 'idle-highlight)
+(eval-after-load "idle-highlight"
+  `(progn
+     (add-hook 'find-file-hook 'idle-highlight)
+     ))
+
 
 ;;See also: light-symbol.el
 
@@ -243,8 +250,7 @@
           '(lambda ()
              (font-lock-add-keywords
               nil
-              '(("\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 1 font-lock-warning-face prepend)
-                ("\\<\\(and\\|or\\|not\\)\\>" . font-lock-keyword-face)))))
+              '(("\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 1 font-lock-warning-face prepend)))))
 
 ;;*** fixme-mode 
 (autoload 'fixme-mode "fixme-mode"
@@ -256,10 +262,13 @@
 (idle-require 'pulse)
 (unless (fboundp 'cedet-called-interactively-p)
   ;;(defalias 'cedet-called-interactively-p 'called-interactively-p)
-  (defun cedet-called-interactively-p ()
-    (if (string< emacs-version "23.2")
-        (called-interactively-p)
-      (called-interactively-p 'any)))
+  (defmacro cedet-called-interactively-p (&optional arg)
+    '(interactive-p))
+        
+  ;; (defun cedet-called-interactively-p ()
+  ;;   (if (string< emacs-version "23.2")
+  ;;       (called-interactively-p)
+  ;;     (called-interactively-p 'any)))
     )
 
 ;;(setq pulse-command-advice-flag (if window-system 1 nil))
