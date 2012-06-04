@@ -80,7 +80,7 @@ Return a list of one element based on major mode."
            ))))
   (symbol-value 'last-tabbar-ruler-tabbar-buffer-groups))
 
-(setq bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple)
+(fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple)
 
 ;;*** Add a buffer modification state indicator in the label
 ;;FROM: http://www.emacswiki.org/emacs/TabBarMode#toc11
@@ -147,7 +147,7 @@ Return a list of one element based on major mode."
 (eval-after-load "tabbar-ruler"
   `(progn
      ;; restore my choice (tabbar-ruler.el would change this)
-     (setq tabbar-buffer-groups-function bmz/tabbar-buffer-groups-function)
+     (setq tabbar-buffer-groups-function 'bmz/tabbar-buffer-groups-function)
      ))
      
 ;;*** show tabbar group on modeline
@@ -167,7 +167,7 @@ Return a list of one element based on major mode."
      ))
 
 ;;*** some hacks on header-line
-(setq tabbar-header-line-format
+(setq bmz/tabbar-header-line-format
               '((:propertize "[X]"
                              local-map
                              (keymap
@@ -187,7 +187,8 @@ C-mouse-3: delete other windows")
 
 (eval-after-load "tabbar"
   `(progn
-     (setq-default header-line tabbar-header-line-format)
+     (setq tabbar-header-line-format bmz/tabbar-header-line-format)
+     (setq-default header-line-format tabbar-header-line-format)
      ))
 
 (defun widen-current-window-by-mouse (event)
@@ -329,11 +330,14 @@ Return a list of one element based on major mode."
           (t
            "Files"
            ))))
-  (if (and (featurep 'frame-bufs-mode)
+  (if (and (featurep 'frame-bufs)
            frame-bufs-mode
            (memq (current-buffer) (frame-bufs-buffer-list (selected-frame))))
       (symbol-value 'last-tabbar-ruler-tabbar-buffer-groups)))
 
-(setq bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple-with-frame-bufs)
+(eval-after-load "frame-bufs"
+  `(progn
+     (fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple-with-frame-bufs)
+     ))
 
 
