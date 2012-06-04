@@ -42,7 +42,7 @@
 
 (global-set-key [C-s-right] 'copy-char-from-above)
 
-;;** copy/cut current line if no region marked
+;;*** copy/cut current line if no region marked
 ;;NOTE: not used. as sometimes I use the non-visible region
 (when nil
 ;; Change cutting behavior:
@@ -68,16 +68,6 @@ current line instead."
            (line-beginning-position 2)))))
 )
 
-;;** search
-;;*** hidesearch
-(autoload 'hidesearch "hidesearch" "Incrementally show only lines in file based on what user types." t)
-(autoload 'show-all-invisible "hide-lines" "Show all areas hidden by the filter-buffer command" t)
-(autoload 'hide-non-matching-lines "hide-lines" "Hide lines that don't match the specified regexp." t)
-
-(global-set-key (kbd "C-c C-s") 'hidesearch)
-(global-set-key (kbd "C-c C-a") 'show-all-invisible)
-
-;;FIXME: anything-occur is better?
 
 ;;** secondary selection
 (autoload 'secondary-to-primary "second-sel" nil t)
@@ -139,6 +129,37 @@ current line instead."
 
 (global-set-key (kbd "C-x t") 'anchored-transpose)
 
+;;** go to somewhere
+;;*** go-to-char
+(defun go-to-char (arg char)
+  (interactive "p\ncGo to char: ")
+  (forward-char 1)
+  (if (if arg
+          (search-forward (char-to-string char) nil nil arg)
+        (search-forward (char-to-string char)))
+      (backward-char 1))
+  )
+
+(defun go-back-to-char (arg char)
+  (interactive "p\ncGo back to char: ")
+  (forward-char -1)
+  (if arg
+      (search-backward (char-to-string char) nil nil arg)
+    (search-backward (char-to-string char)))
+  )
+
+(global-set-key (kbd "M-g c")      'go-to-char)
+(global-set-key (kbd "ESC M-g c")  'go-back-to-char)
+
+;;*** ace-jump-mode
+(autoload 'ace-jump-line-mode  "ace-jump-mode"
+  "AceJump line mode." t)
+(autoload 'ace-jump-char-mode "ace-jump-mode"
+  "AceJump char mode" t)
+
+(define-key goto-map "l"  'ace-jump-line-mode)
+(define-key goto-map " "  'ace-jump-mode)
+
 ;;** misc
 ;;*** extend selection incrementally (ergoemacs-functions.el)
 ;; http://xahlee.org/emacs/syntax_tree_walk.html
@@ -171,24 +192,4 @@ current line instead."
   "Capitalize the current line or text selection, following title conventions." t)
 (global-set-key (kbd "ESC M-c") 'title-case-string-region-or-line)
 
-;;*** go-to-char
-(defun go-to-char (arg char)
-  (interactive "p\ncGo to char: ")
-  (forward-char 1)
-  (if (if arg
-          (search-forward (char-to-string char) nil nil arg)
-        (search-forward (char-to-string char)))
-      (backward-char 1))
-  )
-
-(defun go-back-to-char (arg char)
-  (interactive "p\ncGo back to char: ")
-  (forward-char -1)
-  (if arg
-      (search-backward (char-to-string char) nil nil arg)
-    (search-backward (char-to-string char)))
-  )
-
-(global-set-key (kbd "M-g c")      'go-to-char)
-(global-set-key (kbd "ESC M-g c")  'go-back-to-char)
 

@@ -108,3 +108,18 @@ the GPL."
 
 
 
+
+;;** CNBlogs Ing
+(defun search-cnblogs-ing ()
+  (interactive)
+  (require 'hide-lines)
+  (let ((file (car (last (directory-files "~/Downloads"
+                                          t
+                                          "CNBlogs_Ing_Backup_[0-9]+.txt")))))           
+    (find-file file)
+    (with-current-buffer (file-name-nondirectory file)
+      (local-set-key (kbd "C-c C-s") 'hide-non-matching-lines)
+      (local-set-key (kbd "C-c C-a") 'show-all-invisible)
+      
+      (show-all-invisible)
+      (call-interactively 'hide-non-matching-lines))))
