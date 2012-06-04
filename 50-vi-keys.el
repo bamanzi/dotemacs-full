@@ -146,7 +146,7 @@ whitespaces of the next line. Otherwise it would kill current word."
 ;;---
 (defun init-vi-style-keys (prefix-key)
   (let ( (map (make-sparse-keymap "Vi-style operation")) )
-    (define-prefix-command 'my-win-fns-keymap)
+;;    (define-prefix-command map)
     (global-set-key (read-kbd-macro prefix-key) map)
 
     (define-key map (kbd "w") 'forward-word)
