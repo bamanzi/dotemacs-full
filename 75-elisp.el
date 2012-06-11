@@ -39,7 +39,7 @@
 (define-key dired-mode-map "B" 'bmz/dired-do-byte-compile)
 
 
-;;;_. code folding
+;;** code folding
 (defun emacs-lisp-mode-init-fold ()
   (if (fboundp 'hideshowvis-enable)
       (hideshowvis-enable)
@@ -51,7 +51,7 @@
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-init-fold)
 
 
-;;;_. code complete
+;;** code complete
 
 (if (fboundp 'ac-emacs-lisp-mode-setup)
     (add-hook 'lisp-interaction-mode 'ac-emacs-lisp-mode-setup))
@@ -92,6 +92,7 @@
       (add-hook 'emacs-lisp-mode-hook 'reset-imenu-function))
   (if (fboundp 'setq-mode-local)
       (setq-mode-local emacs-lisp-mode imenu-create-index-function 'imenu-default-create-index-function))
+  
   )
 
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-mode-init-misc)

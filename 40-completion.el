@@ -53,6 +53,30 @@
      )
   )
 
+;;*** helper command: ac-toggle-source
+(defun ac-toggle-source (source &optional desire)
+  "Add or remove a SOURCE in `ac-sources'.
+
+If DESIRE given, this source would be absolutely added (if DESIRE > 0) or
+remove (if DESIRE <= 0). If DESIRE not given, it would be toggled."
+  (interactive
+   (list (intern-soft (ido-completing-read "Source: "
+										   (loop for x being the symbols
+												 if (and (boundp x)
+														 (string-match "^ac-source-" (symbol-name x)))
+												 collect (symbol-name x))))))
+  (when (and source (symbolp source))
+	(if desire
+		(if (> desire 0)
+			(add-to-list 'ac-sources source)
+		  (setq ac-sources (remq source ac-sources)))
+	  (if (memq source ac-sources)
+		  (setq ac-sources (remq source ac-sources))
+		(add-to-list 'ac-sources source)))
+	(message "Source `%s' %s." source (if (memq source ac-sources)
+										  "enabled"
+										"disabled"))))
+
 ;;*** use `pos-tip' to fix the popup window position issue
 ;; `auto-complete' 1.4 already use `pos-tip'
 (when (require 'popup-pos-tip nil t)

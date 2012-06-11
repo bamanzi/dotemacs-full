@@ -95,6 +95,11 @@
   "Run `sudoedit FILE' to edit FILE as root." t)
 ;;`sudo-ext' also has sudo support in shell execution in Emacs
 
+(when (memq system-type '(gnu gnu/linux darwin))
+  ;;another way, hook would be installed on `find-file-hooks', `write-file-hooks'
+  (idle-require 'sudo-save)
+  )
+
 ;;** Save File
 ;;...
 ;;*** Emacs built-in backup rules
@@ -137,8 +142,6 @@
                      (format-time-string backup-each-save-time-format))))
        )
      ))
-
-
 
 
 ;;** filesystem navigation & management
@@ -241,6 +244,14 @@ Otherwise, call the original `dired-jump'."
     (message "file not saved. ")))
 
 (global-set-key (kbd "<f6> M-g") 'describe-this-file)
+
+;;simulate vi's C-g (:file)
+(autoload 'ex-set-visited-file-name "viper-ex" nil nil)
+(defun viper-describe-file ()
+  (interactive)
+  (ex-set-visited-file-name))
+
+(global-set-key (kbd "<f6> C-g") 'viper-describe-file)
 
 ;;*** make built-in lisp file read-only
 (defun find-file-on-built-in-lisp-file ()

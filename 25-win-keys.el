@@ -199,9 +199,12 @@
 ;;    (define-key map (kbd "ESC M-RET") 'restore-frame)
     (define-key map (kbd "M-RET")     'toggle-full-screen)
 
+    (define-key map (kbd "C-x 1 h")   'delete-other-windows-horizontally+)
+    (define-key map (kbd "C-x 1 v")   'delete-other-windows-vertically)
+    
     ;; split-root.el
     (define-key map (kbd "C-x 2")     'split-root-window-vertially)
-    (define-key map (kbd "C-x 3")     'split-root-whenhorizontallywindow-)
+    (define-key map (kbd "C-x 3")     'split-root-window-horizontally)
 
     ;;( (featurep 'tabbar)
     (define-key map (kbd "C-n")       'tabbar-forward-tab)
@@ -223,6 +226,16 @@
     ;;(if (featurep 'sr-speedbar)
     (define-key map (kbd "S")           'sr-speedbar-toggle)
 
+    (define-key map "1"    'select-window-1)
+    (define-key map "2"    'select-window-2)
+    (define-key map "3"    'select-window-3)
+    (define-key map "4"    'select-window-4)
+    (define-key map "5"    'select-window-5)
+    (define-key map "6"    'select-window-6)
+    (define-key map "7"    'select-window-7)
+    (define-key map "8"    'select-window-8)
+    (define-key map "9"    'select-window-9)
+    
     map
     )
 

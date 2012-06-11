@@ -140,10 +140,14 @@
 
 (eval-after-load "markdown-mode"
   `(progn
-     (copy-face 'org-level-1 'markdown-header-face-1)
-     (copy-face 'org-level-2 'markdown-header-face-2)
-     (copy-face 'org-level-3 'markdown-header-face-3)
-     (copy-face 'org-level-4 'markdown-header-face-4)
+     (set-face-attribute 'markdown-header-face-1 nil :inherit 'org-level-1)
+     (set-face-attribute 'markdown-header-face-2 nil :inherit 'org-level-2)
+     (set-face-attribute 'markdown-header-face-3 nil :inherit 'org-level-3)
+     (set-face-attribute 'markdown-header-face-4 nil :inherit 'org-level-4)
+     (set-face-attribute 'markdown-header-face-5 nil :inherit 'org-level-5)
+     (set-face-attribute 'markdown-header-face-6 nil :inherit 'org-level-6)
+
+     (add-hook 'markdown-mode-hook 'buffer-face-mode) 
      ))
 
 

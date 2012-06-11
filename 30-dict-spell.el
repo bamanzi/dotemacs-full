@@ -16,6 +16,8 @@
 (autoload 'dictem-run-search "dictem" nil t)
 (autoload 'dictem-run-match  "dictem" nil t) 
 
+(eval-after-load "dictem"	  `(dictem-initialize))
+
 ;;*** dict.el (external program `dict' needed)
 ;;;  (NOTE: it's hard to use it on windows)
 (setq dict-servers '("localhost" "dict.org"))

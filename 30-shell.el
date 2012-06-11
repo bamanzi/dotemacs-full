@@ -98,6 +98,21 @@
 
 (defalias 'eshell/vi 'eshell/vim)
 
+(defun eshell/start (file)
+    "Invoke system's associated application for FILE.
+On Windows, baskslashes is substituted with slashes."
+    (if (eq system-type 'gnu/linux)
+        (shell-command (concat "gnome-open "
+                               (shell-quote-argument (file))))
+      (w32-shell-execute "Open"
+                       (subst-char-in-string ?\\ ?/ (expand-file-name file))
+		       nil)))
+
+(defun eshell/clear()
+  "to clear the eshell buffer."
+  (interactive)  
+  (let ((inhibit-read-only t))
+    (erase-buffer)))
 
 ;;** misc
 ;;*** oneliner: a special shell supporing piping to/from buffer

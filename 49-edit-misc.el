@@ -160,6 +160,21 @@ current line instead."
 (define-key goto-map "l"  'ace-jump-line-mode)
 (define-key goto-map " "  'ace-jump-mode)
 
+;;*** goto-chg
+;;   (require 'goto-chg)
+(autoload 'goto-last-change "goto-chg"
+  "Go to the point where the last edit was made in the current buffer." t)
+(autoload 'goto-last-change-reverse "goto-chg"
+  "Undocumented." t)
+
+
+;;   (global-set-key [(control ?.)] 'goto-last-change)
+;;   (global-set-key [(control ?,)] 'goto-last-change-reverse)
+
+;;*** goto-last-change
+;;(autoload 'goto-last-change "goto-last-change"
+;;  "Set point to the position of the last change." t)
+
 ;;** misc
 ;;*** extend selection incrementally (ergoemacs-functions.el)
 ;; http://xahlee.org/emacs/syntax_tree_walk.html

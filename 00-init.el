@@ -39,6 +39,8 @@
 ;; <f11>: window-related commands (`super' modifier)
 ;; <f12>: misc stuff
 
+(global-set-key [f1] 'help-command)
+
 (global-unset-key [f2])
 (global-unset-key [f3])
 (global-unset-key [f4])

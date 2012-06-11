@@ -23,7 +23,7 @@
   ;; IMPORTANT: For Emacs >= 23.2, you must place this *before* any
   ;; CEDET component (including EIEIO) gets activated by another 
   ;; package (Gnus, auth-source, ...).
-  (load-library "cedet")
+;;  (load-library "cedet") //FIXME!!!
 )
 
 (defun init-cedet-from-sf.net ()

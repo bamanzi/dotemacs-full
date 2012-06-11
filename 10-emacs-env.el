@@ -95,8 +95,8 @@
 (autoload 'describe-command  "help-fns+"
   "Describe an Emacs command (interactive function)." t)
 (define-key help-map "K"   'describe-key-briefly)
-(define-key help-map "M-k" 'describe-keymap)
-(define-key help-map "M-f" 'describe-file)
+(define-key help-map (kbd "M-k") 'describe-keymap)
+(define-key help-map (kbd "M-f") 'describe-file)
 (define-key help-map "c"   'describe-command)
 
 (define-key help-map " "  #'(lambda ()
@@ -156,6 +156,7 @@
 (define-key help-map "im" 'info-emacs-manual)
 (define-key help-map "ic" 'Info-goto-emacs-command-node)
 (define-key help-map "ik" 'Info-goto-emacs-key-command-node)
+(define-key help-map (kbd "i l") 'elisp-index-search)  ;;info-lookup-symbol is better?
 
 (idle-require 'info+)
 

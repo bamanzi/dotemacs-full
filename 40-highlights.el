@@ -121,13 +121,18 @@
 (global-set-key (kbd "C-*")    'highlight-symbol-next)   ;;NOTE: key not work on terminal
 
 ;;*** automatically highlight symbol at point for a short time
-(autoload 'idle-highlight "idle-highlight" nil t)
+(autoload 'idle-highlight "idle-highlight"
+  "highlight the word the point is on" t)
+(autoload 'idle-highlight-mode "idle-highlight"
+  "highlight the word the point is on" t)
 (global-set-key (kbd "<f10> ih") 'idle-highlight)
 
 (idle-require 'idle-highlight)
 (eval-after-load "idle-highlight"
   `(progn
-     (add-hook 'find-file-hook 'idle-highlight)
+     (if (fboundp 'idle-highlight)
+         (add-hook 'find-file-hook 'idle-highlight)
+       (add-hook 'find-file-hook 'idle-highlight-mode))
      ))
 
 

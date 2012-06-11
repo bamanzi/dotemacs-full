@@ -130,6 +130,23 @@
 
 
 ;;** list & choose method
+(defun anything-goto-symbol ()
+  "Show anything list, using current symbol as input to narrow the choices."
+  (interactive)
+  (anything
+   :prompt "Go to:"
+   :candidate-number-limit 10
+   :input (thing-at-point 'symbol)
+   :sources
+      '( anything-c-source-imenu
+         anything-c-source-browse-code
+         anything-c-source-semantic
+        ;; anything-c-source-info-emacs-lisp-intro
+         )))
+
+(define-key goto-map "s" 'anything-goto-symbol)
+
+
 (defun bmz/select-method()
   (interactive)
   (require 'idomenu "idomenu" t)  
