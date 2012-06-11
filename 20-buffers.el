@@ -42,27 +42,7 @@
 (global-set-key (kbd "C-c C-b") 'ibuffer)
 
 ;;**** ibuffer-vc
-;;Group ibuffer's list by VC project, or show VC status
-(eval-after-load "ibuffer"
-  `(progn
-     (when (require 'ibuffer-vc nil t)
-       (add-hook 'ibuffer-hook
-                 (lambda ()
-                   (ibuffer-vc-set-filter-groups-by-vc-root)
-                   (ibuffer-do-sort-by-alphabetic)))
-
-       (setq ibuffer-formats
-             '((mark modified read-only vc-status-mini " "
-                     (name 18 18 :left :elide)
-                     " "
-                     (size 9 -1 :right)
-                     " "
-                     (mode 16 16 :left :elide)
-                     " "
-                     (vc-status 16 16 :left)
-                     " "
-                     filename-and-process)))
-     )))
+;;(idle-require 'ibuffer-vc)
 
 ;;** temporary buffers
 ;;*** midnight-mode
@@ -71,12 +51,15 @@
 
 ;;*** tempbuf
 ;;(autoload 'turn-on-tempbuf-mode "tempbuf")
-(when (load "tempbuf" t)
-  (add-hook 'dired-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'custom-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
-  (add-hook 'view-mode-hook 'turn-on-tempbuf-mode))
+(idle-require 'tempbuf)
+(eval-after-load "tempbuf"
+  `(progn
+     (add-hook 'dired-mode-hook 'turn-on-tempbuf-mode)
+     (add-hook 'custom-mode-hook 'turn-on-tempbuf-mode)
+     (add-hook 'w3-mode-hook 'turn-on-tempbuf-mode)
+     (add-hook 'Man-mode-hook 'turn-on-tempbuf-mode)
+     (add-hook 'view-mode-hook 'turn-on-tempbuf-mode)
+  ))
 
 
 ;;** misc
