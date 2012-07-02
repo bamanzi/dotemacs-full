@@ -117,6 +117,14 @@
     
     )
 
+;;put face-adjusting code to hook `after-make-frame-functions'
+;;then use this to call them
+(global-set-key (kbd "<f12> <f12>")
+                #'(lambda ()
+                    (interactive)
+                    (run-hook-with-args 'after-make-frame-functions
+                                        (selected-frame))))
+
 ;;** recent-jump
 (setq rj-column-threshold 100)
 (if (load "recent-jump" t)
