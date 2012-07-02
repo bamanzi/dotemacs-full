@@ -27,6 +27,8 @@
   )
 
 ;;** cygwin
+;;DOC: http://www.emacswiki.org/emacs/CygwinizedEmacsHOWTO
+;;DOC: http://www.khngai.com/emacs/cygwin.php
 (defun cygwin-init-paths (cygwin-root-path)
   (if (file-directory-p cygwin-root-path)
       (progn

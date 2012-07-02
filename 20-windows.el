@@ -7,7 +7,7 @@
 
 ;; if a window is narrower/lower than this number,
 ;; don't split horizontally/vertically automatically (`split-window-sensibly')
-(setq split-width-threshold 120
+(setq split-width-threshold 140
       split-height-threshold 60)
 
 ;;*** common used layouts
