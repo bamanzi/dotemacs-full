@@ -92,8 +92,8 @@
   (mode-line-uninstall-element 'which-func-format)
   (mode-line-install-element 'which-func-format)
 
-  (define-key which-func-keymap (kbd "<mode-line> <mouse-2>") 'imenu)
-  (define-key which-func-keymap (kbd "<header-line> <mouse-2>") 'imenu)
+  (define-key which-func-keymap (kbd "<mode-line> <C-mouse-3>") 'imenu)
+  (define-key which-func-keymap (kbd "<header-line> <C-mouse-3>") 'imenu)
   
   )
 

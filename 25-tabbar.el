@@ -168,20 +168,21 @@ Return a list of one element based on major mode."
 
 ;;*** some hacks on header-line
 (setq bmz/tabbar-header-line-format
-              '((:propertize "[X]"
-                             local-map
-                             (keymap
-                              (header-line keymap
-                                           (mouse-1   . mouse-delete-window)
-                                           (C-mouse-1 . mouse-tear-off-window)
-                                           (mouse-2   . tabbar-tabset-menu)
-                                           (mouse-3   . widen-current-window-by-mouse)
-                                           (C-mouse-3 . mouse-delete-other-windows)))
+              '((:propertize "[O]"
+                             local-map (keymap (header-line keymap
+                                                            (mouse-1   . widen-current-window-by-mouse)
+                                                            ))
+                             help-echo " widen current window")
+                (:propertize "[X]"
+                             local-map (keymap (header-line keymap
+                                                            (mouse-1   . mouse-delete-window)
+                                                            (S-mouse-1 . mouse-delete-other-windows)
+                                                            (M-mouse-1 . mouse-tear-off-window)
+                                                            (C-mouse-3 . tabbar-tabset-menu)))
                              help-echo "  mouse-1: delete current window
-C-mouse-1: tear of current window into a new frame
-  mouse-2: list buffers of current tabset in menu
-  mouse-3: widen current window
-C-mouse-3: delete other windows")
+C-mouse-1: delete other windows
+M-mouse-1: tear of current window into a new frame
+C-mouse-3: list buffers of current tabset in menu")
                 which-func-format
                 (:eval (tabbar-line))))
 

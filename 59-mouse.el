@@ -178,7 +178,7 @@
 ;;... (refer to buffers.el)
 ;;(setq mouse-buffer-menu-maxlen (- (frame-parameter nil 'height) 10))
 (define-key mode-line-buffer-identification-keymap
-  (kbd "<mode-line> <mouse-2>") 'mouse-buffer-menu)
+  (kbd "<mode-line> <C-mouse-3>") 'mouse-buffer-menu)
 
 ;;* other stuff
 
