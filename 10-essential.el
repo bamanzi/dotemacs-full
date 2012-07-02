@@ -88,6 +88,35 @@
   (message "%s: failed to load `anything'." load-file-name))
 
 
+;;** themes
+(when (< emacs-major-version 24)
+    ;; if we not loaded color-theme yet (load your faviourite theme in customize.el)
+    (when (not (featurep 'color-theme))
+      (when (require 'color-theme nil t)
+        (require 'color-theme-tangotango nil t)
+        (when (featurep 'color-theme-tangotango)
+           (color-theme-tangotango))))
+        
+
+    ;; (idle-require 'color-theme-zenburn)
+    
+    (autoload 'color-theme-tango  "color-theme-tango"
+      "A color theme based on Tango Palette." t)
+    (autoload 'color-theme-tango-light  "color-theme-tango"
+      "A color theme based on Tango Palette." t)
+
+    (autoload 'color-theme-sanityinc-dark  "color-theme-sanityinc"
+      "Based on `color-theme-subdued" t)
+    (autoload 'color-theme-sanityinc-light  "color-theme-sanityinc"
+      "Based on `color-theme-pierson`" t)
+
+    (autoload 'color-theme-solarized-dark  "color-theme-solarized"
+      "Undocumented." t)
+    (autoload 'color-theme-solarized-light "color-theme-solarized"
+      "Undocumented." t)
+    
+    )
+
 ;;** recent-jump
 (setq rj-column-threshold 100)
 (if (load "recent-jump" t)

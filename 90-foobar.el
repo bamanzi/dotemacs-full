@@ -13,36 +13,7 @@
 
 
 ;;** misc
-;;*** append scratch buffer into a file automatically
-;;https://github.com/wakaran/scratch-log
-(idle-require 'scratch-log)
-
-;; another implementation: How to Make Emacs' Scratch Buffer Persistent Across Sessions 
-;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
-
-;;*** command log
-;; http://www.foldr.org/~michaelw/emacs/mwe-log-commands.el
-;;(idle-require 'mwe-log-commands)
-
-;;*** command frequency
-;;http://xahlee.org/emacs/command-frequency.html
-
-;;** go to scratch buffer
-(defun goto-scratch-buffer-on-botton-window ()
-  (interactive)
-  (require 'windmove)
-  (let ( (win (selected-window)) )
-    (while (windmove-find-other-window 'down nil win)
-      (setq win (windmove-find-other-window 'down nil win)))
-    (when win
-      (select-window win)
-      (switch-to-buffer "*scratch*"))))
-
-;;(global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
-
-
-
-;;** count region
+;;*** count region
 ;; http://xahlee.org/emacs/elisp_count-region.html
 ;; see also: M-= (M-x count-lines-region)
 (defun count-region (begin end)
@@ -60,23 +31,6 @@
 
       (message "Words: %d. Chars: %d." wCnt charCnt)
       )))
-
-
-
-
-;;** color-theme
-(if (< emacs-major-version 24)
-    ;; if we not loaded color-theme yet (load your faviourite theme in customize.el)
-    (when (not (featurep 'color-theme))
-      (when (require 'color-theme nil t)
-        (require 'color-theme-tangotango nil t)
-        (when (featurep 'color-theme-tangotango)
-           (color-theme-tangotango))
-        
-        (idle-require 'color-theme-solarized)
-        (idle-require 'color-theme-zenburn)
-        )))
-          
 
 
 ;;** if no region marked, taken current line as region

@@ -1,5 +1,5 @@
 
-;;;_. options
+;;** options
 ;;(setq custom-unlispify-tag-names nil)
 (global-unset-key (kbd "<f10>"))
 (global-set-key (kbd "<f10> <f10>") 'menu-bar-open)
@@ -15,7 +15,7 @@
 (global-set-key (kbd "<mode-line> <C-wheel-down>") 'text-scale-decrease)
 
 
-;;;_. emacs-lisp
+;;** emacs-lisp
 (global-set-key (kbd "<f12> l l") 'load-library)
 (global-set-key (kbd "<f12> l t") 'load-theme)
 
@@ -193,7 +193,7 @@
 (define-key help-map "as" 'sys-apropos)
 
 
-;;;_. "utils"
+;;** utils
 
 (global-set-key (kbd "<f12> a") 'apropos)  ;;sys-apropos ?
 (global-set-key (kbd "<f12> c") 'quick-calc)
@@ -208,7 +208,44 @@
 (global-set-key (kbd "<f12> S") 'shell)
 
 
-;;;_. "some aliases"
+;;** commands
+;;*** command log
+;; http://www.foldr.org/~michaelw/emacs/mwe-log-commands.el
+;;(idle-require 'mwe-log-commands)
+
+;;*** command frequency
+;;http://xahlee.org/emacs/command-frequency.html
+
+
+;;** scratch
+;;*** append scratch buffer into a file automatically
+;;https://github.com/wakaran/scratch-log
+(idle-require 'scratch-log)
+
+;; another implementation: How to Make Emacs' Scratch Buffer Persistent Across Sessions 
+;; http://dorophone.blogspot.com/2011/11/how-to-make-emacs-scratch-buffer.html
+
+;;*** go to scratch buffer
+(defun goto-scratch-buffer-on-botton-window ()
+  (interactive)
+  (require 'windmove)
+  (let ( (win (selected-window)) )
+    (while (windmove-find-other-window 'down nil win)
+      (setq win (windmove-find-other-window 'down nil win)))
+    (when win
+      (select-window win)
+      (switch-to-buffer "*scratch*"))))
+
+;;(global-set-key (kbd "<f11> s") 'goto-scratch-buffer-on-botton-window)
+
+;;*** multi-scratch
+;;TODO: multi-scratch
+
+;;*** scratch-ext.el
+;;TODO: scratch-ext.el
+
+
+;;** "some aliases"
 (defalias 'fl 'find-library)
 (defalias 'll 'load-library)
 (defalias 'eb 'eval-buffer)
