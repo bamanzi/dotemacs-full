@@ -136,8 +136,56 @@ Return a list of one element based on major mode."
 ;;(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
 
 
+;;make some *useful* buffers group together
+(defun tabbar-buffer-groups-by-folder ()
+   (list
+    (cond
+     ( buffer-file-name
+       (let ((list (split-string buffer-file-name "/")))
+         (concat (nth (- (length list) 3) list)
+                 "/"
+                 (nth (- (length list) 2) list))))
+         
+     (t
+        "Emacs Buffer"
+      )
+     )))
+
+;;(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-by-folder)
 
 
+;;*** user groups
+(defcustom tabbar-user-groups '("user1" "user2" "user3" "user4")
+  "Group name for buffer grouping.")
+
+(defvar tabbar-buffer-user-groups-alist '()
+  "A list storing group names for each buffer.  (buffer-name . (group1 group2 ...)).")
+
+(defun tabbar-add-user-group (name)
+  (interactive "sGroup name: ")
+  (if (member name tabbar-user-groups)
+      (message "Group `%s' already exists.")
+    (add-to-list 'tabbar-user-groups name)))
+
+(defun tabbar-add-buffer-to-user-group (buffer group)
+;;  (interactive "bBuffer: \nsGroup: ")
+  (interactive (list
+                (ido-read-buffer "Buffer: " (buffer-name))
+                (ido-completing-read "Group: " tabbar-user-groups)))
+  (let ((buffer-obj  (get-buffer buffer))
+        (groups      (assoc buffer tabbar-buffer-user-groups-alist)))
+    (when buffer-obj
+      (add-to-list 'tabbar-user-groups group) ;;add group name
+      (if groups
+          (setcdr groups (cons group (cdr groups)))
+        (add-to-list 'tabbar-buffer-user-groups-alist (list buffer group))))))        
+
+(defun tabbar-buffer-groups-by-user-groups ()
+  (let ((groups (assoc (buffer-name (current-buffer)) tabbar-buffer-user-groups-alist)))
+    (append (cdr groups) (tabbar-buffer-groups-by-modes)))) ;;FIXME: tabbar.el supports one buffer in multi groups?
+
+;;TODO: enable this
+;;(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-by-user-groups)
 
 ;;*** tabbar-ruler: add context menu to tabs
 (if (and (not (featurep 'ide-skel))   ;;conflicting with idle-

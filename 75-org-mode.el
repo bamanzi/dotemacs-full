@@ -35,17 +35,17 @@
 ;; when Chinese/English are mixed
 (defun org-mode-init-face ()
   (message "Customize face `variable-pitch' to change fonts for `org-mode'.")
-  (if (font-exists-p "Consolas")
+  (if (font-exists-p "Inconsolata")
       (set-face-attribute 'variable-pitch nil
-                          :family  "Consolas"
-                          :foundry "outline"
-                          :font    "-outline-Consolas-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1"
-                          :fontset "-outline-Consolas-normal-normal-normal-mono-*-*-*-*-c-*-*-*")
-    (if (font-exists-p "Ubuntu Mono")
-        (set-face-attribute 'variable-pitch nil
                           :family  "Inconsolata"
                           :foundry "outline"
-                          :font    "-outline-Inconsolata-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1")
+                          :font    "-*-Inconsolata-normal-normal-normal-*-15-*-*-*-m-*-iso10646-1"
+                          :fontset "-*-Inconsolata-normal-normal-normal-*-15-*-*-*-m-*-fontset-*")
+    (if (font-exists-p "Consolas")
+        (set-face-attribute 'variable-pitch nil
+                          :family  "Consolas"
+                          :foundry "Consolas"
+                          :font    "-outline-Consolas-normal-normal-normal-mono-*-*-*-*-c-*-iso8859-1")
       (message "NOTE: No suitable font found for org-mode. ")))
   
   (set (make-variable-buffer-local 'line-spacing) 2) 

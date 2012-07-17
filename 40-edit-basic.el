@@ -174,15 +174,27 @@ vi style of % jumping to matching brace."
 
 (global-set-key (kbd "C-c C-w") 'toggle-truncate-lines)
 
-;;(setq-default fill-column 72)
-(setq comment-auto-fill-only-comments t)
-;;(auto-fill-mode t)
-
 
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "C-j") 'newline)
 
 (setq require-final-newline 't)
+
+;;*** fill
+;;(setq-default fill-column 72)
+(setq comment-auto-fill-only-comments t)
+;;(auto-fill-mode t)
+
+;;stolen from http://sdpconfig.wordpress.com/2011/09/26/writing-a-function-to-unwrap-text-in-emacs/
+(defun unfill-region-or-buffer ()
+  "Unwrap hard-wrapped text in buffer or region."
+  (interactive)
+  (let ((fill-column most-positive-fixnum))
+    (if (region-active-p)
+        (fill-region (region-beginning) (region-end))
+      (fill-region (point-min) (point-max)))))
+
+(define-key esc-map (kbd "M-q") 'unfill-region-or-buffer)
 
 ;;*** eol char
 (setq eol-mnemonic-dos   "(dos)"

@@ -232,7 +232,11 @@ the mode-line."
     (define-key bmz/win-fns-keymap "\M-9" 'select-window-9)
     ))
 
-    
+(eval-after-load "window-number"
+  `(progn
+     ;; <f11> 1 : go to first window
+     (window-number-define-keys bmz/win-fns-keymap "")
+     ))    
 
 ;;*** jump by buffer name
 (defun ido-jump-to-window ()
@@ -495,6 +499,18 @@ would be displayed in a popup window."
 
 
 ;;** force `info' showing in another frame
+;;stolen from http://dotat.at/prog/rcfiles/emacs
+(defun Info-new-frame (&optional file)
+  "Start *info* mode in another frame."
+  (interactive (if current-prefix-arg
+                   (list (read-file-name "Info file name: " nil nil t))))
+  (let ((pop-up-frames t)
+        (buffer (current-buffer)))
+    (pop-to-buffer buffer t)
+    (raise-frame (window-frame (selected-window)))
+    (info file)))
+
+;;*** another implementation
 (defvar special-display-buffer-other-frame-regexps
   '("*info*")
   "The buffer names that would be forced to display in another frame.")
@@ -529,19 +545,33 @@ to display some special buffers specified in `. For non-special"
           window)
       (let ((display-buffer-function display-buffer-function-orig)) ;;Emacs default
         (display-buffer buffer other-window frame)))))
- 
-   
-(defadvice info (around info-other-frame activate)
+
+(defvar info-other-frame nil
+  "Whether to show info in another frame.
+
+        Dont' change it, it is used internally in `info' advice
+        & `info-other-frame'.")
+
+(defadvice info (around ad-info-other-frame)
   ;;In current Emacs's implementation of `display-buffer',
   ;;`special-display-function' is too late for special buffers.
   ;;I have to override `display-buffer' temporarily.
   (setq display-buffer-function-orig  display-buffer-function)
-  (let ((display-buffer-function      'display-buffer-use-other-frame-first)
+  (let ((display-buffer-function
+         (if info-other-frame  ;;FIXME: remove this (but now sometimes it won't work properly)
+             'display-buffer-use-other-frame-first
+           display-buffer-function))
         (after-make-frame-functions   '()))
     ad-do-it
     ))
- 
+
+(defun info-other-frame ()
+  (interactive)
+  (let ((info-other-frame t))
+    (call-interactively 'info)))
+
 ;;for testing
+(ad-enable-advice 'info 'around 'ad-info-other-frame)
 ;;(ad-deactivate 'info)
 ;;(ad-activate 'info)
 ;; (info "(emacs)Top")

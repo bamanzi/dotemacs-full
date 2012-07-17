@@ -140,3 +140,13 @@ If ARG given, search recursively."
 
 
 ;;FIXME: anything-occur is better?
+
+;;** ace-jump-mode
+(autoload 'ace-jump-line-mode  "ace-jump-mode"
+  "AceJump line mode." t)
+(autoload 'ace-jump-char-mode "ace-jump-mode"
+  "AceJump char mode" t)
+
+(define-key goto-map "l"  'ace-jump-line-mode)
+(define-key goto-map " "  'ace-jump-mode)
+

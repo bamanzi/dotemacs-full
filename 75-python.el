@@ -1,10 +1,11 @@
 
 (eval-after-load "python"
   `(progn
-
+     (setq ropemacs-global-prefix "C-c C-p")
+     
 ;;;_ epy
-     ;; (require 'eepy-menu)
-     ;; (require 'eepy-completion)
+;     (require 'eepy-completion)
+;     (require 'eepy-menu)
      ;; (require 'eepy-ropemacs)
      ;; (require 'eepy-pymisc)
      ;; (require 'eepy-misc)
@@ -25,16 +26,15 @@
 ;;;_ , pyflakes
 ;;;_ , pychecke
 
-
-;;;_ python-mode
-     (if nil
-         (when (require 'python-mode nil t)
-           (define-menu-for-epy py-mode-map)
-           
-           (setq outline-regexp "[[:space:]]*\\(?:\\(?:class\\|def\\)\\)\\_>")
-           
-           )
-       )
-
      ))
 
+;;;_ python-mode
+(if nil
+    (when (require 'python-mode nil t)
+      (if (require 'eepy-menu nil t)
+          (define-menu-for-epy py-mode-map)
+          ) 
+;;      (setq outline-regexp "[[:space:]]*\\(?:\\(?:class\\|def\\)\\)\\_>")
+           
+      )
+  )

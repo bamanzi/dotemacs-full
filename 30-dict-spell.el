@@ -1,7 +1,7 @@
 ;;* language tools: dictionary, translations
 ;;** DICT protocol
-;;*** dictionary.el
-;;(setq dictionary-server "localhost")
+;;*** dictionary.el (recommended)
+(setq dictionary-server "localhost")
 ;;TIP: to searc in specific dictionary, use: C-u M-x dictionary-search
 ;;(setq dictionary-default-dictionary "xdict")
 ;;(setq dictionary-default-dictionary "stardict")

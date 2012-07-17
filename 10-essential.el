@@ -23,6 +23,7 @@
     )
 
 ;;** session
+(setq desktop-restore-eager 5)
 (require 'desktop)
 (desktop-save-mode t)
 
@@ -114,7 +115,11 @@
       "Undocumented." t)
     (autoload 'color-theme-solarized-light "color-theme-solarized"
       "Undocumented." t)
-    
+
+    (autoload 'color-theme-zenburn "color-theme-zenburn"
+      "Just some alien fruit salad to keep you in the zone." t)
+    (autoload 'color-theme-tangotango "color-theme-tangotango"
+      "A color theme based on Tango Palette colors." t)
     )
 
 ;;put face-adjusting code to hook `after-make-frame-functions'
