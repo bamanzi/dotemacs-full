@@ -39,8 +39,8 @@
       (set-face-attribute 'variable-pitch nil
                           :family  "Inconsolata"
                           :foundry "outline"
-                          :font    "-*-Inconsolata-normal-normal-normal-*-15-*-*-*-m-*-iso10646-1"
-                          :fontset "-*-Inconsolata-normal-normal-normal-*-15-*-*-*-m-*-fontset-*")
+                          :font    "-*-Inconsolata-normal-normal-normal-*-15-*-*-*-m-*-iso10646-1")
+;;                          :fontset "-*-Inconsolata-normal-normal-normal-*-15-*-*-*-m-*-fontset-*")
     (if (font-exists-p "Consolas")
         (set-face-attribute 'variable-pitch nil
                           :family  "Consolas"

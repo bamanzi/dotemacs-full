@@ -209,6 +209,10 @@ the mode-line."
 
 (eval-after-load "window-numbering"
   `(progn
+     ;; make window number be compatible with ECB
+     (defun window-numbering-get-number-string (&optional window)
+       (concat "W" (int-to-string (window-numbering-get-number window)) " "))
+     
     (define-key window-numbering-keymap "\M-0" nil)
     (define-key window-numbering-keymap "\M-1" nil)
     (define-key window-numbering-keymap "\M-2" nil)
@@ -444,7 +448,15 @@ an error is signaled."
 
 ;;** managing special/temporary windows
 ;;*** framepop
-;;;TODO: ?
+;;(idle-require 'framepop)
+(eval-after-load "framepop"
+  `(progn
+     (framepop-enable)
+     (setq special-display-regexps '("*Shell Command Output*"
+                                     "*anything .\\*"
+                                     "*grep*"
+                                     "*compilation*"))
+     ))
 ;;*** popwin
 (autoload 'popwin:popup-buffer "popwin"
   "Show BUFFER in a popup window and return the popup window." t)
@@ -567,8 +579,13 @@ to display some special buffers specified in `. For non-special"
 
 (defun info-other-frame ()
   (interactive)
-  (let ((info-other-frame t))
+  (let ((info-other-frame t)
+        (after-make-frame-functions   '()))
     (call-interactively 'info)))
+
+(defun info-view-file-other-frame (file)
+  (interactive (list (read-file-name "Info file name: " nil nil t)))
+  (info-other-frame file))
 
 ;;for testing
 (ad-enable-advice 'info 'around 'ad-info-other-frame)

@@ -1,4 +1,14 @@
 
+;; add site-lisp/proglangs/python/python-libs to PYTHONPATH
+(let ((path (locate-library "pymacs")))
+  (if path
+      (concat
+       (setenv "PYTHONPATH"
+               (concat (file-name-directory path)
+                       "python-libs/"
+                       path-separator))
+       (getenv "PYTHONPATH"))))
+
 ;;** code folding
 (eval-after-load "python"
   `(progn
@@ -36,7 +46,79 @@
   `(add-hook 'python-mode-hook 'python-mode-init-folding))
 
 
-;;** highlight error line in compilation result / shell-mode
+;;** code completion
+(defun python-symbol-completions-maybe (prefix)
+  (let ((python-el (symbol-file major-mode)))
+    (if (string-match "lisp/progmodes/python.el" python-el) ;;Emacs builtin python.el
+        (python-symbol-completions prefix)
+      nil) ;;otherwise, return nil
+    ))
+
+(eval-after-load "auto-complete"
+  `(progn
+    (ac-define-source python-builtin
+      '( (candidates . (python-symbol-completions-maybe ac-prefix))
+         (symbol . "py")
+         (prefix . "[ \t\n['\",()]\\([^\t\n['\",()]+\\)\\=") ))
+
+    (add-hook 'python-mode-hook
+              #'(lambda ()
+                  (add-to-list 'ac-sources 'ac-source-python-builtin)))
+    ))
+  
+
+;;** document lookup
+;;*** python.info
+(eval-after-load "pydoc-info"
+  `(progn
+     (add-to-list 'Info-default-directory-list
+                  (file-name-directory (symbol-file 'pydoc-info)))
+     (add-to-list 'Info-directory-list
+                  (file-name-directory (symbol-file 'pydoc-info)))
+     ;;then use C-h S (`info-lookup-symbol') to lookup python doc
+     ))
+
+(eval-after-load "python"
+  `(progn
+     (require 'pydoc-info nil t)
+     ))
+
+;;*** pydoc command line
+;;stolen from http://stackoverflow.com/a/1068731
+(defun pydoc (&optional arg)
+  (interactive (list
+				(read-string "Call pydoc with arg: "
+							 (with-syntax-table python-dotty-syntax-table
+							   (current-word)))))
+  (setq cmd (concat "pydoc " arg))
+  (ad-activate-regexp "auto-compile-yes-or-no-p-always-yes")
+  (shell-command cmd)
+  (setq pydoc-buf (get-buffer "*Shell Command Output*"))
+  ;;(switch-to-buffer-other-window pydoc-buf)
+  (with-current-buffer pydoc-buf
+    (python-mode))
+  (ad-deactivate-regexp "auto-compile-yes-or-no-p-always-yes")
+)
+
+;;*** pylookup
+;; $ apt-get install python-doc
+;; $ ./pylookup.py -u /usr/share/doc/python2.7/html/
+(autoload 'pylookup-lookup "pylookup"
+  "Lookup SEARCH-TERM in the Python HTML indexes." t)
+
+(eval-after-load "pylookup"
+  `(progn
+     (let ((dir (file-name-directory (symbol-file 'pylookup-lookup))))
+       (setq pylookup-program (concat dir "pylookup.py"))
+       (setq pylookup-db-file (concat dir "pylookup.db"))
+       ;;(setq pylookup-search-options '("--insensitive" "0" "--desc" "0")
+       )))
+
+
+
+
+;;** run
+;;*** highlight error line in compilation result / shell-mode
 ;; stolen from http://www.loveshack.ukfsn.org/emacs/python.el
 (defconst python-compilation-regexp-alist
   ;; FIXME: maybe these should move to compilation-error-regexp-alist-alist.
@@ -61,33 +143,6 @@
        python-compilation-regexp-alist)
   (compilation-minor-mode t))
 
-
-;;** code completion
-(defun python-symbol-completions-maybe (prefix)
-  (let ((python-el (symbol-file major-mode)))
-    (if (string-match "lisp/progmodes/python.el" python-el) ;;Emacs builtin python.el
-        (python-symbol-completions prefix)
-      nil) ;;otherwise, return nil
-    ))
-
-(eval-after-load "auto-complete"
-  `(progn
-    (ac-define-source python-builtin
-      '( (candidates . (python-symbol-completions-maybe ac-prefix))
-         (symbol . "py")
-         (prefix . "[ \t\n['\",()]\\([^\t\n['\",()]+\\)\\=") ))
-
-    (add-hook 'python-mode-hook
-              #'(lambda ()
-                  (add-to-list 'ac-sources 'ac-source-python-builtin)))
-    ))
-  
-
-
-;;** highlight-indentation
-(autoload 'highlight-indentation "highlight-indentation" nil t)
-(eval-after-load "python"
-  `(add-hook 'python-mode-hook 'highlight-indentation))
 
 ;;** python shell
 ;;*** ipython
@@ -118,6 +173,10 @@
 ;;TIPS: or you can use `python-check' with `pychecker'
 
 ;;** misc
+;;*** highlight-indentation
+(autoload 'highlight-indentation "highlight-indentation" nil t)
+(eval-after-load "python"
+  `(add-hook 'python-mode-hook 'highlight-indentation))
 ;;*** ropemacs
 (setq ropemacs-global-prefix "C-c C-p")
 
