@@ -128,6 +128,14 @@
 
 (define-key global-map (kbd "<S-tab>") 'abs-unindent)
 
+;;** judge-indent
+(idle-require 'judge-indent)
+(eval-after-load "judge-indent"
+  `(progn
+     (setq judge-indent-major-modes '(c-mode python-mode sh-mode
+                                             js-mode espresso-mode))
+     (global-judge-indent-mode t)))
+
 ;;** parens
 (setq show-paren-style 'mixed)
 (setq show-paren-mode t)
