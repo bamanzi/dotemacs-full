@@ -1,4 +1,6 @@
+;;* python-related configuration
 
+;;** pymacs: interface between emacs lisp and python
 ;; add site-lisp/proglangs/python/python-libs to PYTHONPATH
 (let ((path (locate-library "pymacs")))
   (if path
@@ -8,6 +10,15 @@
                        "python-libs/"
                        path-separator))
        (getenv "PYTHONPATH"))))
+
+(autoload 'pymacs-load  "pymacs"
+  "Import the Python module named MODULE into Emacs." t)
+(autoload 'pymacs-eval  "pymacs"
+  "Compile TEXT as a Python expression, and return its value." t)
+(autoload 'pymacs-autoload  "pymacs"
+  "Pymacs's equivalent of the standard emacs facility `autoload'." t)
+
+(idle-require 'pymacs)  ;;load `pymacs', for `pymacs-autoload'
 
 ;;** code folding
 (eval-after-load "python"
@@ -47,6 +58,7 @@
 
 
 ;;** code completion
+;;*** auto-complete front-end for GNU Emacs built-in completion
 (defun python-symbol-completions-maybe (prefix)
   (let ((python-el (symbol-file major-mode)))
     (if (string-match "lisp/progmodes/python.el" python-el) ;;Emacs builtin python.el
@@ -65,8 +77,39 @@
               #'(lambda ()
                   (add-to-list 'ac-sources 'ac-source-python-builtin)))
     ))
-  
 
+;;*** pycompletemine from PDEE (https://github.com/pdee/pdee/ )
+;; You need `pycompletemine.{el,py}' from PDEE and pymacs
+;;advantages:
+;;   + differ from `pycomplete', this one would work on both python-mode.el
+;;     and GNU Emacs built-in python.el
+;;   + doc info and signature for completions
+;;disadvantages:
+;;   - `pymacs' needed
+;;   - no 'send region' support, thus no completion for dynamic object
+
+(eval-after-load "python"
+  `(require 'pycompletemine nil t)
+  )
+
+(eval-after-load "auto-complete"
+  `(progn
+     ;;use auto-complete as frond-end
+     ;;need pycompletemine.el/pycomplete.py hacked by myself
+     (if (fboundp 'pycomplete-get-all-completions-for-ac)
+         (ac-define-source pycompletemine
+           '((depends pycompletemine)  ;;FIXME: ok?
+             (prefix .  "[ \t\n['\",()]\\([^\t\n['\",()]+\\)\\=")
+             (candidates . (pycomplete-get-all-completions-for-ac ac-prefix))
+             (symbol . "pyc")
+             (document . py-complete-help))))
+     ))
+
+;;*** gpycomplete
+;;based on pycomplete but works on built-in python-mode
+(autoload 'gpycomplete-mode "gpycomplete"
+  "Enables gpycomplete autocompletion minor-mode" t)
+  
 ;;** document lookup
 ;;*** python.info
 (eval-after-load "pydoc-info"
@@ -109,12 +152,18 @@
 (eval-after-load "pylookup"
   `(progn
      (let ((dir (file-name-directory (symbol-file 'pylookup-lookup))))
-       (setq pylookup-program (concat dir "pylookup.py"))
+       (setq pylookup-program (concat dir "pylookup"))
        (setq pylookup-db-file (concat dir "pylookup.db"))
        ;;(setq pylookup-search-options '("--insensitive" "0" "--desc" "0")
-       )))
+       )
 
-
+     ;;redefine `pylookup-mode-quit-window', to fix issue when pylookup-return-window-config is nil
+     (defun pylookup-mode-quit-window ()
+       "Leave the completions window."
+       (interactive)
+       (if pylookup-return-window-config
+           (set-window-configuration pylookup-return-window-config)))
+     ))
 
 
 ;;** run
@@ -159,29 +208,71 @@
 
 
 ;;** lint
-;;;_ , pep8
-;;;_ , pylint
-;;;_ , pyflakes
-;;;_ , pychecke
-(defun pylint ()
+;;TIPS: or you can M-x `python-check' (provided by python.el)
+
+;;*** pep8
+(autoload 'python-pep8  "python-pep8"
+  "Run PEP8, and collect output in a buffer." t)
+(autoload 'pep8 "python-pep8"
+  "Run PEP8, and collect output in a buffer." t)
+
+(defun pep8-simple ()
+  (interactive)
+  (let ((compile-command (concat "pep8 "
+                                 (file-name-nondirectory (buffer-file-name))))
+        (compilation-ask-about-save nil))
+    (call-interactively 'compile)  
+  ))
+
+;;*** pylint
+(autoload 'python-pylint "python-pylint"
+  "Run PYLINT, and collect output in a buffer." t)
+(autoload 'pylint  "python-pylint"
+  "Run PYLINT, and collect output in a buffer." t)
+
+;;my simple way
+(defun pylint-simple ()
   (interactive)
   (let ((compile-command (concat "epylint "  ;; "pylint -rn -f parseable "
                                  (file-name-nondirectory (buffer-file-name))))
         (compilation-ask-about-save nil))
     (call-interactively 'compile)  
   ))
-;;TIPS: or you can use `python-check' with `pychecker'
+
+;;*** pyflakes
+;;*** pychecker
+
+;;** ropemacs
+(setq ropemacs-confirm-saving nil
+      ropemacs-guess-project t
+      ropemacs-separate-doc-buffer t)
+(setq ropemacs-enable-autoimport t)
+(setq ropemacs-autoimport-modules '("os" "shutil" "sys" "logging"
+                                    "django.*"))
+
+;;if you got this error: Key sequence C-x p n d starts with non-prefix key C-x p
+;;you need this:
+(setq ropemacs-global-prefix "C-c C-p")
+
+(eval-after-load "pymacs"
+  `(progn
+     (if (fboundp 'pymacs-autoload) ;;pymacs>=0.25 needed
+         (progn
+           (pymacs-autoload 'rope-open-project "ropemacs" "rope-"
+                            "Open a rope project." t)
+           (pymacs-autoload 'ropemacs-mode "ropemacs" "rope-"
+                            "Toggle ropemacs-mode." t))
+       (progn
+         (if nil
+             (pymacs-load "ropemacs" "rope-"))))
+     ))
 
 ;;** misc
+;; By default, Emacs inhibits (for `run-python') the loading of Python
+;; modules from the current working directory, for security reasons.
+;; To disable it:
+;;(setq python-remove-cwd-from-path nil)
 ;;*** highlight-indentation
 (autoload 'highlight-indentation "highlight-indentation" nil t)
 (eval-after-load "python"
   `(add-hook 'python-mode-hook 'highlight-indentation))
-;;*** ropemacs
-(setq ropemacs-global-prefix "C-c C-p")
-
-
-
-
-
-
