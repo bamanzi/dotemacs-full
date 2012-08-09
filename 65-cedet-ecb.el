@@ -95,6 +95,7 @@
     (config-cedet-built-in)))
 
 
+;;FIXME: not work?
 (defun bmz/restore-imenu-index-function ()
   "Restore `imenu-create-index-function' for current major-mode.
 	
@@ -120,6 +121,25 @@ but some modes have its own implementation."
     (message "Eval: %s" buffer-expr)
     (eval buffer-expr)
     ))
+
+(defun bmz/restore-imenu-index-function ()
+  "Restore `imenu-create-index-function' for current major-mode.
+
+Note this would reset to `imenu-default-create-index-function', but some modes
+have its own implementation."
+  (interactive)
+  (let* ((func-name (cond
+                    ((eq major-mode 'python-mode)
+                     'python-imenu-create-index)
+                    ((eq major-mode 'js2-mode)
+                     'js2-mode-create-imenu-index)
+                    ((eq major-mode 'espresso-mode)
+                     'espresso--imenu-create-index)
+                    (t
+                     'imenu-default-create-index-function))))
+    (eval `(setq-mode-local ,major-mode imenu-create-index-function
+                     func-name))
+    (setq imenu-create-index-function func-name)))  
 
 ;;** ECB
 

@@ -75,7 +75,7 @@
 
     (add-hook 'python-mode-hook
               #'(lambda ()
-                  (add-to-list 'ac-sources 'ac-source-python-builtin)))
+                  (add-to-list 'ac-sources 'ac-source-python-builtin 'append)))
     ))
 
 ;;*** pycompletemine from PDEE (https://github.com/pdee/pdee/ )
@@ -88,22 +88,26 @@
 ;;   - `pymacs' needed
 ;;   - no 'send region' support, thus no completion for dynamic object
 
-(eval-after-load "python"
+(eval-after-load "pymacs"
   `(require 'pycompletemine nil t)
   )
 
-(eval-after-load "auto-complete"
+(eval-after-load "pycompletemine"
   `(progn
      ;;use auto-complete as frond-end
-     ;;need pycompletemine.el/pycomplete.py hacked by myself
-     (if (fboundp 'pycomplete-get-all-completions-for-ac)
-         (ac-define-source pycompletemine
-           '((depends pycompletemine)  ;;FIXME: ok?
-             (prefix .  "[ \t\n['\",()]\\([^\t\n['\",()]+\\)\\=")
-             (candidates . (pycomplete-get-all-completions-for-ac ac-prefix))
-             (symbol . "pyc")
-             (document . py-complete-help))))
-     ))
+     (when (and (featurep 'auto-complete)
+                ;;need pycompletemine.el/pycomplete.py hacked by myself
+                (fboundp 'pycomplete-get-all-completions-for-ac))
+       (ac-define-source pycompletemine
+         '((depends pycompletemine)  ;;FIXME: ok?
+           (prefix .  "[ \t\n['\",()]\\([^\t\n['\",()]+\\)\\=")
+           (candidates . (pycomplete-get-all-completions-for-ac ac-prefix))
+           (symbol . "pyc")
+           (document . py-complete-help)))
+       (add-hook 'python-mode-hook
+                 #'(lambda ()
+                     (add-to-list 'ac-sources 'ac-source-pycompletemine)))
+       )))
 
 ;;*** gpycomplete
 ;;based on pycomplete but works on built-in python-mode
@@ -135,11 +139,14 @@
 							   (current-word)))))
   (setq cmd (concat "pydoc " arg))
   (ad-activate-regexp "auto-compile-yes-or-no-p-always-yes")
-  (shell-command cmd)
-  (setq pydoc-buf (get-buffer "*Shell Command Output*"))
+  (shell-command cmd "*Pydoc Output*")
+  (setq pydoc-buf (get-buffer "*Pydoc Output*"))
   ;;(switch-to-buffer-other-window pydoc-buf)
   (with-current-buffer pydoc-buf
-    (python-mode))
+    ;;(python-mode)
+    (require 'woman)
+    (woman-man-buffer)
+    (help-mode))
   (ad-deactivate-regexp "auto-compile-yes-or-no-p-always-yes")
 )
 
