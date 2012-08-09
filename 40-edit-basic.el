@@ -127,11 +127,20 @@
 ;;                            (local-set-key (kbd "<S-TAB>")  'abs-unindent)))
 
 (define-key global-map (kbd "<S-tab>") 'abs-unindent)
+(eval-after-load "help-mode"
+  `(progn
+     (define-key help-mode-map (kbd "<S-tab>") 'backward-button)
+     ))
 
-;;** judge-indent
+
+;;** guess indent
 (idle-require 'judge-indent)
 (eval-after-load "judge-indent"
   `(progn
+     (setq judge-indent-default-indent-width 4)  ;;default value of line indent
+     (setq judge-indent-default-tab-width 4)
+     (setq judge-indent-prefer-tabs-mode nil)  ;;I prefer spaces
+     
      (setq judge-indent-major-modes '(c-mode python-mode sh-mode
                                              js-mode espresso-mode))
      (global-judge-indent-mode t)))

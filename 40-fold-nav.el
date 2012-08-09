@@ -45,7 +45,7 @@
        (hideshowvis-highlight-hs-regions-in-fringe))
 
      (define-key hs-minor-mode-map (kbd "C-c @ C-r") 'hideshowvis-refresh-fringe)
-     (define-key hs-minor-mode-map (kbd "<left-fringe> <mouse-2>")  'hideshowvis-refresh-fringe)
+     (define-key hs-minor-mode-map (kbd "<left-fringe> <mouse-3>")  'hideshowvis-refresh-fringe)
      ))
 )
 
@@ -193,7 +193,7 @@
      (define-key outline-minor-mode-map [left-fringe C-mouse-1] 'qtmstr-outline-fringe-click)
 
      (define-key qtmstr-outline-header-map [mouse-1]  'outline-cycle)
-     (define-key qtmstr-outline-header-map [mouse-2]  'hide-leaves)
+;;     (define-key qtmstr-outline-header-map [mouse-2]  'hide-leaves)
      (define-key qtmstr-outline-header-map [mouse-3]  'show-all)
 
      (define-key qtmstr-outline-header-map (kbd "TAB") 'outline-toggle-children)

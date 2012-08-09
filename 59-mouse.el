@@ -240,7 +240,9 @@
 
 (define-key global-map (kbd "<s-down-mouse-1>") 'symbol-jump-on-mouse-down)
 (define-key global-map (kbd "<s-mouse-1>")      'symbol-jump-on-mouse-up-imenu)
-(define-key global-map (kbd "<s-S-mouse-1>")    'symbol-jump-on-mouse-up-among-files)
+(define-key global-map (kbd "<C-s-mouse-1>")    'symbol-jump-on-mouse-up-among-files)
+(define-key global-map (kbd "<s-mouse-3>")      'pop-to-mark-command)
+(define-key global-map (kbd "<C-s-mouse-3>")    'pop-global-mark)
 
 
 

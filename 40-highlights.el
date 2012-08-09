@@ -27,6 +27,9 @@
 ;;                               space-mark tab-mark newline-mark))
 
 ;;*** develock: programmers whitespace-mode
+;; Develock is a minor mode which provides the ability to make font-
+;; lock highlight leading and trailing whitespace, long lines and
+;; oddities in the file buffer for developers
 (autoload 'develock-mode  "develock" "Toggle Develock mode." t)
 (setq develock-auto-enable nil)
 
@@ -75,6 +78,8 @@
   "Toggle highlighting the current line and column." t)
 
 (define-key global-map (kbd "M-+") 'crosshairs-flash)
+(global-set-key (kbd "<f10> ch")   'crosshairs-mode)
+
 
 ;;** highlight matching paren/pair
 
@@ -125,6 +130,7 @@
   "highlight the word the point is on" t)
 (autoload 'idle-highlight-mode "idle-highlight"
   "highlight the word the point is on" t)
+
 (global-set-key (kbd "<f10> ih") 'idle-highlight)
 
 (idle-require 'idle-highlight)
@@ -134,7 +140,6 @@
          (add-hook 'find-file-hook 'idle-highlight)
        (add-hook 'find-file-hook 'idle-highlight-mode))
      ))
-
 
 ;;See also: light-symbol.el
 
@@ -251,18 +256,22 @@
 
 ;;** highlight FIXME/TODO etc in any file
 ;;FROM: http://emacs-fu.blogspot.com/2008/12/highlighting-todo-fixme-and-friends.html
+;; (add-hook 'find-file-hook
+;;           '(lambda ()
+;;              (font-lock-add-keywords
+;;               nil
+;;               '(("\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 1 font-lock-warning-face prepend)))))
 (add-hook 'find-file-hook
           '(lambda ()
-             (font-lock-add-keywords
-              nil
-              '(("\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 1 font-lock-warning-face prepend)))))
+             (highlight-regexp "\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 'font-lock-warning-face)))
 
 ;;*** fixme-mode 
 (autoload 'fixme-mode "fixme-mode"
   "A minor mode for making FIXME and other warnings stand out" t)
 (autoload 'fic-ext-mode "fic-ext-mode"
   "minor mode for highlighting FIXME/TODO in comments" t)
-  
+
+
 ;;** pulse: temperarily highlight a line/region, to draw user's attension
 (idle-require 'pulse)
 (unless (fboundp 'cedet-called-interactively-p)
@@ -281,6 +290,9 @@
 
 (eval-after-load "pulse"
   `(progn
+     (if (fboundp 'pulse-toggle-integration-advice)
+         (pulse-toggle-integration-advice t))
+     
      (defadvice imenu (after pulse-advice activate)
        "Cause the line that is `imenu'd to pulse when the cursor gets there."
        (when (and pulse-command-advice-flag (cedet-called-interactively-p))
@@ -297,8 +309,22 @@
 ;;** misc
 ;;*** higlight-indentation
 ;;very useful for indentation sensit
-(autoload 'highlight-indentation "highlight-indentation" "Toggle highlight indentation." t)
-(global-set-key (kbd "<f10> hi") 'highlight-indentation)
+(autoload 'highlight-indentation "highlight-indentation"
+  "Toggle highlight indentation." t)
+(autoload 'highlight-indentation-mode "highlight-indentation"
+  "Toggle highlight indentation." t)
+
+(eval-after-load "highlight-indentation"
+  `(unless (fboundp 'highlight-indentation-mode)
+     (defalias 'highlight-indentation-mode  'highlight-indentation)))
+
+(global-set-key (kbd "<f10> hi") 'highlight-indentation-mode)
+
+
+;;*** highlight url
+(add-hook 'find-file-hook
+          '(lambda ()
+             (highlight-regexp "https?://[^ \n]*" 'link)))
 
 ;;*** rainbow-mode: colorize strings like 'red', "#3303c4"
 (autoload 'rainbow-mode "rainbow-mode" "Colorize strings that represent colors." t)

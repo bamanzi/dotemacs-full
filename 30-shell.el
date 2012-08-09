@@ -69,7 +69,7 @@
 ;;FIXME: (add-to-list hs-special-modes-alist
 ;;             '(eshell-mode "^.* $" nil nil))
 
-(defun my-eshell-mode-init ()
+(defun bmz/eshell-mode-init ()
   ;; swap <home> and C-a
   (define-key eshell-mode-map (kbd "C-a") 'eshell-maybe-bol)
   (define-key eshell-mode-map (kbd "<home>") 'eshell-maybe-bol)
@@ -82,7 +82,7 @@
     (add-to-list 'ac-sources 'ac-source-eshell-pcomplete))
   )
 
-(add-hook 'eshell-mode-hook 'my-eshell-mode-init)
+(add-hook 'eshell-mode-hook 'bmz/eshell-mode-init)
 
 ;;*** eshell commands
 (defun eshell/vim (&rest args)

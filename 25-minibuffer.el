@@ -19,7 +19,8 @@
 (setq ido-enable-flex-matching t)
 (setq ido-use-filename-at-point 'guess)
 (setq ido-use-url-at-point 'guess)
-(ido-mode t)
+;;(ido-mode t)
+(ido-mode 'buffers)
 
 
 ;;** smex : ido for M-x

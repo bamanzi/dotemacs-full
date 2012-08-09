@@ -1,3 +1,9 @@
+(setq q "This iw not Vi. Use `C-x k' to kill this buffer.")
+(setq w "This is not VI. Use C-x C-s instead!")
+(setq wq "This is not VI. Use C-x C-s instead!!")
+
+
+
 ;;;_. viper 
 (setq viper-expert-level '3)
 (setq viper-inhibit-startup-message 't)

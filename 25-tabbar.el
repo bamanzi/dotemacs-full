@@ -62,27 +62,8 @@
                   (switch-to-buffer (car group))))
           (tabbar-tabs tabbar-tabsets-tabset))))
 
-;;*** buffer grouping functions
 
-(defun tabbar-buffer-grouping-simple ()
-  "Return the list of group names the current buffer belongs to.
-Return a list of one element based on major mode."
-  (setq last-tabbar-ruler-tabbar-buffer-groups
-        (list
-         (cond
-           ((= (aref (buffer-name) 0) ?*)
-           "*Emacs*")
-          ((or (memq major-mode '(dired-mode eshell-mode shell-mode
-                                             occur-mode grep-mode compilation-mode)))              
-           "Utils")
-          (t
-           "Files"
-           ))))
-  (symbol-value 'last-tabbar-ruler-tabbar-buffer-groups))
-
-(fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple)
-
-;;*** Add a buffer modification state indicator in the label
+;;*** add a buffer modification state indicator in the label
 ;;FROM: http://www.emacswiki.org/emacs/TabBarMode#toc11
 
 (eval-after-load "tabbar"
@@ -134,7 +115,7 @@ Return a list of one element based on major mode."
      ))) 
 
 ;;(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
-
+(fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
 
 ;;make some *useful* buffers group together
 (defun tabbar-buffer-groups-by-folder ()

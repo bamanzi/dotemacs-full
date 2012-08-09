@@ -234,6 +234,12 @@ the mode-line."
     (define-key bmz/win-fns-keymap "\M-7" 'select-window-7)
     (define-key bmz/win-fns-keymap "\M-8" 'select-window-8)
     (define-key bmz/win-fns-keymap "\M-9" 'select-window-9)
+
+    (defun bmz/select-window-by-number (n)
+      (interactive "NWindow Number: ")
+      (select-window-by-number n))
+    
+    (define-key bmz/win-fns-keymap "G" 'bmz/select-window-by-number)
     ))
 
 (eval-after-load "window-number"
@@ -280,6 +286,8 @@ the mode-line."
 
 
 (defun swap-or-move-buffer-between-windows (other-window swap &optional this-window)
+  "If SWAP, swap WINDOW's buffer with OTHER-WINDOW's.
+Otherwise, move WINDOW's buffer to OTHER-WINDOW."
   (let ( (window (or this-window
                      (selected-window))) )
     (cond ( (null other-window)
@@ -441,10 +449,6 @@ an error is signaled."
   (rotate-windows-helper (window-list) (window-buffer (car (window-list))))
   (select-window (car (last (window-list)))))
 
-;;*** other transformations
-
-
-
 
 ;;** managing special/temporary windows
 ;;*** framepop
@@ -469,6 +473,11 @@ an error is signaled."
 (eval-after-load "popwin"
   `(progn
 ;;     (setq display-buffer-function 'popwin:display-buffer)
+     
+;;   (push '("*anything recentf*" :width 30 :position right) popwin:special-display-config)
+     (let ((width (round (* (frame-parameter nil 'width) 0.38))))
+       (push `("\*anything .*" :regexp t :width ,width :position right) popwin:special-display-config))
+     
      (define-key bmz/win-fns-keymap (kbd "~") popwin:keymap)
 
      (define-key popwin:keymap "g" 'popwin:select-popup-window) ;;go to
@@ -609,8 +618,9 @@ to display some special buffers specified in `. For non-special"
     (interactive (list (selected-frame)))
     (unless (frame-parameter frame 'unsplittable)
       (with-selected-frame frame
-        maximize-frame)))
-    
+        (if (fboundp 'maximize-frame)
+            (maximize-frame)))))
+
   (add-hook 'after-make-frame-functions 'maximize-frame-if-splittable)
   )
 
@@ -631,7 +641,8 @@ to display some special buffers specified in `. For non-special"
   "Toggle frame full-screen or maximization."
   (interactive "P")
   (cond
-   ( (and (eq window-system 'w32)             
+   ( (and (eq window-system 'w32)
+          ;; https://bitbucket.org/alexander_manenko/emacs-fullscreen-win32
           (locate-file "emacs_fullscreen.exe" exec-path nil 'file-executable-p))
      (shell-command "emacs_fullscreen.exe") )
    ( (and (display-graphic-p) (>= emacs-major-version 23))

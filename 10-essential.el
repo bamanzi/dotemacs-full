@@ -1,6 +1,7 @@
 ;;** gui options
 (setq use-dialog-box nil
-      menu-prompting nil)
+      menu-prompting t) ;;NOTE: set `menu-prompting' to nil would cause mode menu not poping up
+                                        ; when clicking on mode line
 
 (if (fboundp 'tool-bar-mode)
     (tool-bar-mode -1))
@@ -97,8 +98,9 @@
         (require 'color-theme-tangotango nil t)
         (when (featurep 'color-theme-tangotango)
            (color-theme-tangotango))))
-        
+    )
 
+(when t
     ;; (idle-require 'color-theme-zenburn)
     
     (autoload 'color-theme-tango  "color-theme-tango"
