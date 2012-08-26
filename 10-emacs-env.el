@@ -196,16 +196,19 @@
 ;;** utils
 
 (global-set-key (kbd "<f12> a") 'apropos)  ;;sys-apropos ?
-(global-set-key (kbd "<f12> c") 'quick-calc)
-(global-set-key (kbd "<f12> C") 'calc-dispatch)
-(global-set-key (kbd "<f12> d") 'ediff)
-(global-set-key (kbd "<f12> g") 'grep)
-(global-set-key (kbd "<f12> i") 'info-apropos)
+(global-set-key (kbd "<f12> c q") 'quick-calc)
+(global-set-key (kbd "<f12> c c") 'calc-dispatch)
+(global-set-key (kbd "<f12> d b") 'ediff-buffer)
+(global-set-key (kbd "<f12> d f") 'ediff-files)
+;;(global-set-key (kbd "<f12> g") 'grep)
+(global-set-key (kbd "<f12> i a") 'info-apropos)
 
-(global-set-key (kbd "<f12> m") 'woman)
-(global-set-key (kbd "<f12> r") 'regexp-builder)
-(global-set-key (kbd "<f12> s") 'eshell)
-(global-set-key (kbd "<f12> S") 'shell)
+(global-set-key (kbd "<f12> m w") 'woman)
+(global-set-key (kbd "<f12> m m") 'woman)
+(global-set-key (kbd "<f12> r b") 'regexp-builder)
+
+(global-set-key (kbd "<f12> s e") 'eshell)
+(global-set-key (kbd "<f12> s s") 'shell)
 
 
 ;;** commands

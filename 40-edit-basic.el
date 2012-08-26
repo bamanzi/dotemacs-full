@@ -363,7 +363,7 @@ vi style of % jumping to matching brace."
   (interactive "p\ncBack-zap to char: ")
   (zap-to-char (- arg) char))
 
-(global-set-key (kbd "ESC M-z") 'zap-back-to-char)
+(global-set-key (kbd "C-c M-z") 'zap-back-to-char)
 
 ;;*** smart-operator
 (autoload 'smart-operator-mode     "smart-operator" "Insert operators with surrounding spaces smartly." t)

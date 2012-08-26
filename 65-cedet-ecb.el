@@ -139,7 +139,7 @@ have its own implementation."
                      'imenu-default-create-index-function))))
     (eval `(setq-mode-local ,major-mode imenu-create-index-function
                      func-name))
-    (setq imenu-create-index-function func-name)))  
+    (setq imenu-create-index-function func-name))) 
 
 ;;** ECB
 

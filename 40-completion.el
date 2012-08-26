@@ -17,7 +17,7 @@
 (define-key global-map (kbd "M-/")  'dabbrev-expand)
 
 ;;*** hippie-expand 
-(define-key global-map (kbd "ESC M-/")      'hippie-expand)
+(define-key global-map (kbd "C-c M-/")      'hippie-expand)
 
 (defun hippie-expand-filename ()
   (interactive)
@@ -31,7 +31,7 @@
 (define-key global-map (kbd "C-/") 'hippie-expand-filename)
 
 ;;*** words
-(define-key global-map (kbd "ESC M-$") 'ispell-complete-word)
+(define-key global-map (kbd "C-c M-$") 'ispell-complete-word)
 
 ;;** auto-compelte
 (autoload 'auto-complete-mode  "auto-complete"

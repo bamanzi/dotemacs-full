@@ -3,7 +3,7 @@
 ;;(global-set-key (kbd "<C-f4>") 'kill-buffer)
 (autoload 'close-current-buffer "ergoemacs-functions" "Close the current buffer." t)
 (global-set-key (kbd "<C-f4>") 'close-current-buffer)
-(global-set-key (kbd "C-c x")  'close-current-buffer)
+(global-set-key (kbd "C-c b c")  'close-current-buffer)
 
 
 ;;** buffer navigation
@@ -33,13 +33,16 @@
 ;;** buffer management
 ;;C-x C-b : buffer-menu
 (idle-require 'buff-menu+)
+(global-set-key (kbd "C-c b m")     'buffer-menu)
 
 ;;`electric-buffer-list' derived from `buffer-menu'
 ;;but you can mark multiple buffers and perform operations at a single ENTER key
-(global-set-key (kbd "C-c b")     'electric-buffer-list)
+(global-set-key (kbd "C-c b e")     'electric-buffer-list)
+
+(global-set-key (kbd "C-c b <f5>")  'anything-buffers+)
 
 ;;*** ibuffer
-(global-set-key (kbd "C-c C-b") 'ibuffer)
+(global-set-key (kbd "C-c b i")     'ibuffer)
 
 ;;**** ibuffer-vc
 ;;(idle-require 'ibuffer-vc)

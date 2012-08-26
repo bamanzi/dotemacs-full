@@ -2,11 +2,27 @@
 ;; (for minibuffer completion, see 25-minibuffer.el)
 
 ;;** hideshow
-(global-set-key (kbd "C-c +")  'hs-toggle-hiding)
+;;(global-set-key (kbd "M-+")  'hs-toggle-hiding)
 
 (eval-after-load "hideshow"
-  `(define-key hs-minor-mode-map (kbd "C-+")  'hs-toggle-hiding))
+  `(progn
+     (define-key hs-minor-mode-map (kbd "M-+")  'hs-toggle-hiding)
+     (define-key hs-minor-mode-map (kbd "<C-down-mouse-1>")  'hs-mouse-toggle-hiding)
+     ))
 
+(defun bmz/turn-on-hideshow ()
+  (interactive)
+  (if (display-graphic-p)
+      (when (or (require 'hideshowvis nil t)
+                (require 'hideshow-fringe nil t))
+          (hideshowvis-enable))
+    (hs-minor-mode t)))
+
+(add-hook 'find-file-hook 'bmz/turn-on-hideshow)
+
+(defadvice hideshowvis-minor-mode (before disable-hideshowvis-for-term activate)
+  (if (not (display-graphic-p))
+      (error "`hideshowvis' would cause emacs hanging on term. cancelled")))
 
 ;;*** hideshowvis add +/- symbol in left fringe
 (autoload 'hideshowvis-enable "hideshowvis"
@@ -69,7 +85,7 @@
   `(progn
      (global-set-key (kbd "C-z")        outline-mode-prefix-map)
 ;;     (global-set-key (kbd "s-z")        outline-mode-prefix-map)
-     (global-set-key (kbd "<f2> z")        outline-mode-prefix-map)
+;;     (global-set-key (kbd "<f2> z")        outline-mode-prefix-map)
 
      (define-key outline-mode-prefix-map (kbd "C-s") 'show-subtree)
      (define-key outline-mode-prefix-map (kbd "<up>")     'outline-previous-visible-heading)

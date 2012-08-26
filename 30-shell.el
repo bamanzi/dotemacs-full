@@ -121,7 +121,29 @@ On Windows, baskslashes is substituted with slashes."
 (autoload 'oneliner "oneliner" "shell-mode hooks for Oneliners" t)
 
 
-;;*** A quick pop-up shell for emacs
+
+;;*** term-toggle
+(autoload 'term-toggle "term-toggle" 
+  "Toggles between the *terminal* buffer and whatever buffer you are editing."
+  t)
+(autoload 'term-toggle-cd "term-toggle" 
+  "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
+
+(global-set-key (kbd "<f12> t T") 'term-toggle)
+(global-set-key (kbd "<f12> t t") 'term-toggle-cd)
+
+;;*** shell-toggle
+(autoload 'shell-toggle "shell-toggle" 
+  "Toggles between the *shell* buffer and whatever buffer you are editing."
+  t)
+(autoload 'shell-toggle-cd "shell-toggle" 
+  "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
+
+(global-set-key (kbd "<f12> s T") 'shell-toggle)
+(global-set-key (kbd "<f12> s t") 'shell-toggle-cd)
+
+
+;;*** A quick pop-up shell for emacs (lightweight one)
 ;;Based on code stolen from http://tsdh.wordpress.com/2011/10/12/a-quick-pop-up-shell-for-emacs/
 (defvar th-shell-popup-buffer nil)
 
@@ -143,24 +165,4 @@ On Windows, baskslashes is substituted with slashes."
 					      dir)
 					      "\n")))))
 
-(global-set-key (kbd "<f12> ~") 'th-shell-popup)
-
-;;*** shell-toggle
-(autoload 'shell-toggle "shell-toggle" 
-  "Toggles between the *shell* buffer and whatever buffer you are editing."
-  t)
-(autoload 'shell-toggle-cd "shell-toggle" 
-  "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
-
-(global-set-key [C-f11] 'shell-toggle)
-(global-set-key [M-f11] 'shell-toggle-cd)
-
-;;*** term-toggle
-(autoload 'term-toggle "term-toggle" 
-  "Toggles between the *terminal* buffer and whatever buffer you are editing."
-  t)
-(autoload 'term-toggle-cd "term-toggle" 
-  "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
-
-(global-set-key [C-f12] 'term-toggle)
-(global-set-key [M-f12] 'term-toggle-cd)
+(global-set-key (kbd "<f12> s ~") 'th-shell-popup)

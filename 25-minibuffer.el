@@ -1,7 +1,9 @@
 
 ;;** icomplete
-(icomplete-mode t)  ;; completion for minibuffer (commands (M-x)
-                    ;; variables (C-h v, customize-variable), functions (C-h f))
+(icomplete-mode t)  ;; completion for minibuffer
+                                        ; commands (M-x)
+                                        ; variables (C-h v, customize-variable)
+                                        ; functions (C-h f))
 
 ;;** ido
 (setq ido-save-directory-list-file "~/.emacs.d/ido.last")
@@ -27,8 +29,10 @@
 (autoload 'smex "smex" nil t)
 (autoload 'smex-major-mode-commands "smex" nil t)
 (setq smex-save-file "~/.emacs.d/smex-items")
-(global-set-key (kbd "ESC M-x") 'smex)
+(global-set-key (kbd "C-c M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+
+;;(idle-require 'smex")  ;;icomplete is better
 (eval-after-load "smex"
   `(progn
       (smex-initialize)))
@@ -39,6 +43,19 @@
 
 ;;** misc
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)
+
+;;*** easily insert buffer name (useful for `shell-command', `compile' etc)
+(defun minibuffer-insert-buffer-filename (arg)
+  (interactive "P")
+  (let ((target-buffer (window-buffer (minibuffer-selected-window))))
+    (if (and target-buffer
+             (buffer-file-name target-buffer))
+      (insert-string (if arg
+                         (buffer-file-name target-buffer)
+                       (file-name-nondirectory (buffer-file-name target-buffer))))
+      (insert-string " "))))
+
+(define-key minibuffer-local-map (kbd "C-c %") 'minibuffer-insert-buffer-filename)
 
 
 
