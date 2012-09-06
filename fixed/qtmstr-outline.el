@@ -1,5 +1,13 @@
-;; got from  http://paste.lisp.org/display/86638
+;;; qtmstr-outline.el -- Add left-fringe +/- icons and line overlays for outline-sections.
 
+;; Original author: quotemstr <twitter: quotemstr>
+;; Original URL:    http://paste.lisp.org/display/86638 )
+;; Maintainer:      Ba Manzi <bamanzi@gmail.com>
+;; URL:  http://code.google.com/p/bamanzi-misc
+;;
+;;; Commentary:
+
+;;; Code:
 (require 'foldout)
 
 (eval-when-compile
@@ -75,40 +83,57 @@
 
     (qtmstr-outline-reveal-point)))
 
+;; (defun qtmstr-outline-define-keys ()
+;;   (interactive)
+;;   (define-key outline-mode-map "\r" #'qtmstr-outline-newline)
+;;   (define-key outline-mode-map [(tab)] #'qtmstr-outline-demote)
+;;   (define-key outline-mode-map [(backtab)] #'qtmstr-outline-promote)
+
+;;   (setq minor-mode-map-alist
+;;         (assq-delete-all 'outline-minor-mode minor-mode-map-alist))
+
+;;   (setq outline-minor-mode-map (make-sparse-keymap))
+;;   (define-key outline-minor-mode-map [menu-bar] outline-minor-mode-menu-bar-map)
+;;   (define-key outline-minor-mode-map [left-fringe mouse-1] #'qtmstr-outline-fringe-click)
+
+;;   (mapc #'(lambda (ent)
+;;             (define-key outline-minor-mode-map
+;;               (vector '(control ?c) ?f (car ent))
+;;               (cdr ent)))
+;;         '((?>          . foldout-zoom-subtree)
+;;           (?\r         . foldout-zoom-subtree)
+;;           (?<          . foldout-exit-fold)
+;;           (?a          . show-all)
+;;           (?u          . qtmstr-outline-up-heading)
+;;           (?s          . show-subtree)
+;;           (?w          . qtmstr-outline-show-top)
+;;           ((shift ?\t) . outline-previous-visible-heading)
+;;           (?v          . outline-previous-visible-heading)
+;;           (?f          . qtmstr-outline-toggle-children)
+;;           (?\t         . outline-next-visible-heading)
+;;           (backtab     . outline-previous-visible-heading)
+;;           (left        . foldout-exit-fold)
+;;           (right       . foldout-zoom-subtree)))
+
+;;   (push (cons 'outline-minor-mode outline-minor-mode-map) minor-mode-map-alist))
+
 (defun qtmstr-outline-define-keys ()
   (interactive)
-  (define-key outline-mode-map "\r" #'qtmstr-outline-newline)
-  (define-key outline-mode-map [(tab)] #'qtmstr-outline-demote)
-  (define-key outline-mode-map [(backtab)] #'qtmstr-outline-promote)
+  (define-key outline-mode-prefix-map (kbd "RET") #'qtmstr-outline-newline)
+  (define-key outline-mode-prefix-map (kbd "C-u") #'qtmstr-outline-up-heading)
+  (define-key outline-mode-prefix-map (kbd "TAB") #'qtmstr-outline-toggle-children)
+  
+  (define-key outline-mode-prefix-map (kbd "<M-right>") #'qtmstr-outline-demote)
+  (define-key outline-mode-prefix-map (kbd "<M-left>")  #'qtmstr-outline-promote)
+  (define-key outline-mode-prefix-map (kbd "<M-up>")    #'outline-move-subtree-up)
+  (define-key outline-mode-prefix-map (kbd "<M-down>")  #'outline-move-subtree-down)  
+  
+  (define-key outline-mode-prefix-map (kbd "C-w")       #'qtmstr-outline-show-top)
 
-  (setq minor-mode-map-alist
-        (assq-delete-all 'outline-minor-mode minor-mode-map-alist))
-
-  (setq outline-minor-mode-map (make-sparse-keymap))
-  (define-key outline-minor-mode-map [menu-bar] outline-minor-mode-menu-bar-map)
   (define-key outline-minor-mode-map [left-fringe mouse-1] #'qtmstr-outline-fringe-click)
-
-  (mapc #'(lambda (ent)
-            (define-key outline-minor-mode-map
-              (vector '(control ?c) ?f (car ent))
-              (cdr ent)))
-        '((?>          . foldout-zoom-subtree)
-          (?\r         . foldout-zoom-subtree)
-          (?<          . foldout-exit-fold)
-          (?a          . show-all)
-          (?u          . qtmstr-outline-up-heading)
-          (?s          . show-subtree)
-          (?w          . qtmstr-outline-show-top)
-          ((shift ?\t) . outline-previous-visible-heading)
-          (?v          . outline-previous-visible-heading)
-          (?f          . qtmstr-outline-toggle-children)
-          (?\t         . outline-next-visible-heading)
-          (backtab     . outline-previous-visible-heading)
-          (left        . foldout-exit-fold)
-          (right       . foldout-zoom-subtree)))
-
-  (push (cons 'outline-minor-mode outline-minor-mode-map) minor-mode-map-alist))
-
+  (define-key outline-minor-mode-map [left-margin mouse-1] #'qtmstr-outline-fringe-click)
+  (define-key outline-minor-mode-map [left-margin mouse-3] #'show-subtree)
+  
 (eval-after-load "outline"
   '(progn
      (qtmstr-outline-define-keys)))
@@ -225,9 +250,24 @@ add an overlay for this heading."
       (when (overlay-get o 'qtmstr-outline)
         (qtmstr-outline-fixup-overlay o)))))
 
+(defun qtmstr-outline-update-margin ()
+  (if qtmstr-outline-mode
+      (set-window-margins (selected-window) 2)
+    (set-window-margins (selected-window) nil)))
+
 (defun qtmstr-outline-add-overlays ()
   "Add overlays for outline headings"
-
+  (interactive)
+  (when (not window-system)
+      (if (car (window-margins (selected-window)))
+          (display-warning :warning
+                           "`qtmstr-outline' needs to use left-margin, \n
+but currenly it seems to be already used (`linum-mode'on?).
+Anyway `qtmstr-outline' will continue to turn on."))
+      (add-hook 'window-configuration-change-hook
+                'qtmstr-outline-update-margin nil 'local)
+      (qtmstr-outline-update-margin))
+  
   (add-hook 'after-change-functions #'qtmstr-outline-after-change t t)
   (add-hook 'post-command-hook #'qtmstr-outline-post-command-hook t t)
   (add-hook 'outline-view-change-hook #'qtmstr-outline-view-change t t)
@@ -243,6 +283,10 @@ add an overlay for this heading."
             (qtmstr-outline-add-overlay-at-point)))))))
 
 (defun qtmstr-outline-remove-overlays ()
+  (remove-hook 'window-configuration-change-hook
+               'qtmstr-outline-update-margin 'local)
+  (qtmstr-outline-update-margin)
+  
   (remove-hook 'after-change-functions #'qtmstr-outline-after-change t)
   (remove-hook 'post-command-hook #'qtmstr-outline-post-command-hook t)
   (save-restriction
