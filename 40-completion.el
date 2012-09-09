@@ -6,18 +6,67 @@
 ;; M-TAB    complete-symbol     (< 23.2)
 ;;          completion-at-point (>=23.2)
 
+;;*** completion at point
 ;; use TAB for completion
 (if (string< "23.1.99" emacs-version) ;; emacs >= 23.2
    (setq tab-always-indent 'complete)
   (require 'smart-tab nil t)
   )
 
+;;**** Use popup-menu* to provide a drop-down menu for completion-at-point command
+;; http://www.emacswiki.org/PopUp#toc2
+;;
+;; (usually accessible via <TAB>). This is much simpler than
+;; AutoComplete or CompanyMode if you only want the drop-down menu for
+;; completion. --LinhDang
+
+(autoload 'popup-menu* "popup" "Show a popup menu" nil)
+
+(defcustom complete-in-region-use-popup t
+    "If non-NIL, complete-in-region will popup a menu with the possible completions."
+    :type 'boolean
+    :group 'completion)
+
+(defun popup-complete-in-region (next-func start end collection &optional predicate)
+  (if (not complete-in-region-use-popup)
+      (funcall next-func start end collection predicate)
+    (let* ((prefix (buffer-substring start end))
+           (completion (try-completion prefix collection predicate))
+           (choice (and (stringp completion)
+                        (string= completion prefix)
+                        (popup-menu* (all-completions prefix collection predicate))))
+           (replacement (or choice completion))
+           (tail (and (stringp replacement)
+                      (not (string= prefix replacement))
+                      (substring replacement (- end start)))))
+      (cond ((eq completion t)
+             (goto-char end)
+             (message "Sole completion")
+             nil)
+            ((null completion)
+             (message "No match")
+             nil)
+            (tail
+             (goto-char end)
+             (insert tail)
+             t)
+            (choice
+             (message "Nothing to do")
+             nil)
+            (t
+             (message "completion: something failed!")
+             (funcall next-func start end collection predicate))))))
+
+(add-hook 'completion-in-region-functions 'popup-complete-in-region)
+
+
+
 ;;*** dabbrev
 ;;   M-/ - dabbrev-expand
 (define-key global-map (kbd "M-/")  'dabbrev-expand)
 
 ;;*** hippie-expand 
-(define-key global-map (kbd "C-c M-/")      'hippie-expand)
+(define-key global-map (kbd "ESC M-/")      'hippie-expand)
 
 (defun hippie-expand-filename ()
   (interactive)
@@ -31,7 +80,7 @@
 (define-key global-map (kbd "C-/") 'hippie-expand-filename)
 
 ;;*** words
-(define-key global-map (kbd "C-c M-$") 'ispell-complete-word)
+(define-key global-map (kbd "ESC M-$") 'ispell-complete-word)
 
 ;;** auto-compelte
 (autoload 'auto-complete-mode  "auto-complete"
