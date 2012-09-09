@@ -98,12 +98,22 @@
      (when (and (featurep 'auto-complete)
                 ;;need pycompletemine.el/pycomplete.py hacked by myself
                 (fboundp 'pycomplete-get-all-completions-for-ac))
+       
+       (defun py-complete-help-short (str1)
+         (let ((result (if (fboundp 'py-complete-get-help)
+                           (py-complete-get-help str1)
+                         (py-complete-help str1))))
+           (if (> (length result) 300)
+               (substring result 0 300)
+             result)))
+       
        (ac-define-source pycompletemine
          '((depends pycompletemine)  ;;FIXME: ok?
            (prefix .  "[ \t\n['\",()]\\([^\t\n['\",()]+\\)\\=")
            (candidates . (pycomplete-get-all-completions-for-ac ac-prefix))
            (symbol . "pyc")
-           (document . py-complete-help)))
+           (document . py-complete-help-short)))
+       
        (add-hook 'python-mode-hook
                  #'(lambda ()
                      (add-to-list 'ac-sources 'ac-source-pycompletemine)))
