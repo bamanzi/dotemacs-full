@@ -133,6 +133,7 @@
   (define-key outline-minor-mode-map [left-fringe mouse-1] #'qtmstr-outline-fringe-click)
   (define-key outline-minor-mode-map [left-margin mouse-1] #'qtmstr-outline-fringe-click)
   (define-key outline-minor-mode-map [left-margin mouse-3] #'show-subtree)
+  )
   
 (eval-after-load "outline"
   '(progn
