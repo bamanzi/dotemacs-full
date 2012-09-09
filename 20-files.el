@@ -36,7 +36,12 @@
 (global-set-key (kbd "<f5> l") 'anything-locate)
 
 ;;*** others
-;;(define-key search-key (kbd "C-f") 'ffap-other-window)
+(define-key global-map (kbd "M-s C-f")      'ffap)
+(define-key global-map (kbd "ESC M-s C-f")  'ffap-other-window)
+
+(define-key global-map (kbd "<f5> f")       'anything-find-files)
+  
+
 ;;** Open methods
 
 ;;*** read-only

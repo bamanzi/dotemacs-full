@@ -44,6 +44,12 @@
 ;;** misc
 (define-key minibuffer-local-map (kbd "ESC ESC") 'minibuffer-keyboard-quit)
 
+(defun minibuffer-focus ()
+  (interactive)
+  (select-window (minibuffer-window)))
+
+(define-key global-map (kbd "<f11> g m") 'minibuffer-focus)
+
 ;;*** easily insert buffer name (useful for `shell-command', `compile' etc)
 (defun minibuffer-insert-buffer-filename (arg)
   (interactive "P")
@@ -56,6 +62,7 @@
       (insert-string " "))))
 
 (define-key minibuffer-local-map (kbd "C-c %") 'minibuffer-insert-buffer-filename)
+
 
 
 

@@ -7,7 +7,7 @@
   (interactive "*P")
   (comment-or-uncomment-region (line-beginning-position) (line-end-position) arg))
 
-(define-key global-map (kbd "C-c M-;") 'comment-or-uncomment-line)
+(define-key global-map (kbd "ESC M-;") 'comment-or-uncomment-line)
 
 ;;*** another implementation of comment-line
 ;; if nothing marked, use current line as region

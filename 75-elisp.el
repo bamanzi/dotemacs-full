@@ -6,15 +6,17 @@
 
 (global-set-key (kbd "<f3> k")   'find-function-on-key)
 
-(global-set-key (kbd "ESC ESC e b") 'eval-buffer)
-(global-set-key (kbd "ESC ESC e r") 'eval-region)
-;;(global-set-key (kbd "<f12> e f") 'eval-defun)
-;;(global-set-key (kbd "<f12> e s") 'eval-sexp)
+(progn
+  (global-set-key (kbd "<f10> : e b") 'eval-buffer)
+  (global-set-key (kbd "<f10> : e r") 'eval-region)
+  ;;(global-set-key (kbd "<f10> : e f") 'eval-defun)
+  ;;(global-set-key (kbd "<f10> : e s") 'eval-sexp)
 
-(global-set-key (kbd "ESC ESC l l") 'load-library)
-(global-set-key (kbd "ESC ESC f l") 'find-library)
-(global-set-key (kbd "ESC ESC c p") 'check-parens)
-(global-set-key (kbd "ESC ESC b c") 'byte-compile-file)
+  (global-set-key (kbd "<f10> : l l") 'load-library)
+  (global-set-key (kbd "<f10> : f l") 'find-library)
+  (global-set-key (kbd "<f10> : c p") 'check-parens)
+  (global-set-key (kbd "<f10> : b c") 'byte-compile-file)
+  )
 
 (defun bmz/check-parens ()
   (interactive)

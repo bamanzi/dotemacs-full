@@ -103,19 +103,23 @@
  Emacs buffer are those starting with “*”."
    (list
     (cond
-     ((string-equal "*" (substring (buffer-name) 0 1))
-      '("Emacs Buffer")
+     ((memq major-mode '(dired-mode shell-mode eshell-mode ibuffer-mode))
+      "Utils"
       )
-     ((eq major-mode 'dired-mode)
-      '("Dired")
+     ((string-equal "*" (substring (buffer-name) 0 1))
+      "Emacs Buffer"
       )
      (t
-      '("User Buffer")
+      "User Buffer"
       )
-     ))) 
+     )))
 
-;;(setq tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
-(fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
+(defun tabbar-group-by-simple ()
+  (interactive)
+  (setq tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
+  )
+;(fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-groups-simple)
+(tabbar-group-by-simple)
 
 ;;make some *useful* buffers group together
 (defun tabbar-buffer-groups-by-folder ()
@@ -176,7 +180,8 @@
 (eval-after-load "tabbar-ruler"
   `(progn
      ;; restore my choice (tabbar-ruler.el would change this)
-     (setq tabbar-buffer-groups-function 'bmz/tabbar-buffer-groups-function)
+;;     (setq tabbar-buffer-groups-function 'bmz/tabbar-buffer-groups-function)
+     (tabbar-group-by-simple)
      ))
      
 ;;*** show tabbar group on modeline
@@ -200,19 +205,25 @@
               '((:propertize "[O]"
                              local-map (keymap (header-line keymap
                                                             (mouse-1   . widen-current-window-by-mouse)
+                                                            (C-mouse-1 . delete-other-windows)
+                                                            (mouse-3   . tabbar-tabset-menu)
                                                             ))
-                             help-echo " widen current window")
+                             help-echo "  mouse-1: widen current window
+C-mouse-1: delete other windows
+C-mouse-3: list buffers in current tabset")
                 (:propertize "[X]"
                              local-map (keymap (header-line keymap
                                                             (mouse-1   . mouse-delete-window)
+                                                            (C-mouse-1 . kill-buffer)
                                                             (S-mouse-1 . mouse-delete-other-windows)
                                                             (M-mouse-1 . mouse-tear-off-window)
-                                                            (C-mouse-3 . tabbar-tabset-menu)))
+                                                            (mouse-3 . tabbar-tabset-menu)))
                              help-echo "  mouse-1: delete current window
+C-mouse-1: kill current buffer
 C-mouse-1: delete other windows
 M-mouse-1: tear of current window into a new frame
-C-mouse-3: list buffers of current tabset in menu")
-                which-func-format
+  mouse-3: list buffers of current tabset in menu")
+;;                which-func-format
                 (:eval (tabbar-line))))
 
 (eval-after-load "tabbar"
@@ -248,15 +259,13 @@ C-mouse-3: list buffers of current tabset in menu")
      (defun tabbar-buffer-click-on-home (event)
        "Handle a mouse click EVENT on the tab bar home button.
 mouse-1, toggle the display of tabs for groups of buffers.
-mouse-3, close the current buffer."
+mouse-3, list buffers in current tabset."
        (let ((mouse-button (event-basic-type event)))
          (cond
           ((eq mouse-button 'mouse-1)
            (tabbar-buffer-show-groups (not tabbar--buffer-show-groups)))
-          ((eq mouse-button 'mouse-2)
-           (call-interactively 'tabbar-tabset-menu))
           ((eq mouse-button 'mouse-3)
-           (kill-buffer nil))
+           (call-interactively 'tabbar-tabset-menu))
           )))
      ))
 
@@ -367,7 +376,8 @@ Return a list of one element based on major mode."
 
 (eval-after-load "frame-bufs"
   `(progn
-     (fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple-with-frame-bufs)
+     ;;(fset 'bmz/tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple-with-frame-bufs)
+     (setq tabbar-buffer-groups-function 'tabbar-buffer-grouping-simple-with-frame-bufs)
      ))
 
 

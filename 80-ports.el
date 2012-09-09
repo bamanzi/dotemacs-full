@@ -144,6 +144,85 @@
 
 
 ;;** xterm & console
+
+(defun bmz/config-for-linux-console ()
+  (gpm-mouse-mode t) ;;for Linux console
+  )
+
+(defun bmz/config-for-linux-xterm ()
+  (xterm-mouse-mode t)
+  (require 'ext-mouse nil t)
+  
+  )
+
+(defun bmz/config-for-term-common ()
+  (define-key key-translation-map  (kbd "ESC <up>")    (kbd "<M-up>"))
+  (define-key key-translation-map  (kbd "ESC <down>")  (kbd "<M-down>"))
+  (define-key key-translation-map  (kbd "ESC <left>")  (kbd "<M-left>"))
+  (define-key key-translation-map  (kbd "ESC <right>") (kbd "<M-right>"))
+
+
+  )
+  
+(when (eq system-type 'gnu/linux)
+  (if (not window-system)
+      (if (string= (getenv "TERM") "linux") ;;FIXME: if xterm ?
+          (bmz/config-for-linux-console)
+        (bmz/config-for-linux-xterm))
+    )
+
+  ;;(define-key key-translation-map (kbd "<select>") (kbd "<end>"))
+  
+  (load-library "help-mode")  ;; to avoid the error message:
+                              ;;; "Symbol's value as variable is void: help-xref-following"
+  )
+
+
+;; better menu navigation
+(autoload 'lacarte-execute-menu-command "lacarte"
+  "Execute a menu-bar menu command in an alternative way." t)
+
+(define-key global-map (kbd "ESC <f10>") 'lacarte-execute-menu-command)
+
+
+;;*** keychords on different terminals
+  ;;not bound by Emacs, but mostly recognizable (at least when ESC used as Meta)
+  ;; M-#
+  ;; M-+  
+  ;; M-_
+  ;; M-]
+  ;; M-"
+  ;; M-? 
+
+;; not available on term:
+  ;;C-`: n.a. 
+  ;;C-~: n.a. 
+  ;;C-!: n.a. 
+  ;;C-@: n.a.
+  ;;C-#: n.a.
+  ;;C-$: n.a.
+
+  ;;C-: n.a.
+  ;;C-; n.a.
+  ;;C-' n.a.
+  ;;C-" n.a.
+
+;; others: 
+  ;;C-[ -> esc
+  ;;C-]: bound to `abort-recursive-edit'
+
+  ;;C-\ bound to `toggle-input-method'
+  ;;C-| \234    
+
+  ;;C-{: \233
+  ;;C-}: \235
+
+  ;;C-/           -> C-_
+  ;;C-?           -> DEL
+
+  ;;C-backspace   -> C-_
+  ;;C-RET         -> C-^
+
 (defun map-mintty-keys ()
   ;; Mintty supports most combo keys (even telnet/ssh to another server)
   ;; such as C-%, C-&, C-(, C-., C-f1, M-f1, S-f1... while putty doesn't
@@ -160,7 +239,6 @@
   ;;C-_: recognizable on term, bound to `undo'
   (define-key input-decode-map (kbd "M-[ 1;6k") (kbd "C-+")) ;;my: `hs-toggle-hiding'
   (define-key input-decode-map (kbd "M-[ 1;5k") (kbd "C-=")) ;;my: `align-regexp'
-
   
   (define-key input-decode-map (kbd "M-[ 1;5l") (kbd "C-,"))
   (define-key input-decode-map (kbd "M-[ 1;5n") (kbd "C-."))
@@ -204,65 +282,6 @@
   (define-key input-decode-map "\e[1;10D" [M-S-left])
   )
 
-(defun config-for-linux-console ()
-  (gpm-mouse-mode t) ;;for Linux console
-  )
-
-(defun config-for-linux-xterm ()
-  (xterm-mouse-mode t)
-  (require 'ext-mouse nil t)
-  
-  )
-
-(when (eq system-type 'gnu/linux)
-  (if (not window-system)
-      (if (string= (getenv "TERM") "linux") ;;FIXME: if xterm ?
-          (config-for-linux-console)
-        (config-for-linux-xterm))
-    )
-
-  ;;(define-key key-translation-map (kbd "<select>") (kbd "<end>"))
-  
-  (load-library "help-mode")  ;; to avoid the error message:
-                              ;;; "Symbol's value as variable is void: help-xref-following"
-  )
-
-
-  ;;not bound by Emacs, but mostly recognizable (at least when ESC used as Meta)
-  ;; M-#
-  ;; M-+  
-  ;; M-_
-  ;; M-]
-  ;; M-"
-  ;; M-? 
-
-  ;;C-`: n.a. 
-  ;;C-~: n.a. 
-  ;;C-!: n.a. 
-  ;;C-@: n.a.
-  ;;C-#: n.a.
-  ;;C-$: n.a.
-
-  ;;C-[ -> esc
-  ;;C-]: bound to `abort-recursive-edit'
-
-  ;;C-\ bound to `toggle-input-method'
-  ;;C-| \234    
-
-  ;;C-{: \233
-  ;;C-}: \235
-
-  ;;C-: n.a.
-  ;;C-; n.a.
-  ;;C-' n.a.
-  ;;C-" n.a.
-
-
-  ;;C-/           -> C-_
-  ;;C-?           -> DEL
-
-  ;;C-backspace   -> C-_
-  ;;C-RET         -> C-^
 
 (defun map-putty-sco-keys ()
   "Using Emacs over PuTTY: how to use all function keys

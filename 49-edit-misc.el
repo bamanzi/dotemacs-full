@@ -12,7 +12,9 @@
 
 ;;** iedit: variable/function refactoring
 (autoload 'iedit-mode "iedit" "Edit multiple regions with the same content simultaneously." t)
+(global-set-key (kbd "C-;") 'iedit-mode)
 
+;;FIXME: newer iedit.el already has `iedit-mode-on-function'
 (defun iedit-symbol-in-defun ()
   "Enter `iedit-mode' to rename the symbol in current function, or exit it."
   (interactive)
@@ -149,7 +151,7 @@ current line instead."
   )
 
 (global-set-key (kbd "M-g c")      'go-to-char)
-(global-set-key (kbd "C-c M-g c")  'go-back-to-char)
+(global-set-key (kbd "ESC M-g c")  'go-back-to-char)
 
 ;;*** ace-jump-mode
 (autoload 'ace-jump-line-mode  "ace-jump-mode"
@@ -205,6 +207,6 @@ current line instead."
 ;; http://xahlee.blogspot.com/2011/11/emacs-lisp-example-title-case-string.html
 (autoload 'title-case-string-region-or-line  "xeu_elisp_util"
   "Capitalize the current line or text selection, following title conventions." t)
-(global-set-key (kbd "C-c M-c") 'title-case-string-region-or-line)
+(global-set-key (kbd "ESC M-c") 'title-case-string-region-or-line)
 
 

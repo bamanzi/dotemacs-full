@@ -10,7 +10,7 @@
 
 ;; to avoid key conflicting with org-mode
 (define-key cua-global-keymap (kbd "<C-return>") nil)
-(global-set-key (kbd "C-c RET") 'cua-set-rectangle-mark)
+(global-set-key (kbd "C-x r RET") 'cua-set-rectangle-mark)
 
 ;;** where I am
 (line-number-mode t)
@@ -363,7 +363,7 @@ vi style of % jumping to matching brace."
   (interactive "p\ncBack-zap to char: ")
   (zap-to-char (- arg) char))
 
-(global-set-key (kbd "C-c M-z") 'zap-back-to-char)
+(global-set-key (kbd "ESC M-z") 'zap-back-to-char)
 
 ;;*** smart-operator
 (autoload 'smart-operator-mode     "smart-operator" "Insert operators with surrounding spaces smartly." t)
