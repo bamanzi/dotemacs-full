@@ -63,6 +63,18 @@
 
 (define-key minibuffer-local-map (kbd "C-c %") 'minibuffer-insert-buffer-filename)
 
+;;*** insert current symbol to minibuffer
+(defun minibuffer-insert-current-symbol (arg)
+  (interactive "P")
+  (let ((target-buffer (window-buffer (minibuffer-selected-window))))
+    (if (and target-buffer
+             (buffer-file-name target-buffer))
+        (insert-string (with-current-buffer target-buffer
+                         (if arg
+                             (thing-at-point 'string) ;; thingatpt+.el needed
+                           (thing-at-point 'symbol))))
+      (insert-string " "))))
 
+(define-key minibuffer-local-map (kbd "C-c M-s") 'minibuffer-insert-current-symbol)
 
 
