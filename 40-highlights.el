@@ -254,23 +254,6 @@
   (insert-string "(linkd-follow (@url :file-name \""))
 
 
-;;** highlight FIXME/TODO etc in any file
-;;FROM: http://emacs-fu.blogspot.com/2008/12/highlighting-todo-fixme-and-friends.html
-;; (add-hook 'find-file-hook
-;;           '(lambda ()
-;;              (font-lock-add-keywords
-;;               nil
-;;               '(("\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 1 font-lock-warning-face prepend)))))
-(add-hook 'find-file-hook
-          '(lambda ()
-             (highlight-regexp "\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 'font-lock-warning-face)))
-
-;;*** fixme-mode 
-(autoload 'fixme-mode "fixme-mode"
-  "A minor mode for making FIXME and other warnings stand out" t)
-(autoload 'fic-ext-mode "fic-ext-mode"
-  "minor mode for highlighting FIXME/TODO in comments" t)
-
 
 ;;** pulse: temperarily highlight a line/region, to draw user's attension
 (idle-require 'pulse)
@@ -321,10 +304,20 @@
 (global-set-key (kbd "<f10> hi") 'highlight-indentation-mode)
 
 
-;;*** highlight url
-(add-hook 'find-file-hook
-          '(lambda ()
-             (highlight-regexp "https?://[^ \n]*" 'link)))
+;;*** fixme-mode 
+(autoload 'fixme-mode "fixme-mode"
+  "A minor mode for making FIXME and other warnings stand out" t)
+(autoload 'fic-ext-mode "fic-ext-mode"
+  "minor mode for highlighting FIXME/TODO in comments" t)
+
+;;*** highlight misc url, fixme, todo
+
+(defun highlight-misc-stuff/bmz ()
+  (interactive)
+  (highlight-regexp "https?://[^ \n]*" 'link)
+  (highlight-regexp "\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 'font-lock-warning-face))
+
+(add-hook 'find-file-hook 'highlight-misc-stuff/bmz)
 
 ;;*** rainbow-mode: colorize strings like 'red', "#3303c4"
 (autoload 'rainbow-mode "rainbow-mode" "Colorize strings that represent colors." t)
