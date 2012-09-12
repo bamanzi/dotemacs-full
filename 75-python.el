@@ -95,6 +95,12 @@
 (eval-after-load "pycompletemine"
   `(progn
      ;;use auto-complete as frond-end
+     (defun py-complete-get-help-short (prefix)
+       (let ((result (py-complete-help prefix)))
+         (if (> (length result) 300)
+             (substring result 0 300)
+           result)))
+     
      (when (and (featurep 'auto-complete)
                 ;;need pycompletemine.el/pycomplete.py hacked by myself
                 (fboundp 'pycomplete-get-all-completions-for-ac))
@@ -112,7 +118,7 @@
            (prefix .  "[ \t\n['\",()]\\([^\t\n['\",()]+\\)\\=")
            (candidates . (pycomplete-get-all-completions-for-ac ac-prefix))
            (symbol . "pyc")
-           (document . py-complete-help-short)))
+           (document . py-complete-get-help-short)))
        
        (add-hook 'python-mode-hook
                  #'(lambda ()
@@ -133,12 +139,33 @@
      (add-to-list 'Info-directory-list
                   (file-name-directory (symbol-file 'pydoc-info)))
      ;;then use C-h S (`info-lookup-symbol') to lookup python doc
+
      ))
 
 (eval-after-load "python"
   `(progn
      (require 'pydoc-info nil t)
      ))
+
+(progn
+  (defvar anything-c-source-info-python
+    '((name . "Info index: python")
+      (info-index . "python")))
+
+  (defun anything-info-python ()
+    (interactive)
+    (anything
+     :input (thing-at-point 'symbol)
+     :prompt "Info about: "
+     :candidate-number-limit 20
+     :sources
+     '( anything-c-source-info-python
+        ;;         anything-c-source-info-elib
+        ;;anything-c-source-info-cl
+        )))
+
+  (define-key python-mode-map (kbd "M-s <f1>") 'anything-info-python)
+  )
 
 ;;*** pydoc command line
 ;;stolen from http://stackoverflow.com/a/1068731
