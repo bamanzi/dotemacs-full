@@ -324,6 +324,21 @@ vi style of % jumping to matching brace."
 (idle-require 'mark-copy-something)
 
 
+;;** clean up buffer
+;; stolen from http://tuxicity.se/emacs/elisp/2010/05/07/clean-up-buffer-or-region-in-emacs.html
+(defun clean-up-buffer-or-region ()
+  "Untabifies, indents and deletes trailing whitespace from buffer or region."
+  (interactive)
+  (save-excursion
+    (unless (region-active-p)
+      (mark-whole-buffer))
+    (untabify (region-beginning) (region-end))
+    (indent-region (region-beginning) (region-end))
+    (save-restriction
+      (narrow-to-region (region-beginning) (region-end))
+      (delete-trailing-whitespace))))
+
+
 ;;** misc
 (global-set-key (kbd "C-=") 'align-regexp)
 
