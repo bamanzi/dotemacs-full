@@ -36,7 +36,8 @@
       (call-interactively command))))
 
 
-;;; message
+;;** some debugging tricks
+;; let `message' and `error' print where it comes from
   (defadvice message (before who-said-that activate)
     "Find out who said that thing. and say so."
     (let ((trace nil) (n 1) (frame nil))
@@ -88,21 +89,15 @@
 (define-key help-map "\C-h" nil) ;;force '<f1> C-h' to list keymap of `help-map'
 
 (idle-require 'help-fns+)
-(autoload 'describe-keymap  "help-fns+"
-  "Describe bindings in KEYMAP, a variable whose value is a keymap." t)
-(autoload 'describe-file  "help-fns+"
-  "Describe the file named FILENAME." t)
 (autoload 'describe-command  "help-fns+"
   "Describe an Emacs command (interactive function)." t)
 (define-key help-map "K"   'describe-key-briefly)
-(define-key help-map (kbd "M-k") 'describe-keymap)
-(define-key help-map (kbd "M-f") 'describe-file)
 (define-key help-map "c"   'describe-command)
 
-(define-key help-map " "  #'(lambda ()
-                              (interactive)
-                              (describe-keymap help-map)))  ;;help-fns+ needed?
 
+(unless (fboundp 'describe-package)
+  (defalias 'describe-package 'finder-commentary) ;;not a good alias
+)
 
 (defun describe-major-mode ()
   (interactive)
@@ -137,6 +132,11 @@
 
 (define-key help-map "V" 'show-variable-value)
 
+;;*** describe file
+(autoload 'describe-file  "help-fns+"
+  "Describe the file named FILENAME." t)
+
+(define-key help-map (kbd "M-f") 'describe-file)
 
 (defun describe-this-file ()
   (interactive)
@@ -147,6 +147,27 @@
 
 ;;help-fns+:  C-h M-f - describe-file
 (define-key help-map (kbd "M-F") 'describe-this-file)
+
+;;*** describe keymap
+(autoload 'describe-keymap  "help-fns+"
+  "Describe bindings in KEYMAP, a variable whose value is a keymap." t)
+
+(define-key help-map (kbd "M-k") 'describe-keymap)
+
+;;a lightweight implementation
+(defun describe-keymap- (keymap)
+    (interactive
+     (list (intern (completing-read "Keymap: " obarray
+                                    (lambda (m) (and (boundp m) (keymapp (symbol-value m))))
+                                    t nil 'variable-name-history))))
+    (with-output-to-temp-buffer "*Help*"
+      (princ (substitute-command-keys (concat "\\{" (symbol-name keymap) "}")))
+      ))
+(define-key help-map (kbd "M-k") 'describe-keymap-)
+
+(define-key help-map " "  #'(lambda ()
+                              (interactive)
+                              (describe-keymap help-map)))  ;;help-fns+ needed?
 
 ;;** info
 (define-key help-map "i"  nil)

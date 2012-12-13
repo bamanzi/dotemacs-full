@@ -71,7 +71,10 @@
   (multi-occur
    (get-buffers-matching-mode major-mode)
    (format "%s" (bmz/get-symbol-selected-or-current))))
-  
+
+;;*** multi-occur on matching buffers
+;;`multi-occur-in-matching-buffers' in replace.el
+
 
 ;;** grep
 (defun bmz/grep-symbol-at-point-same-ext()
