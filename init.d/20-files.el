@@ -5,7 +5,8 @@
 (setq recentf-max-saved-items 100)
 (setq recentf-max-menu-items 20)
 (setq recentf-menu-path '("File"))
-(setq recentf-save-file "~/.emacs.d/recentf")
+(customize-set-variable
+ '(recentf-save-file "~/.emacs.d/recentf"))
 (recentf-mode t)
 
 (defun ido-recentf ()
@@ -21,6 +22,7 @@
 ;; `C-x r l'                    List all bookmarks (`list-bookmarks').
 ;; `M-x bookmark-save'          Save all the current bookmark values in the default bookmark file.
 
+(setq bookmark-default-file (expand-file-name "emacs.bmk" user-emacs-directory))
 
 (global-set-key (kbd "<f5> B") 'anything-bookmarks)
 
@@ -77,14 +79,55 @@
 ;;...
 
 ;;**** open file with sudo
-(defun revert-buffer-with-sudo ()
-  (interactive)
-  (let ( (filename (buffer-file-name)) )
-    (if filename
-        (let ( (trampfilename (concat "sudo::" filename)) )
-          (find-alternate-file trampfilename))
-      (message "buffer not saved yet."))))
+(when (memq system-type '(gnu gnu/linux darwin))
 
+  ;; (defun revert-buffer-with-sudo ()
+  ;;   (interactive)
+  ;;   (let ( (filename (buffer-file-name)) )
+  ;;     (if filename
+  ;;         (let ( (trampfilename (concat "sudo::" filename)) )
+  ;;           (find-alternate-file trampfilename))
+  ;;       (message "buffer not saved yet."))))
+
+  ;;from: http://xahlee.org/emacs/xah_emacs_generic.el
+  ; from newsgroup gnu.emacs.help, by Richard Riley, 2009-08-02
+  (defun open-current-file-as-admin ()
+        "Open the current buffer as unix root.
+    This command works on unixes only."
+        (interactive)
+        (when buffer-file-name (find-alternate-file
+                                (concat "/sudo:root@localhost:" buffer-file-name))))
+ 
+  (defalias 'revert-buffer-with-sudo 'open-current-file-as-admin)
+   
+  (defun find-file-sudo (filename)
+        "find-file with `sudo' method."
+        (interactive
+        (find-file-read-args "Find file: "
+                            (confirm-nonexistent-file-or-buffer)))
+        (let ((value (find-file-noselect
+                    (concat "/sudo:root@localhost:" filename)
+                    nil nil nil)))
+        (if (listp value)
+            (mapcar 'switch-to-buffer (nreverse value))
+            (switch-to-buffer value))))
+ 
+    (defun write-file-with-sudo (filename &;optional username)
+    "Write current buffer into file FILENAME, with sudo method."
+    (interactive
+    (list (read-file-name "Write file (with sudo): "
+                            nil
+                            (if (buffer-file-name)
+                                (if (string-match "^/sudo:" (buffer-file-name))
+                                    (replace-regexp-in-string "/sudo:.*@localhost:" "" (buffer-file-name))
+                                (buffer-file-name))
+                                default-directory))
+            (if current-prefix-arg
+                (read-string "Username: "
+                            "root"))))
+    (let ((tramp-filename (format "/sudo:%s@localhost:%s" username filename)))
+        (write-file tramp-filename t)))                        
+  ))
 
 ;;*** sudo without tramp
 (autoload 'sudo-find-file  "sudo"
@@ -167,8 +210,26 @@ Otherwise, call the original `dired-jump'."
 
 (define-key goto-map "d" 'bmz/dired-jump)
 
+;;**** dired-single
+(autoload 'joc-dired-single-buffer "dired-single"
+"Visits the selected directory in the current buffer, replacing the" t)
+
+(autoload 'joc-dired-single-buffer-mouse "dired-single"
+"Visits the selected directory in the current buffer, replacing the" t)
+
+(eval-after-load "dired"
+  `(progn
+     (define-key dired-mode-map [return] 'joc-dired-single-buffer)
+     (define-key dired-mode-map [mouse-1] 'joc-dired-single-buffer-mouse)
+     (define-key dired-mode-map "^"
+       (function
+        (lambda nil (interactive) (joc-dired-single-buffer ".."))))
+     )) 
+
 ;;*** nav: simple file system navigation
 (autoload 'nav "nav" "Opens Nav in a new window to the left of the current one." t)
+
+(autoload 'nav-toggle "nav" "Toggles the nav panel." t)
 
 (defadvice nav (after set-nav-window-dedicated activate)
   (let ( (window (get-buffer-window "*nav*")) )
@@ -259,9 +320,13 @@ Otherwise, call the original `dired-jump'."
 (global-set-key (kbd "<f6> C-g") 'viper-describe-file)
 
 ;;*** make built-in lisp file read-only
-(defun find-file-on-built-in-lisp-file ()
-  (let ((lisp-dir (file-name-directory (locate-library "subr"))))
-    (if (string-match lisp-dir buffer-file-name)
+(defvar emacs-lisp-directory (expand-file-name "../" (locate-library "subr")))
+
+(defun make-builtin-lisp-file-read-only ()
+  (let ((filename (buffer-file-name)))
+    (if (string= emacs-lisp-directory
+                 (substring filename 0 (length emacs-lisp-directory)))
         (toggle-read-only t))))
 
-(add-hook 'find-file-hook 'find-file-on-built-in-lisp-file)
+(add-hook 'find-file-hook 'make-builtin-lisp-file-read-only)
+
