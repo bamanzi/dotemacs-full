@@ -12,11 +12,30 @@
 
 ;;*** dictem.el
 ;; external utility `dict' client needed
-(setq dictem-server "localhost")
-(autoload 'dictem-run-search "dictem" nil t)
-(autoload 'dictem-run-match  "dictem" nil t) 
+(setq dictem-server "dict.org")
+(autoload 'dictem-run-search "dictem"
+  "Asks a user about database name, search strategy and query," t)
+(autoload 'dictem-run-match "dictem"
+  "Asks a user about database name, search strategy and query," t)
+(autoload 'dictem-run-define "dictem"
+  "Asks a user about database name and query," t)
 
-(eval-after-load "dictem"	  `(dictem-initialize))
+(progn
+  (define-key search-map (kbd "M-d s") 'dictem-run-search)
+  (define-key search-map (kbd "M-d m") 'dictem-run-match)
+  (define-key search-map (kbd "M-d d") 'dictem-run-define)
+  )
+
+(defun dictem-mode-outline ()
+  (setq outline-regexp "^From.* \\[.*\\]:")
+  (outline-minor-mode 1)
+  (highlight-lines-matching-regexp "^From.*" 'outline-1))
+
+(eval-after-load "dictem"
+  `(progn
+     (dictem-initialize)
+     (add-hook 'dictem-mode-hook 'dictem-mode-outline)))
+
 
 ;;*** dict.el (external program `dict' needed)
 ;;;  (NOTE: it's hard to use it on windows)
