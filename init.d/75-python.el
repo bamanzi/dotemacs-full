@@ -164,7 +164,9 @@
         ;;anything-c-source-info-cl
         )))
 
-  (define-key python-mode-map (kbd "M-s <f1>") 'anything-info-python)
+  (eval-after-load "python"
+    `(define-key python-mode-map (kbd "M-s <f1>") 'anything-info-python)
+    )
   )
 
 ;;*** pydoc command line
