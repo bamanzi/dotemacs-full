@@ -6,7 +6,7 @@
 (setq recentf-max-menu-items 20)
 (setq recentf-menu-path '("File"))
 (customize-set-variable
- '(recentf-save-file "~/.emacs.d/recentf"))
+ 'recentf-save-file "~/.emacs.d/recentf")
 (recentf-mode t)
 
 (defun ido-recentf ()
