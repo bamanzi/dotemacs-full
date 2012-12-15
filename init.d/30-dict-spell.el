@@ -51,7 +51,20 @@
 (autoload 'sdcv-search "sdcv-mode" nil t)
 
 ;;*** sdcv.el
-;;FIXME: problem
+;;NOTE: use the one I fixed: https://bitbucket.org/bamanzi/site-lisp/fixed/
+(autoload 'sdcv-search-detail "sdcv"
+  "Search WORD through the `command-line' tool sdcv." t)
+(define-key search-map "D"  'sdcv-search-detail)
+
+(defun sdcv-search-word-at-pt-mouse (event)
+  (interactive "e")
+  (mouse-set-point event)
+  (require 'sdcv)
+  ;;(setq sdcv-dictionary-simple-list '("XDICT英汉辞典" "XDICT汉英辞典"))
+  (call-interactively 'sdcv-search-pointer+))
+
+(global-set-key (kbd "<C-down-mouse-1>") 'sdcv-search-word-at-pt-mouse)
+(define-key search-map "d"  'sdcv-search-word-at-pt-mouse)
 
 
 ;;** web dictionary
