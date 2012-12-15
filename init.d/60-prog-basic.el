@@ -1,5 +1,47 @@
 ;;* General settings for programming
 
+;;** prog-mode
+(unless (fboundp 'prog-mode)
+  (defvar prog-mode-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map [?\C-\M-q] 'prog-indent-sexp)
+      map)
+    "Keymap used for programming modes.")
+  
+  (define-derived-mode prog-mode fundamental-mode "Prog"
+    "Major mode for editing programming language source code."
+    (set (make-local-variable 'require-final-newline) mode-require-final-newline)
+    (set (make-local-variable 'parse-sexp-ignore-comments) t)
+    ;; Any programming language is always written left to right.
+    (setq bidi-paragraph-direction 'left-to-right))
+  
+  (defun prog-mode-run-hook ()
+    (interactive)  ;;allows manually invoke
+    (run-hooks 'prog-mode-hook))
+
+  ;;as in older Emacs, js-mode, python-mode is not derived from `prog-mode'
+  ;;we had to call the hook manually
+  (progn
+      (add-hook 'emacs-lisp-mode-hook 'prog-mode-run-hook)
+      
+      (eval-after-load "python"
+        (add-hook 'python-mode-hook 'prog-mode-run-hook))
+      (eval-after-load "js"
+        (add-hook 'js-mode-hook     'prog-mode-run-hook))
+      (eval-after-load "js2"
+        (add-hook 'js2-mode-hook    'prog-mode-run-hook))
+      )
+  )
+
+(progn
+  ;;(add-hook 'prog-mode-hook 'whitespace-mode)
+  ;;(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+  (if (fboundp 'bmz/turn-on-hideshow)
+      (add-hook 'prog-mode-hook 'bmz/turn-on-hideshow))
+  ;;(if (fboundp 'qtmstr-outline-mode)
+  ;;    (add-hook 'prog-mode-hook 'qtmstr-outline-mode))
+  )
+
 ;;** comment
 (global-set-key (kbd "C-c ;") 'comment-or-uncomment-region)
 
