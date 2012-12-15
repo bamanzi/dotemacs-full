@@ -310,14 +310,20 @@
 (autoload 'fic-ext-mode "fic-ext-mode"
   "minor mode for highlighting FIXME/TODO in comments" t)
 
-;;*** highlight misc url, fixme, todo
-
-(defun highlight-misc-stuff/bmz ()
+;;*** highlight misc: url, fixme, todo
+(defun highlight-url/bmz ()
   (interactive)
-  (highlight-regexp "https?://[^ \n]*" 'link)
+  (require 'hi-lock)
+  (highlight-regexp "https?://[^]
+\n\|]+" 'link))
+
+(add-hook 'find-file-hook 'highlight-url/bmz)
+
+(defun highlight-fixme/bmz ()
+  (interactive)
   (highlight-regexp "\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 'font-lock-warning-face))
 
-(add-hook 'find-file-hook 'highlight-misc-stuff/bmz)
+(add-hook 'find-file-hook 'highlight-fixme/bmz)
 
 ;;*** rainbow-mode: colorize strings like 'red', "#3303c4"
 (autoload 'rainbow-mode "rainbow-mode" "Colorize strings that represent colors." t)
