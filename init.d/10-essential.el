@@ -91,13 +91,16 @@
 
 
 ;;** themes
-(when (< emacs-major-version 24)
+(if (< emacs-major-version 24)
     ;; if we not loaded color-theme yet (load your faviourite theme in customize.el)
     (when (not (featurep 'color-theme))
       (when (require 'color-theme nil t)
         (require 'color-theme-tangotango nil t)
         (when (featurep 'color-theme-tangotango)
            (color-theme-tangotango))))
+  (unless custom-enabled-themes
+    (custom-set-variables
+     '(custom-enabled-themes (quote (tango-dark)))))
     )
 
 (when t
