@@ -85,7 +85,35 @@
 (setq windresize-default-increment 4)
 (define-key bmz/win-fns-keymap (kbd "RET") 'windresize)
 
-;;*** widen-window: automatically widen
+;;*** enlarge current window
+(defun enlarge-current-window/bmz ()
+  (interactive)
+  (if (require 'golden-ratio nil t)
+      (call-interactively 'golden-ratio)
+    (if (fboundp 'maximize-window) ;;Emacs 24 has 'maximize-window
+        (call-interactively 'maximize-window)
+      (if (require 'widen-window nil t) ;;not work on Emacs 24
+          (call-interactively 'widen-current-window)
+        (delete-other-windows)))))
+
+(defun enlarge-current-window+/bmz ()
+  (interactive)
+  (if (require 'golden-ratio nil t)
+      (let ((-golden-ratio-value 1.3))
+        (call-interactively 'golden-ratio))
+    (if (fboundp 'maximize-window) ;;Emacs 24 has 'maximize-window
+        (call-interactively 'maximize-window)
+      (if (require 'widen-window nil t)
+          (let ((ww-ratio 0.8))
+            (call-interactively 'widen-current-window))
+        (delete-other-windows)))))
+
+(define-key bmz/win-fns-keymap (kbd "x") 'enlarge-current-window/bmz)
+(define-key bmz/win-fns-keymap (kbd "X") 'enlarge-current-window+/bmz)
+
+
+;;**** widen-window: automatically widen
+;;NOTE: it deesn't work on emacs 24
 (autoload 'widen-current-window "widen-window"
   "The very function which resizes the current window." t)
 (autoload 'widen-window-mode "widen-window"
@@ -104,6 +132,18 @@
   (mouse-set-point event)
   (call-interactively 'widen-current-window))
 (define-key bmz/win-fns-keymap (kbd "<mouse-1>") 'widen-current-window-by-mouse)
+
+;;**** golden-ratio: another implementation
+;;(I don't use `golden-ratio-enable')
+(autoload 'golden-ratio "golden-ratio"
+  "Resizes current window to the golden-ratio's size specs" t)
+
+(defun golden-ration+ ()
+  "Enlarge current window, more than command `golden-ratio'."
+  (interactive)
+  (let ((-golden-ratio-value 1.3))
+    (call-interactively 'golden-ratio)))
+
 
 ;;*** adjust `split-window', so that new window not 1/2 in size, but 1/3
 
@@ -711,5 +751,25 @@ Otherwise call `switch-to-buffer'."
 ;;- sticky window
 ;;- delete-other-window-horizontal+
 (idle-require 'window-extension)
+
+;;*** enlarge anything window
+(defun anything-enlarge-window ()
+  (interactive)
+  (with-anything-window
+      (call-interactively 'enlarge-current-window/bmz)))
+
+(defun anything-enlarge-window+ ()
+  (interactive)
+  (with-anything-window
+    (let ((-golden-ratio-value 1.3))
+      (call-interactively 'enlarge-current-window+/bmz))))
+
+(eval-after-load "anything"
+  `(progn     
+     (define-key anything-map (kbd "<f11> x") 'anything-enlarge-window)
+     (define-key anything-map (kbd "<f11> X") 'anything-enlarge-window+)
+     (define-key anything-map (kbd "<f5> |")  'anything-toggle-resplit-window)
+     ))
+
 
 
