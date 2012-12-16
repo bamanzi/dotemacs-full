@@ -317,7 +317,11 @@
   (highlight-regexp "https?://[^]
 \n\|]+" 'link))
 
-(add-hook 'find-file-hook 'highlight-url/bmz)
+;;(add-hook 'find-file-hook 'highlight-url/bmz)
+
+;;this one is better: built-in, overlay supporting mouse
+(add-hook 'find-file-hook 'goto-address-mode)
+;;Use C-c RET to open url
 
 (defun highlight-fixme/bmz ()
   (interactive)
