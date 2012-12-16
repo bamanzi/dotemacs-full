@@ -114,12 +114,20 @@ On Windows, baskslashes is substituted with slashes."
   (let ((inhibit-read-only t))
     (erase-buffer)))
 
+;;*** esh-toggle
+(autoload 'eshell-toggle "esh-toggle"
+  "Toggles between the *eshell* buffer and the current buffer." t)
+(autoload 'eshell-toggle-cd "esh-toggle"
+  "Calls `eshell-toggle' and let it cd to path of current buffer." t)
+
+(global-set-key (kbd "<f12> s e") 'eshell-toggle)
+(global-set-key (kbd "<f12> s E") 'eshell-toggle-cd)
+
 ;;** misc
 ;;*** oneliner: a special shell supporing piping to/from buffer
 ;; http://oneliner-elisp.sourceforge.net/
 ;; a special shell that support piping input/output from/to emacs buffer
 (autoload 'oneliner "oneliner" "shell-mode hooks for Oneliners" t)
-
 
 
 ;;*** term-toggle
@@ -139,8 +147,8 @@ On Windows, baskslashes is substituted with slashes."
 (autoload 'shell-toggle-cd "shell-toggle" 
   "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
 
-(global-set-key (kbd "<f12> s T") 'shell-toggle)
-(global-set-key (kbd "<f12> s t") 'shell-toggle-cd)
+(global-set-key (kbd "<f12> s s") 'shell-toggle)
+(global-set-key (kbd "<f12> s S") 'shell-toggle-cd)
 
 
 ;;*** A quick pop-up shell for emacs (lightweight one)
