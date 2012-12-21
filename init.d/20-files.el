@@ -275,31 +275,6 @@ Otherwise, call the original `dired-jump'."
 ;;(define-key goto-map "\M-n" 'nc-goto-dir)
 
 
-
-;;** ediff
-
-;;*** command line args support
-;; Usage: emacs -diff file1 file2
-(defun command-line-diff (switch)
-  (let ((file1 (pop command-line-args-left))
-        (file2 (pop command-line-args-left)))
-    (ediff file1 file2)))
-
-(add-to-list 'command-switch-alist '("diff" . command-line-diff))
-(add-to-list 'command-switch-alist '("-diff" . command-line-diff))  ;;FIXME: which one?
-
-;;*** window configuration
-;;I don't like multiframe
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
-
-(setq ediff-split-window-function 'split-window-horizontally)
-;; split the window depending on the frame width:
-(setq ediff-split-window-function (lambda (&optional arg)
-                                    (if (> (frame-width) 150)
-                                        (split-window-horizontally arg)
-                                      (split-window-vertically arg))))
-
-
 ;;** misc
 ;;*** describe file
 (defun describe-this-file ()

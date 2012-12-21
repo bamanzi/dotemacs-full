@@ -214,23 +214,50 @@
 (define-key help-map "as" 'sys-apropos)
 
 
-;;** utils
+;;** ediff
 
-(global-set-key (kbd "<f12> a") 'apropos)  ;;sys-apropos ?
-(global-set-key (kbd "<f12> c q") 'quick-calc)
-(global-set-key (kbd "<f12> c c") 'calc-dispatch)
-(global-set-key (kbd "<f12> d b") 'ediff-buffer)
-(global-set-key (kbd "<f12> d f") 'ediff-files)
-;;(global-set-key (kbd "<f12> g") 'grep)
-(global-set-key (kbd "<f12> i a") 'info-apropos)
+;;*** command line args support
+;; Usage: emacs -diff file1 file2
+(defun command-line-diff (switch)
+  (let ((file1 (pop command-line-args-left))
+        (file2 (pop command-line-args-left)))
+    (ediff file1 file2)))
 
-(global-set-key (kbd "<f12> m w") 'woman)
-(global-set-key (kbd "<f12> m m") 'woman)
-(global-set-key (kbd "<f12> r b") 'regexp-builder)
+(add-to-list 'command-switch-alist '("diff" . command-line-diff))
+(add-to-list 'command-switch-alist '("-diff" . command-line-diff))  ;;FIXME: which one?
 
-(global-set-key (kbd "<f12> s e") 'eshell)
-(global-set-key (kbd "<f12> s s") 'shell)
+;;*** window configuration
+;;I don't like multiframe
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
+(setq ediff-split-window-function 'split-window-horizontally)
+;; split the window depending on the frame width:
+(setq ediff-split-window-function (lambda (&optional arg)
+                                    (if (> (frame-width) 150)
+                                        (split-window-horizontally arg)
+                                      (split-window-vertically arg))))
+
+;;*** ediff-buffer-with-file
+;;stolen from http://www.loveshack.ukfsn.org/emacs/fx-misc.el
+(defun ediff-buffer-with-file()
+  "Run Ediff between the (modified) current buffer and the buffer's file.
+
+A new buffer is created containing the disc file's contents and
+`ediff-buffers' is run to compare that with the current buffer."
+  (interactive)
+  (unless (buffer-modified-p)
+    (error "Buffer isn't modified"))
+  (let ((current (buffer-name))
+        (file (or (buffer-file-name)
+                  (error "Current buffer isn't visiting a file")))
+        (mode major-mode))
+    (set-buffer (get-buffer-create (generate-new-buffer-name
+                                    (concat current "-on-disc"))))
+    (buffer-disable-undo)
+    (insert-file-contents file)
+    (set-buffer-modified-p nil)
+    (funcall mode)
+    (ediff-buffers (buffer-name) current)))
 
 ;;** commands
 ;;*** command log
