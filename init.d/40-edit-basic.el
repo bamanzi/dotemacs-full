@@ -236,7 +236,8 @@ vi style of % jumping to matching brace."
 (global-highlight-changes-mode t)
 
 (setq diff-switches "-u")    ;;I prefer the unified format
-(global-set-key (kbd "C-c d") 'diff-buffer-with-file)
+
+;;(global-set-key (kbd "C-c d") 'diff-buffer-with-file)
 
 (global-set-key (kbd "<f10> hc") 'highlight-changes-visible-mode)
 

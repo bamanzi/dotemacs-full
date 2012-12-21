@@ -664,16 +664,23 @@ to display some special buffers specified in `. For non-special"
   (add-hook 'after-make-frame-functions 'maximize-frame-if-splittable)
   )
 
-;;*** full-screen (or maximize)
-;;NOTE: this only works in X & Emacs > 23
+;;*** full-screen (or maximize frame)
 (defun x-toggle-fullscreen (&optional f)
   (interactive)
   (let ((current-value (frame-parameter nil 'fullscreen)))
-    (set-frame-parameter nil 'fullscreen
-                         (if (equal 'fullboth current-value)
-                             (if (boundp 'old-fullscreen) old-fullscreen nil)
-                           (progn (setq old-fullscreen current-value)
-                                  'fullboth)))))
+    (if nil
+        (progn
+          ;;this also works ;;stolen from http://ubuntuforums.org/showpost.php?p=5570302&postcount=5
+          (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+                                 '(2 "_NET_WM_STATE_MAXIMIZED_VERT" 0))
+          (x-send-client-message nil 0 nil "_NET_WM_STATE" 32
+                                 '(2 "_NET_WM_STATE_MAXIMIZED_HORZ" 0)))
+      ;;NOTE: this only works in X & Emacs > 23
+      (set-frame-parameter nil 'fullscreen
+                           (if (equal 'fullboth current-value)
+                               (if (boundp 'old-fullscreen) old-fullscreen nil)
+                             (progn (setq old-fullscreen current-value)
+                                    'fullboth))))))
 
 ;;    (global-set-key [f11] 'toggle-fullscreen)
 

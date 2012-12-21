@@ -83,14 +83,14 @@
 
 
 ;;*** show buffer changes
-(defun bmz/diff-buffer-with-file (arg)
+(defun diff-buffer-with-file/bmz (arg)
   (interactive "P")
   (if arg
-      (diff-buffer-with-file (current-buffer))
-    (call-interactively 'diff-buffer-with-file)))
+      (call-interactively 'diff-buffer-with-file)
+    (diff-buffer-with-file (current-buffer))))
 
-(global-set-key (kbd "C-c d") 'bmz/diff-buffer-with-file)
-
+(global-set-key (kbd "C-c d") 'diff-buffer-with-file/bmz)
+(global-set-key (kbd "C-c D") 'ediff-buffer-with-file) ;; http://www.loveshack.ukfsn.org/emacs/fx-misc.el
 
 (defun bmz/revert-buffer ()
   "revert bufer with close & reopen the file, so local variable would be re-inited."

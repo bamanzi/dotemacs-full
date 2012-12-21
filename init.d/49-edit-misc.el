@@ -36,13 +36,13 @@
 ;; http://www.emacswiki.org/emacs-en/CopyFromAbove
 (autoload 'copy-from-above-command "misc"
     "Copy characters from previous nonblank line, starting just above point." t)
-(global-set-key (kbd "C-c <down>") 'copy-from-above-command)
+(global-set-key (kbd "<M-insert> l") 'copy-from-above-command)
 
 (defun copy-char-from-above ()
   (interactive)
   (copy-from-above-command 1))
 
-(global-set-key [C-s-right] 'copy-char-from-above)
+(global-set-key (kbd "<M-insert> c") 'copy-char-from-above)
 
 ;;*** copy/cut current line if no region marked
 ;;NOTE: not used. as sometimes I use the non-visible region

@@ -21,7 +21,7 @@
 
   ;;as in older Emacs, js-mode, python-mode is not derived from `prog-mode'
   ;;we had to call the hook manually
-  (progn
+  (when nil
       (add-hook 'emacs-lisp-mode-hook 'prog-mode-run-hook)
       
       (eval-after-load "python"

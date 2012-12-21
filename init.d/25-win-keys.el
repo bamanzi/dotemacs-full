@@ -139,8 +139,7 @@
 
     (define-key map (kbd "b")    'balance-windows)
     (define-key map (kbd "m")    'minimize-window) ;; FIXME: only on Emacs 24?
-    (define-key map (kbd "x")    'maximize-window)
-    (define-key map (kbd "w")    'widen-current-window)
+    (define-key map (kbd "x")    'enlarge-current-window/bmz)
 
     (define-key map (kbd "RET")  'windresize)
 

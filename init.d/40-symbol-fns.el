@@ -1,16 +1,16 @@
-;; some commands for the symbol/word at point
+;;* some commands for the symbol/word at point
 
 
 
 
-;;;_. internal functions
+;;** some internal functions
 (defun bmz/get-symbol-selected-or-current ()
   "Get the selected text or (if nothing selected) current symbol."
   (if (and transient-mark-mode mark-active)
       (buffer-substring-no-properties (region-beginning) (region-end))
     (regexp-quote (thing-at-point 'symbol))))
 
-;;;_. search selection
+;;** search selection
 (defun bmz/search-selection-forward ()
   (interactive)
   (let ( (symbol (bmz/get-symbol-selected-or-current)) )
@@ -27,7 +27,7 @@
     (call-interactively 'isearch-repeat-backward)
   ))
 
-;;;_. highlight-symbol
+;;** highlight-symbol
 (autoload 'highlight-symbol-get-symbol "highlight-symbol" nil t)
 (autoload 'highlight-symbol-next       "highlight-symbol" nil t)
 (autoload 'highlight-symbol-prev       "highlight-symbol" nil t)
@@ -36,7 +36,7 @@
 
 
 
-;;;_. bookmark all lines containing current symbol
+;;** bookmark all lines containing current symbol
 ;; based on code of `bm-bookmark-regexp'
 (defun bm-bookmark-symbol-at-point ()
   "Set bookmark on lines that containing current symbol."
@@ -71,7 +71,7 @@
               (pulse-momentary-highlight-region begin end)))
           ))))
 
-;;;_. symbol definition
+;;** symbol definition
 (defun bmz/imenu-at-point ()
   (interactive)
   (imenu (bmz/get-symbol-selected-or-current)))
@@ -94,7 +94,7 @@
      (t
       (call-interactively 'find-tag))))
 
-;;;_. occur
+;;** occur
 (defun bmz/occur-at-point (nlines)
   (interactive "P")
   (occur (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
@@ -105,7 +105,7 @@
   (multi-occur nil (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
 
 
-;;;_.. multi-occur in same mode buffers
+;;*** multi-occur in same mode buffers
 ;; stolen from http://www.masteringemacs.org/articles/2011/07/20/searching-buffers-occur-mode/
 (defun get-buffers-matching-mode (mode)
   "Returns a list of buffers where their major-mode is equal to MODE"
@@ -124,7 +124,7 @@
    (format "%s" (bmz/get-symbol-selected-or-current))))
   
 
-;;;_. grep
+;;** grep
 (defun bmz/grep-symbol-at-point-same-ext()
   (interactive)
   (grep (format "grep -nH %s *.%s %s"
@@ -140,7 +140,7 @@
 		"--exclude \"#*.*\" --exclude \"*.*~\""
 		)))
 
-;;;_. ack: a better grep  http://betterthangrep.com/
+;;*** ack: a better grep  http://betterthangrep.com/
 ;;;  - it would ignore .svn, CVS etc by default
 ;;;  - it would ignore binary files, core dumps, backup files by default
 ;;;  - to limit search in some file types, you can easily use `--type=perl'
@@ -167,16 +167,16 @@
   (interactive "P")
   (bmz/ack-at-point nil arg))
 
-;;;_. local dictionary
+;;** local dictionary
 (autoload 'sdcv-search "sdcv-mode" nil t)
 
-;;;_. "network lookup"
-;;;_.. DICT protocol with dictionary.el
+;;** dict lookup
+;;*** DICT protocol with dictionary.el
 ;;    (setq dictionary-server "localhost")
 (autoload 'dictionary-search "dictionary" "Ask for a word and search it in all dictionaries" t)
 (autoload 'dictionary-match-words "dictionary" "Ask for a word and search all matching words in the dictionaries" t)
 
-;;;_.. DICT protocol with dictem.el (external program `dict' needed)
+;;*** DICT protocol with dictem.el (external program `dict' needed)
 ;;(require 'dictem)
 ;;(setq dictem-server "localhost")
 ;;(require 'dictem)
@@ -184,7 +184,7 @@
 (autoload 'dictem-run-search "dictem" nil t)
 (autoload 'dictem-run-match  "dictem" nil t) 
 
-;;;_.. DICT protocol with dict.el (external program `dict' needed)
+;;*** DICT protocol with dict.el (external program `dict' needed)
 ;;;  (NOTE: it's hard to use it on windows)
 ;;(setq dict-servers '("localhost" "dict.org"))
 ;;(setq dict-enable-key-bindings t)
@@ -196,7 +196,7 @@
   (let ( (word (bmz/get-symbol-selected-or-current)) )
     (dict word)))
 
-;;;_.. lookup on google
+;;** lookup on google
 ;;stolen from Xah Lee's http://xahlee.org/emacs/xah_emacs_generic.el
 (defun lookup-google ()
   "Look up current word in Google Search.
@@ -220,7 +220,7 @@ Launches default browser and opens the doc's url."
       )
      )))
 
-;;;_.. lookup on wikipedia
+;;** lookup on wikipedia
 (defun lookup-wikipedia ()
   "Look up current word in Wikipedia.
 If there is a text selection (e.g. a phrase), lookup that phrase.
@@ -235,7 +235,7 @@ Launches default browser and opens the doc's url."
    ))
 
 
-;;;_. overall
+;;** overall
 (defun init-word-ops-keys (search-map)
 
     (define-key search-map "i" 'bmz/anything-imenu-at-point)
