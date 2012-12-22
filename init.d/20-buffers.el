@@ -116,14 +116,17 @@ LIST defaults to all existing live buffers."
   (while list
     (let* ((buffer (car list))
 	   (name (buffer-name buffer)))
-      (and (not (string-equal name ""))
-	   (not (string-equal name "*Messages*"))
-	  ;; (not (string-equal name "*Buffer List*"))
-	   (not (string-equal name "*Shell Command Output*"))
-	   (not (string-equal name "*scratch*"))
-	   (not (string-equal name "*nav*"))
-	   (not (string-equal name "*imenu-tree*"))
-	   (= (aref name 0) ?*)
+      (and (or (= (aref name 0) ?*)  ;;most special buffer starting with *
+               (with-current-buffer buffer
+                 (eq major-mode 'dired-mode)))
+           (not (get-buffer-process buffer))
+           (not (member name '("*Messages*"
+                               "*Buffer List*"
+                               "*Shell Command Output*"
+                               "*scratch*"
+                               "*nav*"
+                               "*imenu-tree*"
+                               "*eshell*"))) 
 	   (if (buffer-modified-p buffer)
 	       (if (yes-or-no-p
 		    (format "Buffer %s has been edited. Kill? " name))
@@ -150,16 +153,9 @@ LIST defaults to all existing live buffers."
       (setq list (buffer-list)))
   (while list
     (let* ((buffer (car list))
-           (name (buffer-name buffer)))
-      (and (not (string-equal name ""))
-           (not (string-equal name "*Messages*"))
-           ;; (not (string-equal name "*Buffer List*"))
-           (not (string-equal name "*buffer-selection*"))
-           (not (string-equal name "*Shell Command Output*"))
-           (not (string-equal name "*scratch*"))
-           (not (string-equal name "*nav*"))
-           (not (string-equal name "*imenu-tree*"))       
-           (/= (aref name 0) ? )
+           (filename (buffer-file-name buffer)))
+      (and filename
+           (/= (aref filename 0) ? )
            (unless (buffer-modified-p buffer)
              (kill-buffer buffer))))
     (setq list (cdr list))))
