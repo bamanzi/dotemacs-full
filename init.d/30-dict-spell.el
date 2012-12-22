@@ -57,10 +57,11 @@
 (autoload 'sdcv-search-pointer+ "sdcv"
   "Search WORD through the `command-line' tool sdcv." t)
 
-(setq sdcv-dictionary-simple-list '("XDICT英汉辞典" "XDICT汉英辞典"))
+;;(setq sdcv-dictionary-simple-list '("XDICT英汉辞典" "XDICT汉英辞典"))
+(setq sdcv-dictionary-simple-list '("朗道英汉字典5.0" "朗道汉英字典5.0"))
 
-(define-key search-map "d"  'sdcv-search-pointer+)
-(define-key search-map "D"  'sdcv-search-detail)
+(define-key search-map "D"  'sdcv-search-pointer+)
+(define-key search-map "dd"  'sdcv-search-detail)
 
 
 (defun sdcv-search-word-at-pt-mouse (event)
