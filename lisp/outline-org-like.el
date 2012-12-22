@@ -29,7 +29,7 @@
 ;;; Code:
 
 (require 'outline)
-(require 'outline-magic) ;; for `outline-cycle'
+(require 'outline-magic nil t) ;; for `outline-cycle'
 (require 'org)           ;; for face org-level-1..6
 
 ;;** we'll use an internal `outline-regexp' value
@@ -39,7 +39,7 @@
 						  "[[:space:]]+" "" comment-start)))
 	(when (string= comment-start ";")
 	  (setq comment-starter ";;"))
- ;; (concat "^" comment-starter "\\*+")))
+    ;; (concat "^" comment-starter "\\*+")))
 	(concat "^" comment-starter "[*]+ ")))
 
 ;;** heading highlighting
@@ -54,9 +54,9 @@
            (heading-4-regexp
             (concat (substring outline-regexp 0 -1) "\\{4,\\} \\(.*\\)")) )
       `((,heading-1-regexp 1 'org-level-1 t)
-            (,heading-2-regexp 1 'org-level-2 t)
-            (,heading-3-regexp 1 'org-level-3 t)
-            (,heading-4-regexp 1 'org-level-4 t)))))        
+        (,heading-2-regexp 1 'org-level-2 t)
+        (,heading-3-regexp 1 'org-level-3 t)
+        (,heading-4-regexp 1 'org-level-4 t)))))        
 
 (define-minor-mode outline-org-heading-mode
   "org-mode like heading highlighting."
@@ -66,8 +66,8 @@
     (if outline-org-heading-mode
       (font-lock-add-keywords nil keywords)
     (font-lock-remove-keywords nil keywords)))
-  (font-lock-mode -1)
-  (font-lock-mode t)
+  (font-lock-mode -1) ;;FIXME: any better way?
+  (font-lock-mode 1)
   )
 
 ;;** outline commands wrapper without changing user `outline-regexp'
@@ -88,10 +88,11 @@
             (message "%s" command)
             (call-interactively command))
       (message "no command for that key in `outlint-mode-prefix-map'.")))))
-
 ;; Now you can bind a key (e.g `C-z') to `outline-org/outline-command-dispatcher'.
 ;; It would be used as prefix key for other outline commands
 ;;  e.g. C-z C-u similar to C-c @ C-u, but use our `outline-regexp'
+
+(define-key outline-mode-prefix-map (kbd "C-z") 'outline-org/outline-command-dispatcher)
 
 ;;*** our new `outline-cycle'
 (defun outline-org/outline-cycle ()
@@ -161,5 +162,5 @@ See (find-library \"outline-org.el\") ")
         )))
 
 
-
 (provide 'outline-org-like)
+;;; outlne-org-like.el ends here
