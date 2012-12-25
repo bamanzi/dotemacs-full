@@ -110,6 +110,19 @@
        )))
 
 ;;** misc
+;;*** strike thru headlines for DONE task
+;;stolen from http://sachachua.com/blog/2012/12/emacs-strike-through-headlines-for-done-tasks-in-org/
+(setq org-fontify-done-headline t)
+(custom-set-faces
+ '(org-done ((t (:foreground "PaleGreen"   
+                 :weight normal
+                 :strike-through t))))
+ '(org-headline-done 
+            ((((class color) (min-colors 16) (background dark)) 
+               (:foreground "LightSalmon" :strike-through t)))))
+
+
+;;*** quote region
 ;;FIXME: '<s' template
 (defun org-quote-region (begin end)
   (interactive "r")
