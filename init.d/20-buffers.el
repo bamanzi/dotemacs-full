@@ -33,16 +33,15 @@
 ;;** buffer management
 ;;C-x C-b : buffer-menu
 (idle-require 'buff-menu+)
-(global-set-key (kbd "C-c b m")     'buffer-menu)
 
 ;;`electric-buffer-list' derived from `buffer-menu'
 ;;but you can mark multiple buffers and perform operations at a single ENTER key
-(global-set-key (kbd "C-c b e")     'electric-buffer-list)
+(global-set-key (kbd "C-x C-b")     'electric-buffer-list)
 
-(global-set-key (kbd "C-c b <f5>")  'anything-buffers+)
+(global-set-key (kbd "<f5> b")  'anything-buffers+)
 
 ;;*** ibuffer
-(global-set-key (kbd "C-c b i")     'ibuffer)
+(global-set-key (kbd "C-c C-b")     'ibuffer)
 
 ;;**** ibuffer-vc
 ;;(idle-require 'ibuffer-vc)
