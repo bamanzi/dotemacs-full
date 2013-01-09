@@ -120,8 +120,8 @@ On Windows, baskslashes is substituted with slashes."
 (autoload 'eshell-toggle-cd "esh-toggle"
   "Calls `eshell-toggle' and let it cd to path of current buffer." t)
 
-(global-set-key (kbd "<f12> s e") 'eshell-toggle)
-(global-set-key (kbd "<f12> s E") 'eshell-toggle-cd)
+(global-set-key (kbd "<f12> E") 'eshell-toggle)
+(global-set-key (kbd "<f12> e") 'eshell-toggle-cd)
 
 ;;** misc
 ;;*** oneliner: a special shell supporing piping to/from buffer
@@ -137,8 +137,8 @@ On Windows, baskslashes is substituted with slashes."
 (autoload 'term-toggle-cd "term-toggle" 
   "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
 
-(global-set-key (kbd "<f12> t T") 'term-toggle)
-(global-set-key (kbd "<f12> t t") 'term-toggle-cd)
+(global-set-key (kbd "<f12> T") 'term-toggle)
+(global-set-key (kbd "<f12> t") 'term-toggle-cd)
 
 ;;*** shell-toggle
 (autoload 'shell-toggle "shell-toggle" 
@@ -147,8 +147,8 @@ On Windows, baskslashes is substituted with slashes."
 (autoload 'shell-toggle-cd "shell-toggle" 
   "Pops up a shell-buffer and insert a \"cd <file-dir>\" command." t)
 
-(global-set-key (kbd "<f12> s s") 'shell-toggle)
-(global-set-key (kbd "<f12> s S") 'shell-toggle-cd)
+(global-set-key (kbd "<f12> S") 'shell-toggle)
+(global-set-key (kbd "<f12> s") 'shell-toggle-cd)
 
 
 ;;*** A quick pop-up shell for emacs (lightweight one)
@@ -173,4 +173,4 @@ On Windows, baskslashes is substituted with slashes."
 					      dir)
 					      "\n")))))
 
-(global-set-key (kbd "<f12> s ~") 'th-shell-popup)
+(global-set-key (kbd "<f12> ~") 'th-shell-popup)
