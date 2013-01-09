@@ -129,13 +129,16 @@
 
 ;;put face-adjusting code to hook `after-make-frame-functions'
 ;;then use this to call them
-(global-set-key (kbd "<f12> <f12>")
+;;(global-set-key (kbd "<f12> <f12>")
+(run-with-idle-timer 3 nil                
                 #'(lambda ()
                     (interactive)
                     (run-hook-with-args 'after-make-frame-functions
                                         (selected-frame))))
 
-;;** recent-jump
+;;** point History
+
+;;*** recent-jump
 (setq rj-column-threshold 100)
 (if (load "recent-jump" t)
     (recent-jump-mode t)
@@ -143,6 +146,19 @@
 
 (global-set-key (kbd "C-c <") 'recent-jump-backward)
 (global-set-key (kbd "C-c >") 'recent-jump-forward)
+
+;;*** back-button: Visual navigation through mark rings
+;;https://github.com/rolandwalker/back-button
+(idle-require 'back-button)
+(eval-after-load "back-button"
+  `(progn
+     (back-button-mode 1)
+     (define-key goto-map (kbd "<left>")    'back-button-local-backward)
+     (define-key goto-map (kbd "<right>")   'back-button-local-backward)
+     (define-key goto-map (kbd "<M-left>")  'back-button-global-backward)
+     (define-key goto-map (kbd "<M-right>") 'back-button-global-backward)
+     ))
+
 
 
 
