@@ -15,7 +15,7 @@
                                "AutoHotkey.exe /ErrorStdOut "
                                buffer-file-name)))
 
-(add-to-list 'auto-mode-alist '("\\.ahk$" . ahk-mode))
+(add-to-list 'auto-mode-alist '("\\.ahk$" . xahk-mode))
 
 ;;*** ahk-mode
 ;; (this one is better on syntax highlighting, code indentation)
@@ -27,10 +27,11 @@
 
   (modify-syntax-entry ?\; "< b") ;;comment start
   (modify-syntax-entry ?\n "> b") ;;comment end
-s
+
   (if (boundp 'ac-source-scite-api)
       (add-to-list 'ac-sources 'ac-source-scite-api))
 
+  (local-set-key (kbd "RET") 'newline)
   (define-key ahk-mode-map (kbd "<C-f9>") 'compile-autohotkey)
   (define-key ahk-mode-map (kbd "<f9>")   'run-autohotkey)
   )
@@ -43,7 +44,8 @@ s
 
 
 ;;*** xahk-mode
-(autoload 'xahk-mode "xahk-mode")
+(autoload 'xahk-mode "xahk-mode"
+  "Major mode for editing AHK (AutoHotKey script.)." t)
 (defun xahk-mode-my-init ()
   (setq indent-tabs-mode t)
   (setq c-basic-offset tab-width)
@@ -56,6 +58,9 @@ s
   (if (boundp 'ac-source-scite-api)
       (add-to-list 'ac-sources 'ac-source-scite-api))
 
+  (local-set-key (kbd "RET") 'newline)
+  (if (fboundp 'abs-indent-mode)
+      (abs-indent-mode 1))
   (define-key xahk-mode-map (kbd "<C-f9>") 'compile-autohotkey)
   (define-key xahk-mode-map (kbd "<f9>")   'run-autohotkey)
   )
