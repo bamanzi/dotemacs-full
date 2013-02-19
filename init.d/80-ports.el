@@ -1,8 +1,11 @@
 ;;** win32
 (when (eq window-system 'w32)
-  (setq w32-lwindow-modifier nil)
+;;  (setq w32-lwindow-modifier nil)
   (setq w32-pass-lwindow-to-system nil)
-  (define-key key-translation-map (kbd "<lwindow>") (kbd "<f11>"))
+;;  (define-key key-translation-map (kbd "<lwindow>") (kbd "<f11>"))
+
+  (setq w32-lwindow-modifier 'super)
+  (define-key key-translation-map (kbd "s-w>") (kbd "<f11>"))  
 
   (setq w32-rwindow-modifier 'super)
   (setq w32-pass-rwindow-to-system nil)
@@ -223,7 +226,7 @@
   ;;C-backspace   -> C-_
   ;;C-RET         -> C-^
 
-(defun map-mintty-keys ()
+(defun xterm-map-mintty-keys ()
   ;; Mintty supports most combo keys (even telnet/ssh to another server)
   ;; such as C-%, C-&, C-(, C-., C-f1, M-f1, S-f1... while putty doesn't
   ;;   http://code.google.com/p/mintty/wiki/Keycodes
@@ -262,7 +265,50 @@
   (define-key key-translation-map  (kbd "<mouse-21>")  (kbd "<C-wheel-down>"))    
   )
 
-(defun map-iterm-keys ()
+
+(defun xterm-map-function-keys-csi ()
+  "Map xterm control sequences for F1..F4 keys.
+
+Only for CSI sequences (\e[.., used by putty/mingtty)"
+  (interactive)
+  (define-key input-decode-map "\e[1;2P" [S-f1])
+  (define-key input-decode-map "\e[1;2Q" [S-f2])
+  (define-key input-decode-map "\e[1;2R" [S-f3])
+  (define-key input-decode-map "\e[1;2S" [S-f4])
+
+  (define-key input-decode-map "\e[1;3P" [M-f1])
+  (define-key input-decode-map "\e[1;3Q" [M-f2])
+  (define-key input-decode-map "\e[1;3R" [M-f3])
+  (define-key input-decode-map "\e[1;3S" [M-f4])
+
+  (define-key input-decode-map "\e[1;4P" [S-M-f1])
+  (define-key input-decode-map "\e[1;4Q" [S-M-f2])
+  (define-key input-decode-map "\e[1;4R" [S-M-f3])
+  (define-key input-decode-map "\e[1;4S" [S-M-f4])
+
+  ;;putty doesn't support control modifier for F1..F12
+  ;;you can use AutoHotKey script to send following sequences
+  (define-key input-decode-map "\e[1;5P" [C-f1])
+  (define-key input-decode-map "\e[1;5Q" [C-f2])
+  (define-key input-decode-map "\e[1;5R" [C-f3])
+  (define-key input-decode-map "\e[1;5S" [C-f4])
+
+  (define-key input-decode-map "\e[1;6P" [C-S-f1])
+  (define-key input-decode-map "\e[1;6Q" [C-S-f2])
+  (define-key input-decode-map "\e[1;6R" [C-S-f3])
+  (define-key input-decode-map "\e[1;6S" [C-S-f4])  
+  
+  (define-key input-decode-map "\e[1;7P" [C-M-f1])
+  (define-key input-decode-map "\e[1;7Q" [C-M-f2])
+  (define-key input-decode-map "\e[1;7R" [C-M-f3])
+  (define-key input-decode-map "\e[1;7S" [C-M-f4])
+
+  ;;for F5..F12, visit `xterm-extra-bind-keys' in xterm-extra.el for control sequences
+  )
+
+
+(defun xterm-map-iterm-keys ()
+  (interactive)
   ;; http://offbytwo.com/2012/01/15/emacs-plus-paredit-under-terminal.html
 
   (define-key input-decode-map "\e[1;5A" [C-up])   
@@ -283,7 +329,7 @@
   )
 
 
-(defun map-putty-sco-keys ()
+(defun xterm-map-putty-sco-keys ()
   "Using Emacs over PuTTY: how to use all function keys
 
 Be sure to set tke keyboard type (Terminal | Keyboard) to SCO.
@@ -291,6 +337,7 @@ This is the only type that recognizes all function keys.
 See http://the.earth.li/~sgtatham/putty/0.62/htmldoc/Chapter4.html#config-keyboard for more info.
 
 stolen from http://emacswiki.org/emacs/PuTTY#toc9 "
+  (interactive)
   (if (eq system-uses-terminfo t)
       (progn                              ;; PuTTY hack - needs to be in SCO mode
         ;;      (define-key key-translation-map [\e] [\M])
@@ -354,4 +401,36 @@ stolen from http://emacswiki.org/emacs/PuTTY#toc9 "
         (define-key input-decode-map "\e\e[X" [M-f12])))
   )
 
+
+;; By default, Emacs would turn on Application Keypad mode.
+;; Then putty would send special control sequences 
+;; - top row sends \eOP .. \eOS, which means F1..F4. (NOTE numlock no longer a toggler)
+;; - other keys sends \eOl .. \eOy
+;; If you turn application keypad feature off, then the keypad behaves like a normal Windows keypad: 
+;; with NumLock on, the number keys generate numbers, and with NumLock off they act like the arrow keys and Home, End etc. 
+
+;; What I want:
+;; * No top row
+;; * When numlock on, sends numbers
+;; * When numlock off, sends special sequences
+;; You need to use AutoHotKey to force Putty/Mintty to act as above
+;; The following is emacs-side configurations
+(defun xterm-map-keypad-keys ()
+  " http://vim.wikia.com/wiki/PuTTY_numeric_keypad_mappings "
+  (interactive)
+
+  (define-key input-decode-map "\eOl" [kp-add])
+  (define-key input-decode-map "\eOm" [kp-enter])
+  (define-key input-decode-map "\eOn" [kp-decimal])
+  (define-key input-decode-map "\eOp" [kp-0])
+  (define-key input-decode-map "\eOq" [kp-1])
+  (define-key input-decode-map "\eOr" [kp-2])
+  (define-key input-decode-map "\eOs" [kp-3])
+  (define-key input-decode-map "\eOt" [kp-4])
+  (define-key input-decode-map "\eOu" [kp-5])
+  (define-key input-decode-map "\eOv" [kp-6])
+  (define-key input-decode-map "\eOw" [kp-7])
+  (define-key input-decode-map "\eOx" [kp-8])
+  (define-key input-decode-map "\eOy" [kp-9])
+  )
 
