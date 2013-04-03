@@ -1,69 +1,52 @@
+;;; keyword-help.el -- various way to query documentation on current symbol
 
-(defun keyword-help-lookup-chm (file-path keyword)
-   "Open a window showing the Visual C++ documentation for the word under the point"
-   (interactive "fChm File: \nSKeyword: ")
-   (start-process "keyhh" nil "keyhh.exe"
-		  (concat "-" mode-name) ;; use mode name as ID
-		  "-#klink" (format "'%s'" keyword)
-		  file-path))
+;; Copyright (C) 2011 - 2013 Ba Manzi <bamanzi@gmail.com>
 
-(global-set-key (kbd "<C-f1>") '(lambda ()
-				  (interactive)
-				  (let ( (symbol (thing-at-point 'symbol)) )
-				    (keyword-help-lookup-chm "d:\\wintools\\AutoHotkey\\AutoHotkey.chm" symbol))))
+;; Author: Ba Manzi
+;; Keywords: help documentation winhelp chm mshelp devhelp info
+;; URL: https://bitbucket.org/bamanzi/dotemacs-full/src/default/lisp/
+;; Version: 0.2
 
+;; This file is NOT part of GNU Emacs.
 
+;;; Usage
 
+;; This package provides an unified way (`keyword-help-lookup') to
+;; query documentation for current symbol. Currently Info, WinHelp
+;; (.hlp), HtmlHelp (.chm), MSHelp 2, DevHelp & web url are supported.
 
+;; How to use:
+;; 1. customize `keyword-help-lookup-alist'
+;; 2. invoke `keyword-help-lookup'
 
+;;; Code
 
-;;;TODO
-
-(setq keyword-help-lookup-alist      
-  '(
-    ("AHK" . (chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm"))
-    ("PHP" . (web  "http://www.php.net/manual/en/"))
-    ("Emacs-Lisp" . (chm "e:\\emacs.sync\\doc\\elisp.chm"))
-    (".afaf" . (hlp "afafa"))
-    ))
-
-(defun keyword-help-lookup ()
-  (interactive)
-  (let ( (myword (if (and transient-mark-mode mark-active)
-		     (buffer-substring-no-properties (region-beginning) (region-end))
-		   (thing-at-point 'symbol)))
-	 (config (assoc mode-name keyword-help-lookup-alist)) )
-    (when config
-      ;; (let ( (keyword-trans-func (nth 3 config)) )
-      ;; 	(funcall (concat "keyword-help-loopup-" (nth 1 config))
-      ;; 	       (list (nth 2 config) 
-
-      ;; 		     (or (if (nth 3 config)
-      ;; 			     (apply (nth 3 config) 
-
-      ;; 			     (assoc mode-name keyword-help-lookup-alist))
-      (keyword-help-lookup-chm (nth 2 config)))))
-
-(global-set-key (kbd "C-h C-w") 'keyword-help-lookup)
-
-
-
-
-
-
+(defun keyword-help-lookup-hlp (keyword file-path)
+   "Call winhlp32 to display documentation on KEYWORD."
+   (interactive "sKeyword: \nfHlp File: ")
+   (start-process "winhlp32" nil "winhlp32.exe"
+		  "-k" keyword
+		  file-path)
+   (set-process-query-on-exit-flag (get-process "winhlp32") nil)
+   )
 
 ;; CHM (HtmlHelp)
 ;;note: KeyHH.exe needs to be in $PATH.
 ;;KeyHH -MyHelp -#klink "ActiveX Control Wizard" htmlhelp.chm
-(defun keyword-help-lookup-chm (help-file keyword)
-  "lookup a keyword in a CHM file and display it"
-    (start-process "keyhh" nil
-		   "keyhh.exe"
-		   (concat "-" (symbol-name major-mode))
-		   "-#klink" (format "'%s'" keyword)
-		   help-file )
-    (set-process-query-on-exit-flag (get-process "keyhh") nil)
-    )
+(defun keyword-help-lookup-chm (keyword file-path)
+   "Call keyhh to command hh.exe to display documentation on KEYWORD."
+   (interactive "sKeyword: \nfSHelp-file: ")
+   (start-process "keyhh" nil "keyhh.exe"
+		  (concat "-" mode-name) ;; use mode name as ID
+		  "-#klink" (format "'%s'" keyword)
+		  file-path)
+   (set-process-query-on-exit-flag (get-process "keyhh") nil)
+   )
+
+(defun keyword-help-lookup-info (keyword)
+  (interactive "Skeyword: ")
+  (info-lookup-symbol keyword))
+
 
 ;; MS Help 2 (MSDN)
 ;; http://www.emacswiki.org/emacs/MsdnHelp
@@ -71,27 +54,67 @@
 ;; 	http://www.helpware.net/mshelp2/h2viewer.htm
 ;; invoke it as this:
 ;; 	h2viewer /helpcol MS.PSDK.1033 /keyword K$CreateWindowEx
-(defun keyword-help-lookup-hh2 (helpcol keyword)
+(defun keyword-help-lookup-hh2 (keyword helpcol)
   "Open a window showing the MSDN documentation for the word under the point"
   (interactive)
-  (if (string= "w32" window-system)
-      (start-process "h2viewer" nil 
-		     "h2viewer.exe"
-		     "/appID" "MSDN-Viewer"
-		     "/helpcol" helpcol
-;; 		     "/filtername" "Visual C++"
-		     "/keyword" (concat "K$" (current-word)))))
+  (start-process "h2viewer" nil 
+                 "h2viewer.exe"
+                 "/appID" "MSDN-Viewer"
+                 "/helpcol" helpcol
+                 ;; 		     "/filtername" "Visual C++"
+                 "/keyword" (concat "K$" (current-word)))
+  (set-process-query-on-exit-flag (get-process "h2viewer") nil))
 
-;;(keyword-help-lookup-hh2 "embarcadero.rs2010" "TListView")
 
 ;; GNOME DevHelp
 ;; got from devhelp's source package
-(defun keyword-help-lookup-devhelp (placeholder keyword)
+(defun keyword-help-lookup-devhelp (keyword)
   "Searches for the current word in Devhelp"
   (start-process-shell-command "devhelp" nil "devhelp" "-s" keyword)
   (set-process-query-on-exit-flag (get-process "devhelp") nil))
 
 
+(defun keyword-help-lookup-web (keyword url)
+  ;;TODO: implement this
+  ;;FIXME: use `webjump'?
+  )
+
+(setq keyword-help-lookup-alist      
+  '(
+    (python-mode chm "e:\\python\\ActivePython27.chm")
+    (pascal-mode hlp "d:\\Borland\\Delphi7\\Help\\d7.hlp")
+    (pascal-mode chm "f:\\_Cloud\\borland\\delphi2009\\delphivclwin32.chm")
+    (delphi-mode chm "e:\\lazarus\\docs/chm\\lazarus.chm")
+    (emacs-lisp-mode chm "e:\\emacs\\doc\\elisp-24.3.chm")
+    (emacs-lisp-mode info)
+    (xahk-mode chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm")
+    (ahk-mode chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm")
+    (php-mode web  "http://www.php.net/manual/en/")
+    (awk-mode info)))
+    
+
+(defun keyword-help-lookup (keyword)
+  (interactive
+   (list (read-string "Keyword: "
+                      (if (and transient-mark-mode mark-active)
+                          (buffer-substring-no-properties (region-beginning) (region-end))
+                        (thing-at-point 'symbol))
+                      )))
+  (let* ((config (assoc major-mode keyword-help-lookup-alist))
+         (func (if config
+                   (concat "keyword-help-lookup-" (symbol-name (nth 1 config)))))
+         (params (if config (cddr config))))
+    (when config
+      (message "Calling '%s' with %s %s" func keyword params)
+      (apply (intern func) keyword (cddr config)))))
+
+
+(define-key global-map (kbd "<C-f1>") 'keyword-help-lookup)
+
+
+
+
+;;; OLD IMPLEMENTATION
 (defcustom keyword-help-url nil
   "Help file path used to show keyword sensitive help.
   .CHM and .HLP format are supported."
@@ -118,7 +141,7 @@
      ("AWK/l"		 "E:/docs/gnuwin32/gawk.chm")
      ))
 
-(defun invoke-keyword-help(&optional arg)
+(defun keyword-help()
   "Show the help info for the keyword at point. CHM and HLP are supported.
   
 You need to set `keyword-help-url-alist' or `keyword-help-url'
@@ -147,5 +170,6 @@ ARG given, `keyword-help-url' is used."
 	    (message "Help file not exist: %s" help-file)))))
 	))
   
-     
+(provide 'keyword-help)
+
   
