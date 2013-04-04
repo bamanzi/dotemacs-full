@@ -108,7 +108,7 @@
             (keyword-help--get-mode-config cfg)
           cfg))))
 
-
+;;;###autoload
 (defun keyword-help-lookup (keyword &optional category)
   "Invoke documentation query backends for KEYWORD.
 
