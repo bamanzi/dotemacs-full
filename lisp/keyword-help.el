@@ -12,14 +12,19 @@
 ;;; Usage
 
 ;; This package provides an unified way (`keyword-help-lookup') to
-;; query documentation for current symbol. Currently Info, WinHelp
-;; (.hlp), HtmlHelp (.chm), MSHelp 2, DevHelp & web url are supported.
+;; query documentation for current symbol.
+
+;; Features:
+;;   - supports Info, WinHelp(.hlp), HtmlHelp (.chm), MSHelp 2, DevHelp & web url
+;;   - supports Multiple help sources for each major mode
 
 ;; How to use:
 ;; 1. customize `keyword-help-lookup-alist'
 ;; 2. invoke `keyword-help-lookup'
 
 ;;; Code
+
+;; various backends
 
 (defun keyword-help-lookup-hlp (keyword file-path)
    "Call winhlp32 to display documentation on KEYWORD."
@@ -79,39 +84,67 @@
   ;;FIXME: use `webjump'?
   )
 
+
+;; front-end
 (setq keyword-help-lookup-alist      
   '(
-    (python-mode chm "e:\\python\\ActivePython27.chm")
-    (pascal-mode hlp "d:\\Borland\\Delphi7\\Help\\d7.hlp")
-    (pascal-mode chm "f:\\_Cloud\\borland\\delphi2009\\delphivclwin32.chm")
-    (delphi-mode chm "e:\\lazarus\\docs/chm\\lazarus.chm")
-    (emacs-lisp-mode chm "e:\\emacs\\doc\\elisp-24.3.chm")
-    (emacs-lisp-mode info)
-    (xahk-mode chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm")
-    (ahk-mode chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm")
+    (python-mode ("default" chm "e:\\python\\ActivePython27.chm")
+                  ("online"  pylookup)
+                  ("django"  pylookup))
+    (pascal-mode ("default" hlp "d:\\Borland\\Delphi7\\Help\\d7.hlp")
+                  ("d2009" chm "f:\\_Cloud\\borland\\delphi2009\\delphivclwin32.chm")
+                  ("lazarus" chm "e:\\lazarus\\docs/chm\\lazarus.chm"))
+    (emacs-lisp-mode ("default" chm "e:\\emacs\\doc\\elisp-24.3.chm")
+                      ("info" info))
+    (xahk-mode ("default" chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm"))
+    (ahk-mode . xahk-mode)
     (php-mode web  "http://www.php.net/manual/en/")
-    (awk-mode info)))
+    (".afaf" hlp "afafa")))
     
+(defun keyword-help--get-mode-config (majormode)
+  (let ((cfg (cdr (assq majormode keyword-help-lookup-alist))))
+    (if cfg
+        (if (symbolp cfg)
+            (keyword-help--get-mode-config cfg)
+          cfg))))
 
-(defun keyword-help-lookup (keyword)
+
+(defun keyword-help-lookup (keyword &optional category)
+  "Invoke documentation query backends for KEYWORD.
+
+Without prefix key, only the 'default' help source would be invoked.
+If invoked with prefix key, it would let you choose which source to invoke."
   (interactive
    (list (read-string "Keyword: "
                       (if (and transient-mark-mode mark-active)
                           (buffer-substring-no-properties (region-beginning) (region-end))
                         (thing-at-point 'symbol))
-                      )))
-  (let* ((config (assoc major-mode keyword-help-lookup-alist))
-         (func (if config
-                   (concat "keyword-help-lookup-" (symbol-name (nth 1 config)))))
-         (params (if config (cddr config))))
-    (when config
-      (message "Calling '%s' with %s %s" func keyword params)
-      (apply (intern func) keyword (cddr config)))))
-
+                      )
+         (if current-prefix-arg
+             (completing-read "Category: "
+                              (mapcar 'car (keyword-help--get-mode-config major-mode))
+                              nil
+                              t
+                              "default"))))
+  (let* ((all-sources (keyword-help--get-mode-config major-mode))
+         (category (or category "default"))
+         (help-source (if all-sources                 
+                   (assoc category all-sources)))
+         (method (if help-source
+                     (concat "keyword-help-lookup-" (symbol-name (nth 1 help-source)))
+                   "keyword-help-lookup-default"))
+         (params (if help-source
+                     (cddr help-source))))
+    (if help-source
+        (if (inter-soft method)
+            (progn
+              (message "Calling '%s' for \"%s\" with params: %s" method keyword params)
+              (apply (intern func) keyword params))
+          (message "No backend for: %s" (symbol-name (nth 1 help-source))))
+      (message "No configuration for '%s' in `keyword-help-lookup-alist'" major-mode)          
+      )))
 
 (define-key global-map (kbd "<C-f1>") 'keyword-help-lookup)
-
-
 
 
 ;;; OLD IMPLEMENTATION
