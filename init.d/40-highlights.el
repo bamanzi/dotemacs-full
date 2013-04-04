@@ -287,7 +287,25 @@
                   (> (abs (- (point) (mark))) 400))
                    (pulse-momentary-highlight-one-line (point))))
      ))
-         
+
+
+;;** highlight url
+;;*** goto-address-mode (emacs built-in) 
+;;this one is better than my own: built-in, overlay supporting mouse
+(add-hook 'find-file-hook 'goto-address-mode)
+;;Use mouse or `goto-address' (C-c RET) to open url
+
+;;*** org-link-minor-mode
+;;https://github.com/seanohalpin/org-link-minor-mode
+;; it suport all org-mode links, including url, file, man, info, date,
+;; http://orgmode.org/manual/External-links.htm
+;; use mouse or `org-open-at-point' to open link
+(idle-require 'org-link-minor-mode)
+(eval-after-load "org-link-minor-mode"
+  `(progn
+     (remove-hook 'find-file-hook 'goto-address-mode)
+     (add-hook 'find-file-hook 'org-link-minor-mode)))
+
 
 ;;** misc
 ;;*** higlight-indentation
@@ -310,19 +328,7 @@
 (autoload 'fic-ext-mode "fic-ext-mode"
   "minor mode for highlighting FIXME/TODO in comments" t)
 
-;;*** highlight misc: url, fixme, todo
-(defun highlight-url/bmz ()
-  (interactive)
-  (require 'hi-lock)
-  (highlight-regexp "https?://[^]
-\n\|]+" 'link))
-
-;;(add-hook 'find-file-hook 'highlight-url/bmz)
-
-;;this one is better: built-in, overlay supporting mouse
-(add-hook 'find-file-hook 'goto-address-mode)
-;;Use C-c RET to open url
-
+;;my own implementation
 (defun highlight-fixme/bmz ()
   (interactive)
   (highlight-regexp "\\<\\(FIXME\\|TODO\\|NOTE\\|BUG\\):" 'font-lock-warning-face))
