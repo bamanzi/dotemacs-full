@@ -123,13 +123,7 @@ On Windows, baskslashes is substituted with slashes."
 (global-set-key (kbd "<f12> E") 'eshell-toggle)
 (global-set-key (kbd "<f12> e") 'eshell-toggle-cd)
 
-;;** misc
-;;*** oneliner: a special shell supporing piping to/from buffer
-;; http://oneliner-elisp.sourceforge.net/
-;; a special shell that support piping input/output from/to emacs buffer
-(autoload 'oneliner "oneliner" "shell-mode hooks for Oneliners" t)
-
-
+;;** shell-toggle
 ;;*** term-toggle
 (autoload 'term-toggle "term-toggle" 
   "Toggles between the *terminal* buffer and whatever buffer you are editing."
@@ -150,7 +144,14 @@ On Windows, baskslashes is substituted with slashes."
 (global-set-key (kbd "<f12> S") 'shell-toggle)
 (global-set-key (kbd "<f12> s") 'shell-toggle-cd)
 
+;;*** comint-toggle
+(autoload 'comint-toggle "comint-toggle"
+  "Switch to comint buffer from editing buffer or switch back." t)
 
+(global-set-key (kbd "C-`") 'comint-toggle) ;;C-` not available on xterm
+(global-set-key (kbd "<f12> `") 'comint-toggle)
+
+                
 ;;*** A quick pop-up shell for emacs (lightweight one)
 ;;Based on code stolen from http://tsdh.wordpress.com/2011/10/12/a-quick-pop-up-shell-for-emacs/
 (defvar th-shell-popup-buffer nil)
@@ -174,3 +175,12 @@ On Windows, baskslashes is substituted with slashes."
 					      "\n")))))
 
 (global-set-key (kbd "<f12> ~") 'th-shell-popup)
+
+
+;;** misc
+;;*** oneliner: a special shell supporing piping to/from buffer
+;; http://oneliner-elisp.sourceforge.net/
+;; a special shell that support piping input/output from/to emacs buffer
+(autoload 'oneliner "oneliner" "shell-mode hooks for Oneliners" t)
+
+
