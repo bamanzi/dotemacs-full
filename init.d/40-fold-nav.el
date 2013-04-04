@@ -310,7 +310,7 @@ See: `forward-block'"
 ;;** outline settings for my init files
 
 (defun bmz/turn-on-outline-settings ()
-  (if (string-match "/.emacs.d/.*init.*.el$" buffer-file-name)
+  (if (string-match ".*init.*.el$" buffer-file-name)
       (ignore-errors
         (when (require 'outline-org-like nil t)
             ;;(outline-org-mode 1)  ;;FIXME: sometimes causes Emacs hang

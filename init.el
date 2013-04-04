@@ -14,8 +14,8 @@
      (expand-file-name "~/.emacs.d/elpa/package.el") t)
   (package-initialize))
 
-(when (file-exists-p "~/.emacs.d/site-lisp/site-start.el")
-  (load "~/.emacs.d/site-lisp/site-start.el"))
+(when (file-exists-p "~/projects/site-lisp-hg/site-lisp/site-start.el")
+  (load "~/projects/site-lisp-hg/site-lisp/site-start.el"))
 
 (add-to-list 'image-load-path "~/.emacs.d/etc/images/")
 (add-to-list 'load-path "~/.emacs.d/lisp/")
@@ -142,6 +142,10 @@ If any error occurs, it would exit. After you fixed the errors, you can use this
   )
 
 
+(ignore-errors
+  (add-to-list 'load-path "~/projects/bamanzi.bitbucket.org/o-blog-zh/")
+  (load-library "o-blog")
+  )
 
 
 (when (fboundp 'idle-require-mode)

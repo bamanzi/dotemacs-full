@@ -135,10 +135,12 @@
 
 ;;**** golden-ratio: another implementation
 ;;(I don't use `golden-ratio-enable')
+(autoload 'golden-ratio-enable "golden-ratio"
+  "Enables golden-ratio's automatic window resizing" t)
 (autoload 'golden-ratio "golden-ratio"
   "Resizes current window to the golden-ratio's size specs" t)
 
-(defun golden-ration+ ()
+(defun golden-ratio+ ()
   "Enlarge current window, more than command `golden-ratio'."
   (interactive)
   (let ((-golden-ratio-value 1.3))

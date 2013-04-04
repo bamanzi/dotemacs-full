@@ -3,12 +3,14 @@
 ;;(global-set-key (kbd "<C-f4>") 'kill-buffer)
 (autoload 'close-current-buffer "ergoemacs-functions" "Close the current buffer." t)
 (global-set-key (kbd "<C-f4>") 'close-current-buffer)
-(global-set-key (kbd "C-c b c")  'close-current-buffer)
+(global-set-key (kbd "C-x K")  'close-current-buffer)
 
 
 ;;** buffer navigation
 (global-set-key (kbd "<C-tab>")   'previous-buffer)
 (global-set-key (kbd "<C-S-tab>") 'next-buffer)
+
+(global-set-key (kbd "<f12> *")   (kbd "C-x b *scratch* RET"))
 
 ;;*** wcy-swbuffer
 (autoload 'wcy-switch-buffer-forward "wcy-swbuff" nil t)
@@ -42,6 +44,7 @@
 
 ;;*** ibuffer
 (global-set-key (kbd "C-c C-b")     'ibuffer)
+(global-set-key (kbd "C-c B")     'ibuffer)
 
 ;;**** ibuffer-vc
 ;;(idle-require 'ibuffer-vc)

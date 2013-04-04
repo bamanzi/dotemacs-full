@@ -195,7 +195,8 @@
   ;; M-_
   ;; M-]
   ;; M-"
-  ;; M-? 
+  ;; M-?
+  ;; C-^
 
 ;; not available on term:
   ;;C-`: n.a. 
@@ -209,6 +210,8 @@
   ;;C-; n.a.
   ;;C-' n.a.
   ;;C-" n.a.
+  ;;C-, n.a.
+  ;;C-. n.a.
 
 ;; others: 
   ;;C-[ -> esc

@@ -82,6 +82,11 @@
 (add-to-list 'auto-mode-alist '("\\.frm\\'" . visual-basic-mode)) ;basic language source
 (add-to-list 'auto-mode-alist '("\\.cls\\'" . visual-basic-mode)) ;C++ class definition file
 
+;;; YAML
+(autoload 'yaml-mode  "yaml-mode" "Simple mode to edit YAML." t)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode)) ;VBscript
+
+
 
 
 

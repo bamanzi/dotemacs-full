@@ -17,12 +17,15 @@
   (defadvice ido-completing-read (before ido-completing-read-fix)
     (ido-common-initialization))
   )
+
 (setq ido-everywhere t)
 (setq ido-enable-flex-matching t)
 (setq ido-use-filename-at-point 'guess)
 (setq ido-use-url-at-point 'guess)
 (setq ido-auto-merge-work-directories-length -1) ;;don't auto jump between directories
-(ido-mode t)
+(ido-mode 'buffers)
+
+(global-set-key (kbd "C-x M-f") 'ido-find-file)
 
 
 ;;** smex : ido for M-x
