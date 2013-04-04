@@ -21,7 +21,7 @@
 
 
 ;;*** marks
-(global-set-key (kbd "C-`")    'set-mark-command)
+;;(global-set-key (kbd "C-`")    'set-mark-command)
 ;;(global-set-key (kbd "M-`")    'exchange-point-and-mark)
 (global-set-key (kbd "C-M-`")  'pop-to-mark-command)
 
@@ -267,12 +267,12 @@ vi style of % jumping to matching brace."
   (define-key global-map (kbd "C-c C-v") 'yank))
   
 
-(unless (boundp 'mark-map)
-  (defvar mark-map (make-sparse-keymap "Mark...")))
-(define-key global-map (kbd "M-`") mark-map)
+(unless (boundp 'mark-sth-map)
+  (defvar mark-sth-map (make-sparse-keymap "Mark...")))
+(define-key global-map (kbd "M-`") mark-sth-map)
 
-(unless (boundp 'copy-map)
-  (defvar copy-map (make-sparse-keymap "Copy...")))
+(unless (boundp 'copy-sth-map)
+  (defvar copy-sth-map (make-sparse-keymap "Copy...")))
 
  
 ;;*** anything-show-kill-ring を使うように修正した
@@ -289,8 +289,8 @@ vi style of % jumping to matching brace."
       (anything-show-kill-ring)
     ad-do-it))
 
-;;*** kill/yank a line
 
+;;*** kill/yank a line
 
 (defun mark-current-line (arg)
   "Mark current line."
@@ -300,7 +300,7 @@ vi style of % jumping to matching brace."
     (push-mark beg 'nomsg 'activate)
     (goto-char (point))))
 
-(define-key mark-map "l" 'mark-current-line)
+(define-key mark-sth-map "l" 'mark-current-line)
 
 
 (defun copy-current-line (arg)
@@ -314,7 +314,7 @@ vi style of % jumping to matching brace."
       (kill-ring-save beg end)
       )))
 
-(define-key copy-map "l" 'copy-current-line)
+(define-key copy-sth-map "l" 'copy-current-line)
 
 ;;kill current line
 ;;TIP: C-u C-k would backward kill to the beginning of line
