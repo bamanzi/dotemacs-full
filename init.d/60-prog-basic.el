@@ -208,7 +208,7 @@
    (t
     (call-interactively 'imenu))))
 
-(global-set-key (kbd "C-c C-o") 'bmz/select-method)
+;(global-set-key (kbd "C-c C-o") 'bmz/select-method)
 (global-set-key (kbd "<f5> I") 'bmz/select-method)
 
 (defun bmz/go-to-symbol-within-buffer ()

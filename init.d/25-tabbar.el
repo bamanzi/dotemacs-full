@@ -103,7 +103,9 @@
  Emacs buffer are those starting with “*”."
    (list
     (cond
-     ((memq major-mode '(dired-mode shell-mode eshell-mode ibuffer-mode))
+     ((or (memq major-mode '(dired-mode shell-mode eshell-mode ibuffer-mode
+                                    grep-mode occur-mode lisp-interaction-mode compilation-mode))
+          (get-buffer-process (current-buffer)))
       "Utils"
       )
      ((string-equal "*" (substring (buffer-name) 0 1))

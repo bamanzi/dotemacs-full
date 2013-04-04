@@ -716,11 +716,12 @@ to display some special buffers specified in `. For non-special"
 ;;*** opening server files always in a new frame
 ;;http://www.emacswiki.org/emacs/EmacsClient#toc21
 
-(add-hook 'server-switch-hook
+(if nil
+    (add-hook 'server-switch-hook
           (lambda nil
             (let ((server-buf (current-buffer)))
               (bury-buffer)
-              (switch-to-buffer-other-frame server-buf))))
+              (switch-to-buffer-other-frame server-buf)))))
 
 ;;** multiple layouts management
 ;;*** elscreen
