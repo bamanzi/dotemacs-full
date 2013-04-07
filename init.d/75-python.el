@@ -238,6 +238,12 @@
        python-compilation-regexp-alist)
   (compilation-minor-mode t))
 
+;;** debug
+;;*** gud-pdb
+(if (memq system-type '(windows-nt msdos))
+    ;; -u     : unbuffered binary stdout and stderr; also PYTHONUNBUFFERED=x
+    ;;     see man page for details on internal buffering relating to '-u'
+    (setq gud-pdb-command-name "python -u -mpdb"))
 
 ;;** python shell
 ;;*** ipython
