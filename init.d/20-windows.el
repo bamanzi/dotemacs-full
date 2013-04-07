@@ -88,26 +88,29 @@
 ;;*** enlarge current window
 (defun enlarge-current-window/bmz ()
   (interactive)
-  (if (require 'golden-ratio nil t)
-      (call-interactively 'golden-ratio)
-    (if (fboundp 'maximize-window) ;;Emacs 24 has 'maximize-window
-        (call-interactively 'maximize-window)
-      (if (require 'widen-window nil t) ;;not work on Emacs 24
-          (call-interactively 'widen-current-window)
-        (delete-other-windows)))))
+  (cond ((and (fboundp 'window-full-height-p)
+              (require 'golden-ratio nil t))
+         (call-interactively 'golden-ratio))
+        ((require 'widen-window nil t) ;;not work on Emacs 24
+         (let ((ww-ratio 0.65))
+           (call-interactively 'widen-current-window)))
+        ((fboundp 'maximize-window) ;;Emacs 24 has 'maximize-window
+         (call-interactively 'maximize-window))
+        (delete-other-windows)))
 
 (defun enlarge-current-window+/bmz ()
   (interactive)
-  (if (require 'golden-ratio nil t)
-      (let ((-golden-ratio-value 1.3))
-        (call-interactively 'golden-ratio))
-    (if (fboundp 'maximize-window) ;;Emacs 24 has 'maximize-window
-        (call-interactively 'maximize-window)
-      (if (require 'widen-window nil t)
-          (let ((ww-ratio 0.8))
-            (call-interactively 'widen-current-window))
-        (delete-other-windows)))))
-
+  (cond ((and (fboundp 'window-full-height-p)
+              (require 'golden-ratio nil t))
+         (let ((-golden-ratio-value 1.3))
+           (call-interactively 'golden-ratio)))
+        ((require 'widen-window nil t) ;;not work on Emacs 24
+         (let ((ww-ratio 0.8))
+           (call-interactively 'widen-current-window)))
+        ((fboundp 'maximize-window) ;;Emacs 24 has 'maximize-window
+         (call-interactively 'maximize-window))
+        (delete-other-windows)))
+ 
 (define-key bmz/win-fns-keymap (kbd "x") 'enlarge-current-window/bmz)
 (define-key bmz/win-fns-keymap (kbd "X") 'enlarge-current-window+/bmz)
 
@@ -123,7 +126,7 @@
 
 ;;(idle-require 'widen-window)
 ;; (eval-after-load "widen-window"
-(setq ww-ratio 0.75)
+;;(setq ww-ratio 0.75)
 ;;   `(global-widen-window-mode t)
 ;;   )
 
