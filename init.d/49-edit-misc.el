@@ -144,6 +144,21 @@ current line instead."
 
 (global-set-key (kbd "C-x t") 'anchored-transpose)
 
+
+;;*** move content of seconary selection to current position
+(defun move-secondary-sel-here ()
+  "Move seconary selection to current point."
+  (interactive)
+  (let ((2nd-sel mouse-secondary-overlay)
+        (here    (point)))
+    (if (overlayp 2nd-sel)
+        (progn
+          (with-current-buffer (overlay-buffer 2nd-sel)
+            (kill-region (overlay-start 2nd-sel)
+                     (overlay-end 2nd-sel)))
+        (yank))
+      (message "No secondary selection found."))))
+
 ;;** go to somewhere
 ;;*** a better goto-line
 ;;stolen from http://whattheemacsd.com/key-bindings.el-01.html
