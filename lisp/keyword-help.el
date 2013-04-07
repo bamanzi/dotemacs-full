@@ -5,7 +5,7 @@
 ;; Author: Ba Manzi
 ;; Keywords: help documentation winhelp chm mshelp devhelp info
 ;; URL: https://bitbucket.org/bamanzi/dotemacs-full/src/default/lisp/
-;; Version: 0.2
+;; Version: 0.3
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -19,7 +19,7 @@
 ;;   - supports Multiple help sources for each major mode
 
 ;; How to use:
-;; 1. customize `keyword-help-lookup-alist'
+;; 1. customize `keyword-help-source-alist'
 ;; 2. invoke `keyword-help-lookup'
 
 ;;; Code
@@ -42,7 +42,7 @@
    "Call keyhh to command hh.exe to display documentation on KEYWORD."
    (interactive "sKeyword: \nfSHelp-file: ")
    (start-process "keyhh" nil "keyhh.exe"
-		  (concat "-" mode-name) ;; use mode name as ID
+		  "-Emacs"  ;;(concat "-" mode-name) ;; use mode name as ID
 		  "-#klink" (format "'%s'" keyword)
 		  file-path)
    (set-process-query-on-exit-flag (get-process "keyhh") nil)
@@ -78,38 +78,71 @@
   (start-process-shell-command "devhelp" nil "devhelp" "-s" keyword)
   (set-process-query-on-exit-flag (get-process "devhelp") nil))
 
-
 (defun keyword-help-lookup-web (keyword url)
-  ;;TODO: implement this
   ;;FIXME: use `webjump'?
+  (require 'url-util)
+  (if (string-match "%s" url)
+      (setq url (replace-regexp-in-string "%s" (url-hexify-string keyword) url))
+    (setq url (concat url (url-hexify-string keyword))))
+  (browse-url url)
   )
 
 
-;; front-end
-(setq keyword-help-lookup-alist      
+(defun keyword-help-lookup-cmdline (keyword cmdline &optional bufname)
+  (if (string-match "%s" cmdline)
+      (setq cmdline (replace-regexp-in-string "%s" keyword cmdline))
+    (setq cmdline (concat cmdline (url-hexify-string keyword))))
+  (let ((result (shell-command-to-string cmdline)))
+         (display-message-or-buffer result (or bufname (format "*%sHelp*" mode-name))))
+  )
+
+
+;;; sources
+(setq keyword-help-source-alist      
   '(
-    (python-mode ("default" chm "e:\\python\\ActivePython27.chm")
-                  ("online"  pylookup)
-                  ("django"  pylookup))
+    (fundamental-mode ("*google" web "http://www.google.com.hk/search?q=%s")
+                      ("*ddg" web "https://duckduckgo.com/?q=%s"))  
+    (python-mode ("chm" chm "e:\\python\\ActivePython27.chm")
+                 ("web" web "http://docs.python.org/2/search.html?q=%s&check_keywords=yes&area=default")
+                 ("web-py3" web "http://docs.python.org/3/search.html?q=%s&check_keywords=yes&area=default")
+                 ("pydoc" cmdline "pydoc %s")
+                 ("pylookup"  pylookup)
+                 ("django"  pylookup))
     (pascal-mode ("default" hlp "d:\\Borland\\Delphi7\\Help\\d7.hlp")
-                  ("d2009" chm "f:\\_Cloud\\borland\\delphi2009\\delphivclwin32.chm")
-                  ("lazarus" chm "e:\\lazarus\\docs/chm\\lazarus.chm"))
-    (emacs-lisp-mode ("default" chm "e:\\emacs\\doc\\elisp-24.3.chm")
-                      ("info" info))
+                 ("rs009" chm "f:\\borland\\rs2009\\delphivclwin32.chm")
+                 ("lazarus" chm "e:\\lazarus\\docs\\chm\\lazarus.chm"))
+    (emacs-lisp-mode ("chm" chm "e:\\emacs\\doc\\elisp-24.3.chm")
+                     ("info" info))
+    (help-mode . emacs-lisp-mode)
     (xahk-mode ("default" chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm"))
     (ahk-mode . xahk-mode)
-    (php-mode web  "http://www.php.net/manual/en/")
-    (".afaf" hlp "afafa")))
+    (php-mode ("default" web "http://www.php.net/%s")      ;; refer http://www.php.net/urlhowto.php for more info
+              ("chinese" web "http://www.php.net/zh/%s"))
+    ))
     
-(defun keyword-help--get-mode-config (majormode)
-  (let ((cfg (cdr (assq majormode keyword-help-lookup-alist))))
-    (if cfg
-        (if (symbolp cfg)
-            (keyword-help--get-mode-config cfg)
-          cfg))))
+
+(setq keyword-help-default-source-alist
+      '((python-mode . "chm")
+        (emacs-lisp-mode . "chm")
+        (xahk-mode . "chm")))
+
+(defun keyword-help--get-mode-config (majormode &optional noparent)
+  (let ((cfg (cdr (assq majormode keyword-help-source-alist)))
+        (parent-mode (get majormode 'derived-mode-parent)))
+    (append (if cfg
+                (if (symbolp cfg)
+                    (keyword-help--get-mode-config cfg)
+                  cfg))
+           (if (and parent-mode (not noparent))
+               (keyword-help--get-mode-config parent-mode)))))
+
+(defun keyword-help--get-mode-sources (majormode)
+  (append (keyword-help--get-mode-config majormode)
+          (keyword-help--get-mode-config 'fundamental-mode)))
+
 
 ;;;###autoload
-(defun keyword-help-lookup (keyword &optional category)
+(defun keyword-help-lookup (keyword &optional source)
   "Invoke documentation query backends for KEYWORD.
 
 Without prefix key, only the 'default' help source would be invoked.
@@ -120,28 +153,39 @@ If invoked with prefix key, it would let you choose which source to invoke."
                           (buffer-substring-no-properties (region-beginning) (region-end))
                         (thing-at-point 'symbol))
                       )
-         (if current-prefix-arg
-             (completing-read "Category: "
-                              (mapcar 'car (keyword-help--get-mode-config major-mode))
-                              nil
-                              t
-                              "default"))))
-  (let* ((all-sources (keyword-help--get-mode-config major-mode))
-         (category (or category "default"))
+         (let* ((all-sources (keyword-help--get-mode-sources major-mode))
+                (all-sources-names (mapcar 'car all-sources))
+                (completing-read-func (if (fboundp 'ido-completing-read)
+                                          'ido-completing-read
+                                        'completing-read))
+                (default-source (or (cdr (assq major-mode keyword-help-default-source-alist))
+                                    "default")))
+           (if (or current-prefix-arg
+                   (not (member default-source all-sources-names)))
+             (apply completing-read-func
+                    "Source: "
+                    all-sources-names
+                    nil
+                    t
+                    nil)))))
+  (let* ((all-sources (keyword-help--get-mode-sources major-mode))
+         (source (or source
+                       (cdr (assq major-mode keyword-help-default-source-alist))
+                       "default"))
          (help-source (if all-sources                 
-                   (assoc category all-sources)))
+                   (assoc source all-sources)))
          (method (if help-source
                      (concat "keyword-help-lookup-" (symbol-name (nth 1 help-source)))
                    "keyword-help-lookup-default"))
          (params (if help-source
                      (cddr help-source))))
     (if help-source
-        (if (inter-soft method)
+        (if (intern-soft method)
             (progn
               (message "Calling '%s' for \"%s\" with params: %s" method keyword params)
-              (apply (intern func) keyword params))
-          (message "No backend for: %s" (symbol-name (nth 1 help-source))))
-      (message "No configuration for '%s' in `keyword-help-lookup-alist'" major-mode)          
+              (apply (intern method) keyword params))
+          (message "keyword-help: no backend configurated for: %s" (symbol-name (nth 1 help-source))))
+      (message "No configuration for '%s' in `keyword-help-source-alist' (source:%s)" major-mode source)
       )))
 
 (define-key global-map (kbd "<C-f1>") 'keyword-help-lookup)
@@ -198,8 +242,8 @@ ARG given, `keyword-help-url' is used."
 	      (progn
 		(message "invoke help for '%s': %s " keyword help-file)
 		(cond
-		 ((string= ext "chm") (keyword-help-lookup-chm help-file keyword))
-		 ((string= ext "hlp") (keyword-help-lookup-hlp help-file keyword))))
+		 ((string= ext "chm") (keyword-help-lookup-chm keyword help-file))
+		 ((string= ext "hlp") (keyword-help-lookup-hlp keyword help-file))))
 	    (message "Help file not exist: %s" help-file)))))
 	))
   
