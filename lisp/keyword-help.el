@@ -68,8 +68,46 @@
 
 
 (defun keyword-help-lookup-info (keyword)
+  "Use `info-lookup-symbol' (C-h S) to lookup documentation.
+
+You may need to customize `info-lookup-file-name-alist' to use this method.
+Refer `info-lookup-add-help' and `info-lookup-maybe-add-help' for detail info."
   (interactive "Skeyword: ")
   (info-lookup-symbol keyword))
+
+
+(defun keyword-help-lookup-info-external (keyword node)
+  "Use external executable GNU Info to lookup documentation.
+
+Commandd line e.g.:
+  info elisp --index-search=mapcar
+
+NOTE: gnu info is needed. pinfo won't work.
+NOTE: not work on windows (maybe works on cygwin)."
+  (interactive "Skeyword: \nSInfo Node: ")
+  (let* ((program "info")
+         (args (list node (format "--index-search=\"%s\"" keyword)))
+         (term-buf
+          (generate-new-buffer
+           (format "*%s-%s*" program node)))
+         (keyword-help-info-sentinel
+          #'(lambda (proc string)
+              (message "event %s from process %s" string proc)
+              ;;TODO: this doesn't work. how to close buffer automatically
+              (let (buffer (process-buffer proc))
+                (if buffer
+                    (kill-buffer buffer)
+                  (message "no buffer found for process %s" proc))))))
+        (progn  ;;save-current-buffer
+          (switch-to-buffer term-buf)
+          (term-mode)
+          (term-exec term-buf program program nil args)
+          (let ((proc (get-buffer-process term-buf)))
+            (if (and proc (eq 'run (process-status proc)))
+                (set-process-sentinel proc 'keyword-help-info-sentinel)
+              (error "Failed to invoke visual command")))
+          (term-char-mode)
+          (term-set-escape-char ?\C-x))))
 
 ;; GNOME DevHelp
 ;; got from devhelp's source package
