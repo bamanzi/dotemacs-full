@@ -141,7 +141,7 @@ NOTE: not work on windows (maybe works on cygwin)."
         (apply func keyword args)
       (message "error: %s is not a elisp function." (symbol-name func)))))
 
-;;; sources
+;;; Sources
 (setq keyword-help-source-alist      
   '(
     (fundamental-mode ("*google" web "http://www.google.com.hk/search?q=%s")
@@ -151,13 +151,30 @@ NOTE: not work on windows (maybe works on cygwin)."
                  ("web-py3" web "http://docs.python.org/3/search.html?q=%s&check_keywords=yes&area=default")
                  ("pydoc" cmdline "pydoc %s")
                  ("pylookup"  pylookup)
-                 ("django"  pylookup))
-    (pascal-mode ("default" hlp "d:\\Borland\\Delphi7\\Help\\d7.hlp")
+                 ("django"  pylookup)
+                 ("wx-chm" chm "E:\\docs\\python\\wxPython\\wxpython.chm"))
+    (pascal-mode ("d7help" hlp "d:\\Borland\\Delphi7\\Help\\d7.hlp")
+                 ;; delphi/c++builder/radstudio http://docs.embarcadero.com/products/rad_studio/
                  ("rs009" chm "f:\\borland\\rs2009\\delphivclwin32.chm")
-                 ("lazarus" chm "e:\\lazarus\\docs\\chm\\lazarus.chm"))
+                 ;; fpc-lazarus-doc-chm: http://sourceforge.net/projects/lazarus/files/Lazarus%20Documentation/Lazarus%201.0/
+                 ("fp-rtl"  chm "e:\\lazarus\\docs\\chm\\rtl.chm")
+                 ("fp-fcl"  chm "e:\\lazarus\\docs\\chm\\fcl.chm")
+                 ("lazarus-fcl" chm "e:\\lazarus\\docs\\chm\\lcl.chm"))                
     (emacs-lisp-mode ("chm" chm "e:\\emacs\\doc\\elisp-24.3.chm")
-                     ("info" info))
+                     ("info" info)
+                     ("web" web "http://www.emacswiki.org/cgi-bin/info-ref?find=%s"))
     (help-mode . emacs-lisp-mode)
+    (ruby-mode   ("yari" elisp yari yari)
+                 ;; ruby-doc-chm http://rubyforge.org/projects/rubyinstaller/
+                 ("chm1.8" chm "d:\\Rails\\ruby18.chm")
+                 ("chm1.9.3" chm "d:\\Rails\\ruby19.chm")
+                 ;; rails 2.3 chm http://rubyforge.org/projects/rdoc-chm/
+                 ("rails-2.3" chm "d:\\Rails\\Rails-2.3.2.chm")
+                 ;; http://apidock.com/
+                 ("apidocruby" web "http://apidock.com/ruby/search?query=%s")
+                 ("apidocror" web  "http://apidock.com/rails/search?query=%s")
+                 ("railsdock" web  "http://apidock.com/rails/search?query=%s"))                 
+    (enh-ruby-mode . ruby-mode)    
     (xahk-mode ("default" chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm"))
     (ahk-mode . xahk-mode)
     (php-mode ("default" web "http://www.php.net/%s")      ;; refer http://www.php.net/urlhowto.php for more info
@@ -184,6 +201,7 @@ NOTE: not work on windows (maybe works on cygwin)."
   (append (keyword-help--get-mode-config majormode)
           (keyword-help--get-mode-config 'fundamental-mode)))
 
+;;; User Commands
 
 ;;;###autoload
 (defun keyword-help-lookup (keyword &optional source)
