@@ -182,8 +182,8 @@ NOTE: not work on windows (maybe works on cygwin)."
     ))
     
 
-(setq keyword-help-default-source-alist
-      '((python-mode . "chm")
+(setq keyword-help-last-source
+      '((python-mode . "d7hlp")
         (emacs-lisp-mode . "chm")
         (xahk-mode . "chm")))
 
@@ -207,8 +207,8 @@ NOTE: not work on windows (maybe works on cygwin)."
 (defun keyword-help-lookup (keyword &optional source)
   "Invoke documentation query backends for KEYWORD.
 
-Without prefix key, only the 'default' help source would be invoked.
-If invoked with prefix key, it would let you choose which source to invoke."
+If used without the prefix key, last used source would be used.
+With the prefix key, it would let you choose which source to invoke."
   (interactive
    (list (read-string "Keyword: "
                       (if (and transient-mark-mode mark-active)
@@ -220,10 +220,9 @@ If invoked with prefix key, it would let you choose which source to invoke."
                 (completing-read-func (if (fboundp 'ido-completing-read)
                                           'ido-completing-read
                                         'completing-read))
-                (default-source (or (cdr (assq major-mode keyword-help-default-source-alist))
-                                    "default")))
+                (last-source (cdr (assq major-mode keyword-help-last-source)))
            (if (or current-prefix-arg
-                   (not (member default-source all-sources-names)))
+                   (not (member last-source all-sources-names)))
              (apply completing-read-func
                     "Source: "
                     all-sources-names
@@ -232,8 +231,7 @@ If invoked with prefix key, it would let you choose which source to invoke."
                     nil)))))
   (let* ((all-sources (keyword-help--get-mode-sources major-mode))
          (source (or source
-                       (cdr (assq major-mode keyword-help-default-source-alist))
-                       "default"))
+                       (cdr (assq major-mode keyword-help-last-source)))
          (help-source (if all-sources                 
                    (assoc source all-sources)))
          (method (if help-source
@@ -245,6 +243,7 @@ If invoked with prefix key, it would let you choose which source to invoke."
         (if (intern-soft method)
             (progn
               (message "Calling '%s' for \"%s\" with params: %s" method keyword params)
+              ;;TODO: save last-source
               (apply (intern method) keyword params))
           (message "keyword-help: no backend configurated for: %s" (symbol-name (nth 1 help-source))))
       (message "No configuration for '%s' in `keyword-help-source-alist' (source:%s)" major-mode source)
