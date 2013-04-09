@@ -24,7 +24,7 @@
 
 ;;; Code
 
-;; various backends
+;;; Various Backends
 
 (defun keyword-help-lookup-hlp (keyword file-path)
    "Call winhlp32 to display documentation on KEYWORD."
@@ -48,11 +48,6 @@
    (set-process-query-on-exit-flag (get-process "keyhh") nil)
    )
 
-(defun keyword-help-lookup-info (keyword)
-  (interactive "Skeyword: ")
-  (info-lookup-symbol keyword))
-
-
 ;; MS Help 2 (MSDN)
 ;; http://www.emacswiki.org/emacs/MsdnHelp
 ;; You need `h2viewer' utility from 
@@ -71,6 +66,11 @@
   (set-process-query-on-exit-flag (get-process "h2viewer") nil))
 
 
+
+(defun keyword-help-lookup-info (keyword)
+  (interactive "Skeyword: ")
+  (info-lookup-symbol keyword))
+
 ;; GNOME DevHelp
 ;; got from devhelp's source package
 (defun keyword-help-lookup-devhelp (keyword)
@@ -79,14 +79,12 @@
   (set-process-query-on-exit-flag (get-process "devhelp") nil))
 
 (defun keyword-help-lookup-web (keyword url)
-  ;;FIXME: use `webjump'?
   (require 'url-util)
   (if (string-match "%s" url)
       (setq url (replace-regexp-in-string "%s" (url-hexify-string keyword) url))
     (setq url (concat url (url-hexify-string keyword))))
   (browse-url url)
   )
-
 
 (defun keyword-help-lookup-cmdline (keyword cmdline &optional bufname)
   (if (string-match "%s" cmdline)
@@ -96,6 +94,14 @@
          (display-message-or-buffer result (or bufname (format "*%sHelp*" mode-name))))
   )
 
+(defun keyword-help-lookup-elisp (keyword func &optional pkg args)
+  "Call an elisp function to lookup documentation."
+  (if (and pkg
+           (not (require pkg nil t)))
+      (message "failed to load package '%s' for '%s'" pkg func)
+    (if (functionp func)
+        (apply func keyword args)
+      (message "error: %s is not a elisp function." (symbol-name func)))))
 
 ;;; sources
 (setq keyword-help-source-alist      
