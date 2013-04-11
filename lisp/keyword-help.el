@@ -142,6 +142,7 @@ NOTE: not work on windows (maybe works on cygwin)."
       (message "error: %s is not a elisp function." (symbol-name func)))))
 
 ;;; Sources
+
 (setq keyword-help-source-alist      
   '(
     (fundamental-mode ("*google" web "http://www.google.com.hk/search?q=%s")
@@ -183,7 +184,7 @@ NOTE: not work on windows (maybe works on cygwin)."
     
 
 (setq keyword-help-last-source
-      '((python-mode . "d7hlp")
+      '((python-mode . "chm")
         (emacs-lisp-mode . "chm")
         (xahk-mode . "chm")))
 
@@ -200,6 +201,7 @@ NOTE: not work on windows (maybe works on cygwin)."
 (defun keyword-help--get-mode-sources (majormode)
   (append (keyword-help--get-mode-config majormode)
           (keyword-help--get-mode-config 'fundamental-mode)))
+
 
 ;;; User Commands
 
@@ -220,9 +222,9 @@ With the prefix key, it would let you choose which source to invoke."
                 (completing-read-func (if (fboundp 'ido-completing-read)
                                           'ido-completing-read
                                         'completing-read))
-                (last-source (cdr (assq major-mode keyword-help-last-source)))
+                (last-source-name (cdr (assq major-mode keyword-help-last-source))))
            (if (or current-prefix-arg
-                   (not (member last-source all-sources-names)))
+                   (not (member last-source-name all-sources-names)))
              (apply completing-read-func
                     "Source: "
                     all-sources-names
@@ -230,23 +232,24 @@ With the prefix key, it would let you choose which source to invoke."
                     t
                     nil)))))
   (let* ((all-sources (keyword-help--get-mode-sources major-mode))
-         (source (or source
-                       (cdr (assq major-mode keyword-help-last-source)))
+         (source-name (or source
+                          (cdr (assq major-mode keyword-help-last-source))))
          (help-source (if all-sources                 
-                   (assoc source all-sources)))
+                          (assoc source-name all-sources)))
          (method (if help-source
-                     (concat "keyword-help-lookup-" (symbol-name (nth 1 help-source)))
-                   "keyword-help-lookup-default"))
+                     (concat "keyword-help-lookup-" (symbol-name (nth 1 help-source)))))
          (params (if help-source
                      (cddr help-source))))
     (if help-source
         (if (intern-soft method)
             (progn
               (message "Calling '%s' for \"%s\" with params: %s" method keyword params)
-              ;;TODO: save last-source
+              (if (assq major-mode keyword-help-last-source)
+                  (setcdr (assq major-mode keyword-help-last-source) source-name)
+                (add-to-list keyword-help-last-source (cons major-mode source-name)))
               (apply (intern method) keyword params))
           (message "keyword-help: no backend configurated for: %s" (symbol-name (nth 1 help-source))))
-      (message "No configuration for '%s' in `keyword-help-source-alist' (source:%s)" major-mode source)
+      (message "No configuration for '%s' in `keyword-help-source-alist' (source:%s)" major-mode source-name)
       )))
 
 (define-key global-map (kbd "<C-f1>") 'keyword-help-lookup)
