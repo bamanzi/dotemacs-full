@@ -173,7 +173,7 @@
   `(progn
      (add-hook 'after-save-hook 'backup-each-save)
 
-     (if (eq system-type 'windows-nt)
+     (if (memq system-type '(windows-nt ms-dos cygwin))
 
          ;; for windows, remove ':' in backup filename 
          (defun backup-each-save-compute-location (filename)

@@ -41,7 +41,10 @@
   (let ( (emacs-lisp-mode-hook '()) )
     (dired-map-over-marks-check (function dired-byte-compile) arg 'byte-compile t)))
 
-(define-key dired-mode-map "B" 'bmz/dired-do-byte-compile)
+(eval-after-load "dired"
+  `(progn
+     (define-key dired-mode-map "B" 'bmz/dired-do-byte-compile)
+     ))
 
 
 ;;** code folding

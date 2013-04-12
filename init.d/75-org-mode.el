@@ -56,9 +56,9 @@
 
 (defun bmz/init-org-level-faces (frame)
   (interactive (list (selected-frame)))
-  (set-face-attribute 'org-level-1 frame :height 1.5 :bold t)
-  (set-face-attribute 'org-level-2 frame :height 1.3 :bold t)
-  (set-face-attribute 'org-level-3 frame :height 1.1))
+  (set-face-attribute 'org-level-1 frame :height 1.5 :bold t :inverse-video t)
+  (set-face-attribute 'org-level-2 frame :height 1.3 :bold t :inverse-video t)
+  (set-face-attribute 'org-level-3 frame :height 1.1 :inverse-video t))
 
 ;;FIXME: not work?
 (add-hook 'org-mode-hook 'org-mode-init-face)
