@@ -136,8 +136,8 @@
   `(progn
      (add-to-list 'Info-default-directory-list
                   (file-name-directory (symbol-file 'pydoc-info)))
-     (add-to-list 'Info-directory-list
-                  (file-name-directory (symbol-file 'pydoc-info)))
+     ;;force info re-init `Info-directory-list'
+     (setq Info-directory-list nil)
      ;;then use C-h S (`info-lookup-symbol') to lookup python doc
 
      ))

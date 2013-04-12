@@ -5,7 +5,7 @@
 ;;  (define-key key-translation-map (kbd "<lwindow>") (kbd "<f11>"))
 
   (setq w32-lwindow-modifier 'super)
-  (define-key key-translation-map (kbd "s-w>") (kbd "<f11>"))  
+  (define-key key-translation-map (kbd "s-w") (kbd "<f11>"))  
 
   (setq w32-rwindow-modifier 'super)
   (setq w32-pass-rwindow-to-system nil)
@@ -41,7 +41,9 @@
                      (expand-file-name "usr/share/info" cygwin-root-path))
         (add-to-list 'Info-default-directory-list
                      (expand-file-name "usr/local/share/info"  cygwin-root-path))
-
+        ;;force info re-init `Info-directory-list'
+        (setq Info-directory-list nil)        
+        
         (require 'woman)
         (add-to-list 'woman-manpath
                      (expand-file-name "usr/share/man" cygwin-root-path))
