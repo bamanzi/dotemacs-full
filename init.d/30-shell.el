@@ -46,19 +46,6 @@
       eshell-mv-overwrite-files nil
       eshell-ln-overwrite-files nil)
 
-;;stolen from http://linuxtoy.org/archives/emacs-eshell.html
-(eval-after-load "auto-complete"
-  `(progn
-     (ac-define-source eshell-pcomplete
-       '((candidates . pcomplete-completions)))
-
-     (add-to-list 'ac-modes 'eshell-mode)
-     ))
-
-;; (defun ac-complete-eshell-pcomplete ()
-;;   (interactive)
-;;   (auto-complete '(ac-source-eshell-pcomplete)))
-
 (defun eshell-maybe-bol ()
   (interactive)
   (let ((p (point)))
@@ -76,13 +63,38 @@
 
   (setq outline-regexp "^.* $")
   (outline-minor-mode t)
+  )
 
+(add-hook 'eshell-mode-hook 'bmz/eshell-mode-init)
+
+;;*** completion
+;;stolen from http://linuxtoy.org/archives/emacs-eshell.html
+(eval-after-load "auto-complete"
+  `(progn
+     (ac-define-source eshell-pcomplete
+       '((candidates . pcomplete-completions)))
+
+     (add-to-list 'ac-modes 'eshell-mode)
+
+     ))
+
+(defun bmz/eshell-mode-init-ac ()
+  (if (require 'pcase nil t) ;;for Emacs 23, you need fetch a pcase.el from Emacs 24
+      (require 'pcmpl-args nil t))
+  (require 'pcmpl-apt nil t)
+  (require 'pcmpl-git nil t)
+  ;; `monky.el' would provide pcomplete support for `hg'
+  
   (when (boundp 'ac-sources)
     (add-to-list 'ac-sources 'ac-source-files-in-current-dir)
     (add-to-list 'ac-sources 'ac-source-eshell-pcomplete))
   )
 
-(add-hook 'eshell-mode-hook 'bmz/eshell-mode-init)
+(add-hook 'eshell-mode-hook 'bmz/eshell-mode-init-ac)
+
+;; (defun ac-complete-eshell-pcomplete ()
+;;   (interactive)
+;;   (auto-complete '(ac-source-eshell-pcomplete)))
 
 ;;*** eshell commands
 (defun eshell/vim (&rest args)
