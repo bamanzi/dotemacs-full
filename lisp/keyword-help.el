@@ -175,7 +175,39 @@ NOTE: not work on windows (maybe works on cygwin)."
                  ("apidocruby" web "http://apidock.com/ruby/search?query=%s")
                  ("apidocror" web  "http://apidock.com/rails/search?query=%s")
                  ("railsdock" web  "http://apidock.com/rails/search?query=%s"))                 
-    (enh-ruby-mode . ruby-mode)    
+    (enh-ruby-mode . ruby-mode)
+    (rhtml-mode . ruby-mode)    
+    (css-mode ("mozilla" web "https://duckduckgo.com/?q=!css %s")
+              ("css-tricks" web "http://css-tricks.com/search-results/?q=%s")
+              ("sitepoint" web "http://www.google.com.hk/search?q=css+%s+site%3Areference.sitepoint.com")
+              ("sitepoint-lucky" web "http://www.google.com.hk/search?q=css+%s+site%3Areference.sitepoint.com&btnI=1")
+              ;; CHM & DevHelp: http://code.google.com/p/htmlhelp/downloads/list?can=2&q=css
+              ("css-2.1-chmc" chm "d:\\web\\css-2.1.chm")
+              ("csss-2.1-devhelp" devhelp))
+    (html-mode  ("sitepoint" web "http://www.google.com.hk/search?q=html+%s+site%3Areference.sitepoint.com")
+                ("sitepoint-lucky" web "http://www.google.com.hk/search?q=html+%s+site%3Areference.sitepoint.com&btnI=1")
+                ;; CHM & DevHelp http://code.google.com/p/htmlhelp/downloads/list?can=2&q=html
+                ("chm" chm "d:\\web\\html-4.01.chm")
+                ("devhelp" devhelp))
+    (web-mode . html-mode)
+    (javascript ("mozilla" web "https://developer.mozilla.org/en/search?q=javascript+%s")
+                ;; M$ JScript CHM http://www.microsoft.com/en-us/download/details.aspx?id=2764
+                ("jscript.chm" chm "d:\\doc\\wsh\\script56.chm")
+                )
+    (espresso-mode . javascript-mode)
+    (js2-mode . javascript-mode)
+    (js3-mode . javascript-mode)
+    (php-mode ("php.net" web "http://www.php.net/%s")      ;; refer http://www.php.net/urlhowto.php for more info
+              ("php.net/zh" web "http://www.php.net/zh/%s"))
+    (perl-mode ("perldoc-f" cmdline "perldoc" "-f %s")
+               ("perldoc-v" cmdline "perldoc" "-v %s")
+               ("perldoc" cmdline "perldoc")
+               ("perlmonks" web "http://www.perlmonks.org/?node=%s")
+               ;;CHM & DevHelp: http://code.google.com/p/htmlhelp/downloads/list?can=2&q=perl
+               ("devhelp" devhelp)
+               ("chm" chm "e:\\perl5\\perl-5.10.0.chm"))
+    (xahk-mode ("chm" chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm")
+               ("web" web  "http://duckduckgo.com/?q=!ahk %s"))    
     (xahk-mode ("default" chm  "d:\\Programs\\AutoHotkey\\AutoHotkey-chs.chm"))
     (ahk-mode . xahk-mode)
     (php-mode ("default" web "http://www.php.net/%s")      ;; refer http://www.php.net/urlhowto.php for more info
@@ -313,4 +345,4 @@ ARG given, `keyword-help-url' is used."
   
 (provide 'keyword-help)
 
-  
+;;; keyword-help.el ends here
