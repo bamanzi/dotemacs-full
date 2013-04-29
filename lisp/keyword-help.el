@@ -257,12 +257,16 @@ With the prefix key, it would let you choose which source to invoke."
                 (last-source-name (cdr (assq major-mode keyword-help-last-source))))
            (if (or current-prefix-arg
                    (not (member last-source-name all-sources-names)))
-             (apply completing-read-func
-                    "Source: "
-                    all-sources-names
-                    nil
-                    t
-                    nil)))))
+               (replace-regexp-in-string
+                " (.+)$" ""
+                (apply completing-read-func
+                       "Source: "
+                       (mapcar #'(lambda (src)
+                                   (format "%s (%s)" (car src) (nth 1 src)))
+                               all-sources)
+                       nil
+                       t
+                       nil))))))
   (let* ((all-sources (keyword-help--get-mode-sources major-mode))
          (source-name (or source
                           (cdr (assq major-mode keyword-help-last-source))))
