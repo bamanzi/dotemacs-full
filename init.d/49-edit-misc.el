@@ -3,19 +3,6 @@
 ;;*** linum-mode: emacs built-in 
 ;; linum-mode
 
-;;a better goto-line
-;;stolen from http://whattheemacsd.com//key-bindings.el-01.html
-(global-set-key [remap goto-line] 'goto-line-with-feedback)
-
-(defun goto-line-with-feedback ()
-  "Show line numbers temporarily, while prompting for the line number input"
-  (interactive)
-  (unwind-protect
-      (progn
-        (linum-mode 1)
-        (goto-line (read-number "Goto line: ")))
-    (linum-mode -1)))
-
 ;;*** setnu.el
 (autoload 'setnu-mode "setnu" "Toggle setnu-mode." t)
 
@@ -83,6 +70,23 @@ current line instead."
            (line-beginning-position 2)))))
 )
 
+;;*** copy rectangle (backport from emacs-24)
+;;stolen from http://ergoemacs.org/emacs/emacs_string-rectangle_ascii-art.html
+(unless (functionp 'copy-rectangle-as-kill)  ;; emacs-24 has this
+  (defun copy-rectangle-to-clipboard (p1 p2)
+    "Copy region as column (rectangle) to operating system's clipboard.
+This command will also put the text in register 0.
+
+See also: `kill-rectangle', `copy-to-register'."
+    (interactive "r")
+    (let ((x-select-enable-clipboard t))
+      (copy-rectangle-to-register ?0 p1 p2)
+      (kill-new
+       (with-temp-buffer
+         (insert-register ?0)
+         (buffer-string) )) ) )
+
+  (define-key ctl-x-r-map (kbd "M-w") 'copy-rectangle-as-kill))
 
 ;;** secondary selection
 (autoload 'secondary-to-primary "second-sel" nil t)
