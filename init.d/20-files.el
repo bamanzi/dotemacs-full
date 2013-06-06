@@ -173,7 +173,18 @@
   `(progn
      (add-hook 'after-save-hook 'backup-each-save)
 
-     (if (memq system-type '(windows-nt ms-dos cygwin))
+     (when (memq system-type '(windows-nt ms-dos cygwin))
+
+         (defun backup-each-save ()
+           (let ((bfn (buffer-file-name)))
+             (when (and (file-exists-p bfn)
+                        (or backup-each-save-remote-files
+                            (not (file-remote-p bfn)))
+                        (funcall backup-each-save-filter-function bfn)
+                        (or (not backup-each-save-size-limit)
+                            (<= (buffer-size) backup-each-save-size-limit)))
+               (copy-file bfn (backup-each-save-compute-location bfn) t t t))))
+
 
          ;; for windows, remove ':' in backup filename 
          (defun backup-each-save-compute-location (filename)
