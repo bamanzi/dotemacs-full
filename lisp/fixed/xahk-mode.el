@@ -58,6 +58,9 @@
   (define-key xahk-mode-map (kbd "M-TAB") 'xahk-complete-symbol)
   (define-key xahk-mode-map [remap comment-dwim] 'xahk-comment-dwim)
 
+  (define-key xahk-mode-map (kbd "RET") 'newline)
+  (define-key xahk-mode-map (kbd "TAB") 'tab-to-tab-stop)
+
   (define-key xahk-mode-map [menu-bar] (make-sparse-keymap))
 
   (let ((menuMap (make-sparse-keymap "AHK")))
@@ -76,7 +79,7 @@
   (modify-syntax-entry ?\n "> b" synTable)
   (modify-syntax-entry ?! "." synTable)
   (modify-syntax-entry ?@ "." synTable)
-  (modify-syntax-entry ?# "'" synTable)
+  (modify-syntax-entry ?# "_" synTable)
   (modify-syntax-entry ?$ "." synTable)
   (modify-syntax-entry ?% "." synTable)
   (modify-syntax-entry ?^ "." synTable)
@@ -94,7 +97,7 @@
   (modify-syntax-entry ?. "." synTable)
   (modify-syntax-entry ?/ "." synTable)
   (modify-syntax-entry ?- "." synTable)
-  (modify-syntax-entry ?_ "." synTable)
+  (modify-syntax-entry ?_ "w" synTable)
   (modify-syntax-entry ?\\ "." synTable) ; \ is path separator
   synTable)
   "Syntax table for `xahk-mode'.")
