@@ -282,7 +282,7 @@ With the prefix key, it would let you choose which source to invoke."
               (message "Calling '%s' for \"%s\" with params: %s" method keyword params)
               (if (assq major-mode keyword-help-last-source)
                   (setcdr (assq major-mode keyword-help-last-source) source-name)
-                (add-to-list keyword-help-last-source (cons major-mode source-name)))
+                (add-to-list 'keyword-help-last-source (cons major-mode source-name)))
               (apply (intern method) keyword params))
           (message "keyword-help: no backend configurated for: %s" (symbol-name (nth 1 help-source))))
       (message "No configuration for '%s' in `keyword-help-source-alist' (source:%s)" major-mode source-name)
