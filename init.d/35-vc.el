@@ -10,8 +10,59 @@
 
 ;;*** svn 1.7
 ;;you need dsvn.el or vc-svn17.el
-	
+
+
+;;** git
+(autoload 'magit-status  "magit"
+  "Open a Magit status buffer for the Git repository containing" t)
+(autoload 'magit-log "magit"
+  "Command for `log'." t)
+
+;;*** git-gutter
+;; https://github.com/syohex/emacs-git-gutter
+(autoload 'git-gutter:toggle "git-gutter"
+  "toggle to show diff information" t)
+
+(defun frame-reinit-git-gutter (&optional frame)
+  "Choose `git-gutter' implementation from `git-gutter.el' or `git-gutter-fringe.el'."
+  (interactive)
+  (if (require 'git-gutter-fringe nil t)
+      (if (display-graphic-p)
+          (setq git-gutter:init-function 'git-gutter-fr:init
+                git-gutter:view-diff-function 'git-gutter-fr:view-diff-infos
+                git-gutter:clear-function 'git-gutter-fr:clear)
+        (setq git-gutter:init-function nil
+                git-gutter:view-diff-function 'git-gutter:view-diff-infos
+                git-gutter:clear-function 'git-gutter:clear-diff-infos))))
+
+(eval-after-load "magit"
+  `(progn
+     (add-hook 'after-make-frame-functions 'frame-reinit-git-gutter)
+     ))
+
+
+;;** hg
+(autoload 'monky-status "monky"
+  "Show the status of Hg repository." t)
+(autoload 'monky-log  "monky"
+  "Undocumented." t)
+
+
 ;;** misc
+;;*** diff-hl
+;;Highlight uncommitted changes when editing
+;;similar to `git-gutter', but works
+(autoload 'diff-hl-mode "diff-hl"
+  "Toggle VC diff fringe highlighting." t)
+
+(eval-after-load "diff-hl"
+  `(progn
+     (if (boundp 'prog-mode-hook)
+         (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode))
+     (add-hook 'vc-dir-mode-hook 'turn-on-diff-hl-mode)
+     ))
+
+
 ;;*** vc-jump (similar to dired-jump)
 (autoload 'vc-jump "vc-jump"
   "jump to status buffer for the current VC." t)
@@ -42,7 +93,7 @@
 
      ))
 
-;*** show vc status as icons (use tortoisesvn's icon set)
+;;*** show vc status as icons (use tortoisesvn's icon set)
 (defconst vc-icon-dir "d:/Program Files/TortoiseSVN/Icons/XPStyle/")
 (add-to-list 'image-load-path vc-icon-dir)
 
