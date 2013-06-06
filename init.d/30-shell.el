@@ -24,17 +24,7 @@
       ))
   (message "`shell-file-name' now set to %s" shell-file-name)
   )
-            
-        
 
-;;** shell-mode
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
-;;*** show current dir in mode-line
-(defun add-mode-line-dirtrack ()
-  (add-to-list 'mode-line-buffer-identification 
-               '(:propertize (" " default-directory " ") face dired-directory)))
-;;(add-hook 'shell-mode-hook 'add-mode-line-dirtrack)
 
 
 ;;** eshell
@@ -53,19 +43,48 @@
     (if (= p (point))
         (beginning-of-line))))
 
-;;FIXME: (add-to-list hs-special-modes-alist
-;;             '(eshell-mode "^.* $" nil nil))
+(defun kai-eshell-insert-last-word (n)
+  (interactive "p")
+  (insert (car (reverse
+                (split-string
+                 (eshell-previous-input-string (- n 1)))))))
 
 (defun bmz/eshell-mode-init ()
   ;; swap <home> and C-a
   (define-key eshell-mode-map (kbd "C-a") 'eshell-maybe-bol)
   (define-key eshell-mode-map (kbd "<home>") 'eshell-maybe-bol)
 
+  (eshell-toggle-cursor-keybinding 1)
+  
+  ;;I'd like M-s as highlight-xxx prefix key
+  (define-key eshell-mode-map (kbd "M-s") nil)
+
+  (if (fboundp 'drag-stuff-mode)
+      (drag-stuff-mode -1))
+
+  (define-key eshell-mode-map (kbd "<M-up>")   'eshell-previous-matching-input)
+  (define-key eshell-mode-map (kbd "<M-down>") 'eshell-next-matching-input)
+  
+  (define-key eshell-mode-map (kbd "M-.") 'kai-eshell-insert-last-word)  
+  
+  
   (setq outline-regexp "^.* $")
   (outline-minor-mode t)
+
+;;FIXME: (add-to-list hs-special-modes-alist
+;;             '(eshell-mode "^.* $" nil nil))
+
+  ;;prompt
+  (setq eshell-prompt-function (lambda nil
+                                 (concat
+                                  (propertize (eshell/pwd) 'face `(:foreground "blue"))
+                                  (propertize " $ " 'face `(:foreground "green")))))
+  (setq eshell-highlight-prompt nil)  
   )
 
 (add-hook 'eshell-mode-hook 'bmz/eshell-mode-init)
+
+
 
 ;;*** completion
 ;;stolen from http://linuxtoy.org/archives/emacs-eshell.html
@@ -97,7 +116,7 @@
 ;;   (auto-complete '(ac-source-eshell-pcomplete)))
 
 ;;*** eshell commands
-(defun eshell/vim (&rest args)
+(defun eshell/edit (&rest args)
   "Invoke find-file' on the file.
 \"vi +42 foo\" also goes to line 42 in the buffer."
   (while args
@@ -108,9 +127,11 @@
           (goto-line line))
       (find-file (pop args)))))
 
-(defalias 'eshell/vi 'eshell/vim)
+(defalias 'eshell/vi 'eshell/edit)
+(defalias 'eshell/vim 'eshell/edit)
+(defalias 'eshell/emacs 'eshell/edit)
 
-(defun eshell/start (file)
+(defun eshell/open (file)
     "Invoke system's associated application for FILE.
 On Windows, baskslashes is substituted with slashes."
     (if (eq system-type 'gnu/linux)
@@ -120,11 +141,46 @@ On Windows, baskslashes is substituted with slashes."
                        (subst-char-in-string ?\\ ?/ (expand-file-name file))
 		       nil)))
 
+(defalias 'eshell/start 'eshell/open)
+
 (defun eshell/clear()
   "to clear the eshell buffer."
   (interactive)  
   (let ((inhibit-read-only t))
     (erase-buffer)))
+
+;;autojump
+(eval-after-load 'eshell
+  '(require 'eshell-autojump nil t))
+;;use command `j' to list your MRU path,
+;;use command `j regexp' to jump to one
+
+;;*** cursor keysc
+
+(defun comint-toggle-cursor-keybinding (arg)
+  "Toggle up/down key between {previous,next}-line and {previous,next}-input."
+  (interactive "P")
+  (if (or arg (eq (key-binding (kbd "<up>") 'previous-line)))
+      (progn
+        (define-key comint-mode-map (kbd "<up>")   'comint-previous-input)
+        (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
+        (message "up/down key now binding to `eshell-{previous,next}-input'."))
+    (progn
+        (define-key comint-mode-map (kbd "<up>")   'previous-line)
+        (define-key comint-mode-map (kbd "<down>") 'next-line))))
+
+(defun eshell-toggle-cursor-keybinding (arg)
+  "Toggle up/down key between {previous,next}-line and {previous,next}-input."
+  (interactive "P")
+  (if (or arg (eq (key-binding (kbd "<up>") 'previous-line)))
+      (progn
+        (define-key eshell-mode-map (kbd "<up>")   'eshell-previous-input)
+        (define-key eshell-mode-map (kbd "<down>") 'eshell-next-input)
+        (message "up/down key now binding to `eshell-{previous,next}-input'."))
+    (progn
+        (define-key eshell-mode-map (kbd "<up>")   'previous-line)
+        (define-key eshell-mode-map (kbd "<down>") 'next-line))))
+
 
 ;;*** esh-toggle
 (autoload 'eshell-toggle "esh-toggle"
@@ -190,6 +246,15 @@ On Windows, baskslashes is substituted with slashes."
 
 
 ;;** misc
+;;** ansi-color
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+;;*** show current dir in mode-line
+(defun add-mode-line-dirtrack ()
+  (add-to-list 'mode-line-buffer-identification 
+               '(:propertize (" " default-directory " ") face dired-directory)))
+;;(add-hook 'shell-mode-hook 'add-mode-line-dirtrack)
+
 ;;*** oneliner: a special shell supporing piping to/from buffer
 ;; http://oneliner-elisp.sourceforge.net/
 ;; a special shell that support piping input/output from/to emacs buffer
