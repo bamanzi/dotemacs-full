@@ -20,11 +20,12 @@
 
 (add-hook 'find-file-hook 'bmz/turn-on-hideshow)
 
-(defadvice hideshowvis-minor-mode (before disable-hideshowvis-for-term activate)
-  (if (not (display-graphic-p))
-      (error "`hideshowvis' would cause emacs hanging on term. cancelled")))
-
 ;;*** hideshowvis add +/- symbol in left fringe
+(defadvice hideshowvis-minor-mode (around disable-hideshowvis-for-term activate)
+  (if (not (display-graphic-p))
+      (display-warning 'hideshowvis "`hideshowvis' would cause emacs hanging on term. cancelled")
+    ad-do-it))
+
 (autoload 'hideshowvis-enable "hideshowvis"
   "Add markers to the fringe for regions foldable by `hideshow-mode'." t)
 (autoload 'hideshowvis-minor-mode "hideshowvis"

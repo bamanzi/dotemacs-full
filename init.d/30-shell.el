@@ -160,26 +160,32 @@ On Windows, baskslashes is substituted with slashes."
 (defun comint-toggle-cursor-keybinding (arg)
   "Toggle up/down key between {previous,next}-line and {previous,next}-input."
   (interactive "P")
-  (if (or arg (eq (key-binding (kbd "<up>") 'previous-line)))
+  (define-key comint-mode-map (kbd "<<Scroll_Lock>") 'comint-toggle-cursor-keybinding)  
+  (if (or arg (eq (key-binding (kbd "<up>")) 'previous-line))
       (progn
         (define-key comint-mode-map (kbd "<up>")   'comint-previous-input)
         (define-key comint-mode-map (kbd "<down>") 'comint-next-input)
-        (message "up/down key now binding to `eshell-{previous,next}-input'."))
+        (message "up/down key now binding to `comint-{previous,next}-input'."))
     (progn
         (define-key comint-mode-map (kbd "<up>")   'previous-line)
-        (define-key comint-mode-map (kbd "<down>") 'next-line))))
+        (define-key comint-mode-map (kbd "<down>") 'next-line)
+        (message "up/down key now binding to `{previous,next}-input'."))))
+        
 
 (defun eshell-toggle-cursor-keybinding (arg)
   "Toggle up/down key between {previous,next}-line and {previous,next}-input."
   (interactive "P")
-  (if (or arg (eq (key-binding (kbd "<up>") 'previous-line)))
+  (define-key eshell-mode-map (kbd "<<Scroll_Lock>") 'eshell-toggle-cursor-keybinding)
+  (if (or arg (eq (key-binding (kbd "<up>")) 'previous-line))
       (progn
         (define-key eshell-mode-map (kbd "<up>")   'eshell-previous-input)
         (define-key eshell-mode-map (kbd "<down>") 'eshell-next-input)
         (message "up/down key now binding to `eshell-{previous,next}-input'."))
     (progn
         (define-key eshell-mode-map (kbd "<up>")   'previous-line)
-        (define-key eshell-mode-map (kbd "<down>") 'next-line))))
+        (define-key eshell-mode-map (kbd "<down>") 'next-line)
+        (message "up/down key now binding to `{previous,next}-input'."))))
+        
 
 
 ;;*** esh-toggle

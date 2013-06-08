@@ -21,9 +21,9 @@
   "Asks a user about database name and query," t)
 
 (progn
-  (define-key search-map (kbd "M-d s") 'dictem-run-search)
-  (define-key search-map (kbd "M-d m") 'dictem-run-match)
-  (define-key search-map (kbd "M-d d") 'dictem-run-define)
+  (define-key search-map (kbd "d s") 'dictem-run-search)
+  (define-key search-map (kbd "d m") 'dictem-run-match)
+  (define-key search-map (kbd "d d") 'dictem-run-define)
   )
 
 (defun dictem-mode-outline ()
@@ -61,7 +61,7 @@
 (setq sdcv-dictionary-simple-list '("朗道英汉字典5.0" "朗道汉英字典5.0"))
 
 (define-key search-map "D"  'sdcv-search-pointer+)
-(define-key search-map "dd"  'sdcv-search-detail)
+(define-key search-map "d SPC"  'sdcv-search-detail)
 
 
 (defun sdcv-search-word-at-pt-mouse (event)
