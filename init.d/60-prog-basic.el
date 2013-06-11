@@ -164,11 +164,12 @@
       (ido-completing-read
        "Project file: " (tags-table-files) nil t)))))
  
-(global-set-key [remap find-tag] 'ido-find-tag)
+;;(global-set-key [remap find-tag] 'ido-find-tag) ;;anything-c-etags-select is better
 ;;(global-set-key (kbd "C-M-.") 'ido-find-file-in-tag-files)
 
 ;;*** anything-tags
 ;;anything-c-etag-select
+(global-set-key (kbd "<f5> .") 'anything-c-etags-select)
 
 
 ;;** list & choose method
