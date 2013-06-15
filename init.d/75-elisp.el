@@ -1,3 +1,5 @@
+(defalias 'fdap 'find-function-at-point)
+(defalias 'fvap 'find-variable-at-point)
 
 (global-set-key (kbd "<f3> f") 'find-function-at-point)
 (global-set-key (kbd "<f3> F") 'find-function)
@@ -18,32 +20,34 @@
   (global-set-key (kbd "<f10> : b c") 'byte-compile-file)
   )
 
-(defun bmz/check-parens ()
+(defun check-parens-ok? ()
   (interactive)
   (check-parens)
   (message "%s: OK" (buffer-file-name)))
 
-(define-key emacs-lisp-mode-map (kbd "<M-f9>") 'bmz/check-parens)
+(define-key emacs-lisp-mode-map (kbd "<M-f9>") 'check-parens-ok?)
 
-(defun bmz/byte-compile-file (arg)
+(defun byte-compile-file- (arg)
    (interactive "P")
-   (let ( (emacs-lisp-mode-hook '()) )
+   (let ( (emacs-lisp-mode-hook '())
+          (find-file-hook '()) )
      (if arg
          (call-interactively 'byte-compile-file)
        (byte-compile-file (buffer-file-name)))))
 
-(define-key emacs-lisp-mode-map (kbd "<C-f9>") 'bmz/byte-compile-file)
+(define-key emacs-lisp-mode-map (kbd "<C-f9>") 'byte-compile-file-)
 
 
-(defun bmz/dired-do-byte-compile (&optional arg)
+(defun dired-do-byte-compile- (&optional arg)
   "Byte compile marked (or next ARG) Emacs Lisp files."
   (interactive "P")
-  (let ( (emacs-lisp-mode-hook '()) )
+  (let ( (emacs-lisp-mode-hook '())
+         (find-file-hook '()) )
     (dired-map-over-marks-check (function dired-byte-compile) arg 'byte-compile t)))
 
 (eval-after-load "dired"
   `(progn
-     (define-key dired-mode-map "B" 'bmz/dired-do-byte-compile)
+     (define-key dired-mode-map "B" 'dired-do-byte-compile-)
      ))
 
 

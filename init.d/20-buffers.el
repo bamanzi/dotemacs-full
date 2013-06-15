@@ -94,7 +94,7 @@
 (global-set-key (kbd "C-c d") 'diff-buffer-with-file/bmz)
 (global-set-key (kbd "C-c D") 'ediff-buffer-with-file) ;; http://www.loveshack.ukfsn.org/emacs/fx-misc.el
 
-(defun bmz/revert-buffer ()
+(defun revert-buffer+ ()
   "revert bufer with close & reopen the file, so local variable would be re-inited."
   (interactive)
   (let ( (file-name (buffer-file-name))
@@ -103,7 +103,7 @@
         (find-file file-name)
         (goto-char pt))))
 
-(global-set-key (kbd "C-x M-r") 'bmz/revert-buffer)
+(global-set-key (kbd "C-x M-r") 'revert-buffer+)
 
 
 

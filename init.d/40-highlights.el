@@ -83,14 +83,14 @@
 
 ;;** highlight matching paren/pair
 
-(defun bmz/toggle-show-paren-style ()
+(defun toggle-show-paren-style ()
   (interactive)
   (if (eq show-paren-style 'parenthesis)
       (setq show-paren-style 'expression)
     (setq show-parent-style 'parenthesis))
   (message "show-paren-style switched to %s." show-paren-style))
 
-(global-set-key (kbd "<C-f10> p") 'bmz/toggle-show-paren-style)
+(global-set-key (kbd "<C-f10> p") 'toggle-show-paren-style)
 
 
 (autoload 'highlight-parentheses-mode "highlight-parentheses" nil t)

@@ -118,6 +118,17 @@ If a region is active (a phrase), lookup that phrase."
 ;;** speek/synthesizer
 
 ;;** translation
+(setq google-translate-default-source-language "en"
+      google-translate-default-target-language "zh-CN")
+
+(autoload 'google-translate-at-point  "google-translate"
+  "Translate the word at point or the words in the active region." t)
+
+(autoload 'google-translate-query-translate "google-translate"
+  "Interactively translate text with Google Translate." t)
+
+
+
 ;;TODO: babel.el
 (defun google-translate (tolang)
   "Translate current word's to another language with Google Translate service.

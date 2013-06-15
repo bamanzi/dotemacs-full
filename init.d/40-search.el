@@ -15,24 +15,24 @@
 
 
 ;;** search selection
-(defun bmz/search-selection-forward ()
+(defun search-selection-forward ()
   (interactive)
-  (let ( (symbol (bmz/get-symbol-selected-or-current)) )
+  (let ( (symbol (get-symbol-selected-or-current)) )
     (deactivate-mark)
     (setq isearch-string symbol)
     (call-interactively 'isearch-repeat-forward)
   ))
 
-(defun bmz/search-selection-backward ()
+(defun search-selection-backward ()
   (interactive)
-  (let ( (symbol (bmz/get-symbol-selected-or-current)) )
+  (let ( (symbol (get-symbol-selected-or-current)) )
     (deactivate-mark)
     (setq isearch-string symbol)
     (call-interactively 'isearch-repeat-backward)
   ))
 
-(define-key global-map (kbd "<C-f3>")   'bmz/search-selection-forward)
-(define-key global-map (kbd "<S-f3>")   'bmz/search-selection-backward)
+(define-key global-map (kbd "<C-f3>")   'search-selection-forward)
+(define-key global-map (kbd "<S-f3>")   'search-selection-backward)
 
 ;;** search current symbol
 (autoload 'highlight-symbol-next  "highlight-symbol"
@@ -44,14 +44,14 @@
 (define-key search-map (kbd "#") 'highlight-symbol-prev)
 
 ;;** occur
-(defun bmz/occur-at-point (nlines)
+(defun occur-at-point (nlines)
   (interactive "P")
-  (occur (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
+  (occur (format "%s" (get-symbol-selected-or-current)) nlines))
 
-(defun bmz/multi-occur-at-point (nlines)
+(defun multi-occur-at-point (nlines)
   (interactive "P")
   ;;FIXME: use multi-occur?
-  (multi-occur nil (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
+  (multi-occur nil (format "%s" (get-symbol-selected-or-current)) nlines))
 
 
 ;;*** multi-occur in same mode buffers
@@ -65,30 +65,30 @@
            (add-to-list 'buffer-mode-matches buf))))
    buffer-mode-matches))
  
-(defun bmz/multi-occur-in-this-mode ()
+(defun multi-occur-in-this-mode ()
   "Show all lines matching REGEXP in buffers with this major mode."
   (interactive)
   (multi-occur
    (get-buffers-matching-mode major-mode)
-   (format "%s" (bmz/get-symbol-selected-or-current))))
+   (format "%s" (get-symbol-selected-or-current))))
 
 ;;*** multi-occur on matching buffers
 ;;`multi-occur-in-matching-buffers' in replace.el
 
 
 ;;** grep
-(defun bmz/grep-symbol-at-point-same-ext()
+(defun grep-symbol-at-point-same-ext()
   (interactive)
   (grep (format "grep -nH %s *.%s %s"
-		(bmz/get-symbol-selected-or-current)
+		(get-symbol-selected-or-current)
         (file-name-extension buffer-file-name)
 		"--exclude \"#*.*\" --exclude \"*.*~\""
 		)))
 
-(defun bmz/grep-symbol-at-point()
+(defun grep-symbol-at-point()
   (interactive)
   (grep (format "grep -nH %s *.* %s"
-		(bmz/get-symbol-selected-or-current)
+		(get-symbol-selected-or-current)
 		"--exclude \"#*.*\" --exclude \"*.*~\""
 		)))
 
@@ -101,28 +101,28 @@
 (autoload 'ack "ack" "Use ack where you might usually use grep." t)
 (autoload 'ack-mode "ack" "Use ack where you might usually use grep." nil)
 
-(defun bmz/ack-at-point (typep recursively)
+(defun ack-at-point (typep recursively)
   (require 'ack)
   (let ( (command (concat (if typep (ack-build-command)
                             ack-command)
                           (if recursively " -r "
                               " ")
-                          (bmz/get-symbol-selected-or-current))) )
+                          (get-symbol-selected-or-current))) )
     (compilation-start command 'ack-mode)))
 
-(defun bmz/ack-at-point-in-same-type-files (arg)  
+(defun ack-at-point-in-same-type-files (arg)  
   "Use `ack' to search current symbol in same type files.
 
 If ARG given, search recursively."
   (interactive "P")
-  (bmz/ack-at-point 'same-type arg))
+  (ack-at-point 'same-type arg))
 
-(defun bmz/ack-at-point-in-all-files (arg)
+(defun ack-at-point-in-all-files (arg)
     "Use `ack' to search current symbol in all files.
 
 If ARG given, search recursively."
   (interactive "P")
-  (bmz/ack-at-point nil arg))
+  (ack-at-point nil arg))
 
 ;;** hidesearch
 (autoload 'hidesearch "hidesearch"

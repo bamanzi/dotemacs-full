@@ -64,7 +64,7 @@
 (ad-disable-advice 'error 'before 'who-said-that)
 (ad-update 'error)
 
-(defun bmz/toggle-debug-on-error ()
+(defun toggle-debug-on-error/bmz ()
   (interactive)
   (if debug-on-error
       (progn ;;turn if off
@@ -79,7 +79,7 @@
                                             "enabled"
                                           "disabled")))
 
-(global-set-key (kbd "<C-f10> d") 'bmz/toggle-debug-on-error)
+(global-set-key (kbd "<C-f10> d") 'toggle-debug-on-error/bmz)
 
 
 ;;** helps

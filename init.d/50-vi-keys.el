@@ -166,10 +166,10 @@ whitespaces of the next line. Otherwise it would kill current word."
     (define-key map (kbd "y") 'kill-ring-save)
     (define-key map (kbd "p") 'cua-paste) ;;compared to `yank', `cua-paste' support register 1-9    
 
-    (define-key map (kbd "*") 'bmz/goto-symbol-next-occur)
-    (define-key map (kbd "#") 'bmz/goto-symbol-prev-occur)
-    (define-key map (kbd "%") 'goto-match-paren)
-    (define-key map (kbd "C-]") 'bmz/find-symbol-definition-across-files)
+    (define-key map (kbd "*")   'goto-symbol-next-occur)
+    (define-key map (kbd "#")   'goto-symbol-prev-occur)
+    (define-key map (kbd "%")   'goto-match-paren)
+    (define-key map (kbd "C-]") 'find-symbol-definition-across-files)
     
     (define-key map (kbd "d w") 'kill-word-vi-style)
     (define-key map (kbd "d t") 'zap-up-to-char)

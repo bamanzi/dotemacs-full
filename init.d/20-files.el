@@ -207,7 +207,7 @@
 ;;*** dired
 (global-set-key (kbd "M-g d") 'dired-jump) ;;C-x C-j
 
-(defun bmz/dired-jump ()
+(defun dired-jump+ ()
   "If current buffer is in an archive(zip/tar), jump to it.
 Otherwise, call the original `dired-jump'."
   (interactive)
@@ -219,7 +219,7 @@ Otherwise, call the original `dired-jump'."
           (find-file arcfile))
       (call-interactively 'dired-jump))))
 
-(define-key goto-map "d" 'bmz/dired-jump)
+(define-key goto-map "d" 'dired-jump+)
 
 ;;**** dired-single
 (autoload 'joc-dired-single-buffer "dired-single"
@@ -247,7 +247,7 @@ Otherwise, call the original `dired-jump'."
     (if window
         (set-window-dedicated-p window t))))
 
-(defun bmz/nav-goto-dir (dir)
+(defun nav-jump-to-dir+ (dir)
   (interactive "Dnav to: ")
   (unless (get-buffer "*nav*")
     (nav))
@@ -256,7 +256,7 @@ Otherwise, call the original `dired-jump'."
   (with-current-buffer "*nav*"
       (nav-jump-to-dir dir)))
 
-(define-key goto-map "D" 'bmz/nav-goto-dir)
+(define-key goto-map "D" 'nav-jump-to-dir+)
 
 ;;*** nc.el: norton commander clone
 (autoload 'nc "nc" "Major mode for File Browser in GNU emacs." t)

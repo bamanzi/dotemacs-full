@@ -185,7 +185,7 @@
 ;;(ad-enable-advice 'split-window 'around 'make-new-win-one-third)
 
 ;;**** this one is safer
-(defun bmz/split-window-vertically ()
+(defun split-window-vertically/golden ()
   (interactive)
   (let ( (old-window (selected-window))
 	 (old-size (window-height (selected-window))) )
@@ -193,7 +193,7 @@
     (with-selected-window old-window
       (enlarge-window (/ old-size 6) nil))))
 
-(defun bmz/split-window-horizontally ()
+(defun split-window-horizontally/golden ()
   (interactive)
   (let ( (old-window (selected-window))
 	 (old-size (window-height (selected-window))) )
@@ -201,8 +201,8 @@
     (with-selected-window old-window
       (enlarge-window (/ old-size 6) 'horizontal))))
 
-(global-set-key [remap split-window-vertically]   'bmz/split-window-vertically)
-(global-set-key [remap split-window-horizontally] 'bmz/split-window-horizontally)
+(global-set-key [remap split-window-vertically]   'split-window-vertically/golden)
+(global-set-key [remap split-window-horizontally] 'split-window-horizontally/golden)
 
 
 ;;*** misc
@@ -280,11 +280,11 @@ the mode-line."
     (define-key bmz/win-fns-keymap "\M-8" 'select-window-8)
     (define-key bmz/win-fns-keymap "\M-9" 'select-window-9)
 
-    (defun bmz/select-window-by-number (n)
+    (defun select-window-by-number/bmz (n)
       (interactive "NWindow Number: ")
       (select-window-by-number n))
     
-    (define-key bmz/win-fns-keymap "G" 'bmz/select-window-by-number)
+    (define-key bmz/win-fns-keymap "G" 'select-window-by-number/bmz)
     ))
 
 (eval-after-load "window-number"

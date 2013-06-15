@@ -109,13 +109,13 @@
 
 ;;; select rectangle using H-mouse-1 (FIXME: could it work?)
 (require 'cua-rect)	
-(defun bmz/mouse-mark-cua-rectangle (event)
+(defun cua-mark-rectangle-by-mouse (event)
   (interactive "e")
   (if (not cua--rectangle)	  
       (cua-mouse-set-rectangle-mark event)
     (cua-mouse-resize-rectangle event)))
-(global-set-key (kbd "<H-mouse-1>") 'bmz/mouse-mark-cua-rectangle)
-(define-key cua--rectangle-keymap (kbd "<H-mouse-1>") 'bmz/mouse-mark-cua-rectangle)
+(global-set-key (kbd "<H-mouse-1>") 'cua-mark-rectangle-by-mouse)
+(define-key cua--rectangle-keymap (kbd "<H-mouse-1>") 'cua-mark-rectangle-by-mouse)
 
 
 

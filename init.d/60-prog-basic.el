@@ -98,7 +98,8 @@
 
 ;;*** imenu-tree window
 (autoload 'imenu-tree "imenu-tree" "Display tree view of imenu." t)
-(defun bmz/imenu-tree (arg)
+(defun imenu-tree/bmz (arg)
+  "Improve `imenu-tree' by making buffer unique and sticky."
   (interactive "P")
    ;; delete other-buffers' tree
   (let ( (buffer (get-buffer "*imenu-tree*")) )
@@ -190,7 +191,7 @@
 (define-key goto-map "s" 'anything-goto-symbol)
 
 
-(defun bmz/select-method()
+(defun select-method/bmz()
   (interactive)
   (require 'idomenu "idomenu" t)  
   (cond
@@ -209,10 +210,10 @@
    (t
     (call-interactively 'imenu))))
 
-;(global-set-key (kbd "C-c C-o") 'bmz/select-method)
-(global-set-key (kbd "<f5> I") 'bmz/select-method)
+;(global-set-key (kbd "C-c C-o") 'select-method/bmz)
+(global-set-key (kbd "<f5> I") 'select-method/bmz)
 
-(defun bmz/go-to-symbol-within-buffer ()
+(defun go-to-symbol-within-buffer/bmz ()
   "Go to symbol (definition) within current buffer.
 
 This would get rid of some annoyance:
@@ -227,5 +228,5 @@ This would get rid of some annoyance:
    '(anything-c-source-imenu
      anything-c-source-browse-code)))
 
-(define-key goto-map "s" 'bmz/go-to-symbol-within-buffer)
+(define-key goto-map "s" 'go-to-symbol-within-buffer/bmz)
    

@@ -26,7 +26,7 @@
 ;;** session
 (setq desktop-restore-eager 5)
 (require 'desktop)
-(desktop-save-mode t)
+;;(desktop-save-mode t)
 
 ;;*** save & load desktop session to/from bookmarks
 ;;(idle-require 'bookmark+)

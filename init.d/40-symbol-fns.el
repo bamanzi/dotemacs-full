@@ -4,24 +4,24 @@
 
 
 ;;** some internal functions
-(defun bmz/get-symbol-selected-or-current ()
+(defun get-symbol-selected-or-current ()
   "Get the selected text or (if nothing selected) current symbol."
   (if (and transient-mark-mode mark-active)
       (buffer-substring-no-properties (region-beginning) (region-end))
     (regexp-quote (thing-at-point 'symbol))))
 
 ;;** search selection
-(defun bmz/search-selection-forward ()
+(defun search-selection-forward ()
   (interactive)
-  (let ( (symbol (bmz/get-symbol-selected-or-current)) )
+  (let ( (symbol (get-symbol-selected-or-current)) )
     (deactivate-mark)
     (setq isearch-string symbol)
     (call-interactively 'isearch-repeat-forward)
   ))
 
-(defun bmz/search-selection-backward ()
+(defun search-selection-backward ()
   (interactive)
-  (let ( (symbol (bmz/get-symbol-selected-or-current)) )
+  (let ( (symbol (get-symbol-selected-or-current)) )
     (deactivate-mark)
     (setq isearch-string symbol)
     (call-interactively 'isearch-repeat-backward)
@@ -43,7 +43,7 @@
   (interactive)
   (let ( (beg (point-min))
          (end (point-max))
-         (regexp (bmz/get-symbol-selected-or-current))
+         (regexp (get-symbol-selected-or-current))
          (annotation nil)
          (count 0) )
     (unless (featurep 'bm) (require 'bm))
@@ -72,18 +72,18 @@
           ))))
 
 ;;** symbol definition
-(defun bmz/imenu-at-point ()
+(defun imenu-at-point ()
   (interactive)
-  (imenu (bmz/get-symbol-selected-or-current)))
+  (imenu (get-symbol-selected-or-current)))
 
-(defun bmz/anything-imenu-at-point ()
+(defun anything-imenu-at-point ()
   (interactive)
   (anything
-   :input (bmz/get-symbol-selected-or-current)
+   :input (get-symbol-selected-or-current)
    :sources '(anything-c-source-browse-code
               anything-c-source-imenu)))
 
-(defun bmz/find-symbol-definition-across-files ()
+(defun find-symbol-definition-across-files ()
   (interactive)
     (cond
      ( (memq major-mode '(emacs-lisp-mode lisp-interaction-mode))
@@ -95,14 +95,14 @@
       (call-interactively 'find-tag))))
 
 ;;** occur
-(defun bmz/occur-at-point (nlines)
+(defun occur-at-point (nlines)
   (interactive "P")
-  (occur (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
+  (occur (format "%s" (get-symbol-selected-or-current)) nlines))
 
-(defun bmz/multi-occur-at-point (nlines)
+(defun multi-occur-at-point (nlines)
   (interactive "P")
   ;;FIXME: use multi-occur?
-  (multi-occur nil (format "%s" (bmz/get-symbol-selected-or-current)) nlines))
+  (multi-occur nil (format "%s" (get-symbol-selected-or-current)) nlines))
 
 
 ;;*** multi-occur in same mode buffers
@@ -116,27 +116,27 @@
            (add-to-list 'buffer-mode-matches buf))))
    buffer-mode-matches))
  
-(defun bmz/multi-occur-in-this-mode ()
+(defun multi-occur-in-this-mode ()
   "Show all lines matching REGEXP in buffers with this major mode."
   (interactive)
   (multi-occur
    (get-buffers-matching-mode major-mode)
-   (format "%s" (bmz/get-symbol-selected-or-current))))
+   (format "%s" (get-symbol-selected-or-current))))
   
 
 ;;** grep
-(defun bmz/grep-symbol-at-point-same-ext()
+(defun grep-symbol-at-point-same-ext()
   (interactive)
   (grep (format "grep -nH %s *.%s %s"
-		(bmz/get-symbol-selected-or-current)
+		(get-symbol-selected-or-current)
         (file-name-extension buffer-file-name)
 		"--exclude \"#*.*\" --exclude \"*.*~\""
 		)))
 
-(defun bmz/grep-symbol-at-point()
+(defun grep-symbol-at-point()
   (interactive)
   (grep (format "grep -nH %s *.* %s"
-		(bmz/get-symbol-selected-or-current)
+		(get-symbol-selected-or-current)
 		"--exclude \"#*.*\" --exclude \"*.*~\""
 		)))
 
@@ -148,24 +148,24 @@
 ;;;
 (autoload 'ack "ack" "Use ack where you might usually use grep." t)
 (autoload 'ack-mode "ack" "Use ack where you might usually use grep." nil)
-(defun bmz/ack-at-point (typep recursively)
+(defun ack-at-point (typep recursively)
   (require 'ack)
   (let ( (command (concat (if typep (ack-build-command)
                             ack-command)
                           (if recursively " -r "
                               " ")
-                          (bmz/get-symbol-selected-or-current))) )
+                          (get-symbol-selected-or-current))) )
     (compilation-start command 'ack-mode)))
 
-(defun bmz/ack-at-point-in-same-type-files (arg)  
+(defun ack-at-point-in-same-type-files (arg)  
   "Use `ack' to search current symbol in same type files. if ARG given, search recursively."
   (interactive "P")
-  (bmz/ack-at-point 'same-type arg))
+  (ack-at-point 'same-type arg))
 
-(defun bmz/ack-at-point-in-all-files (arg)
+(defun ack-at-point-in-all-files (arg)
     "Use `ack' to search current symbol in all files. if ARG given, search recursively."
   (interactive "P")
-  (bmz/ack-at-point nil arg))
+  (ack-at-point nil arg))
 
 ;;** local dictionary
 (autoload 'sdcv-search "sdcv-mode" nil t)
@@ -191,9 +191,9 @@
 ;;(setq dict-databases '("gcide" "pydict"))
 
 (autoload 'dict "dict" "Lookup a WORD on dict.org." t)
-(defun bmz/dict-org-at-point  ()
+(defun dict-org-at-point  ()
   (interactive)
-  (let ( (word (bmz/get-symbol-selected-or-current)) )
+  (let ( (word (get-symbol-selected-or-current)) )
     (dict word)))
 
 ;;** lookup on google
@@ -204,7 +204,7 @@ If a there is a text selection (a phrase), lookup that phrase.
 Launches default browser and opens the doc's url."
   (interactive)
   (let ( inputstr myurl)
-    (setq inputstr (bmz/get-symbol-selected-or-current))
+    (setq inputstr (get-symbol-selected-or-current))
 ;;    (setq inputstr (dehtmlize-in-string inputstr) )
     (setq myurl (concat "http://www.google.com/search?q=%22" inputstr "%22"))
 
@@ -227,7 +227,7 @@ If there is a text selection (e.g. a phrase), lookup that phrase.
 Launches default browser and opens the doc's url."
  (interactive)
  (let (inputstr myurl)
-    (setq inputstr (bmz/get-symbol-selected-or-current))
+    (setq inputstr (get-symbol-selected-or-current))
     (setq inputstr (replace-regexp-in-string " " "_" inputstr))
     (setq myurl (concat "http://en.wikipedia.org/wiki/" inputstr))
     ;; (browse-url-default-windows-browser myurl)
@@ -238,13 +238,13 @@ Launches default browser and opens the doc's url."
 ;;** overall
 (defun init-word-ops-keys (search-map)
 
-    (define-key search-map "i" 'bmz/anything-imenu-at-point)
-    (define-key search-map "I" 'bmz/imenu-at-point)
+    (define-key search-map "i" 'anything-imenu-at-point)
+    (define-key search-map "I" 'imenu-at-point)
 
-    ;;(define-key search-map "g"          'bmz/goto-symbol-definition-in-buffer)
-    (define-key search-map (kbd "M-.")    'bmz/find-symbol-definition-across-files) ;; Emacs style key
-    (define-key search-map (kbd "C-]")    'bmz/find-symbol-definition-across-files) ;; Vi style key
-    ;;(define-key search-map "G"          'bmz/find-symbol-definition-across-files)
+    ;;(define-key search-map "g"          'goto-symbol-definition-in-buffer)
+    (define-key search-map (kbd "M-.")    'find-symbol-definition-across-files) ;; Emacs style key
+    (define-key search-map (kbd "C-]")    'find-symbol-definition-across-files) ;; Vi style key
+    ;;(define-key search-map "G"          'find-symbol-definition-across-files)
 
     (define-key search-map (kbd "<f3>")   'isearch-repeat-forward)
     (define-key search-map (kbd "<S-f3>") 'isearch-repeat-backward)
@@ -256,23 +256,23 @@ Launches default browser and opens the doc's url."
     (define-key search-map (kbd "<down>") 'highlight-symbol-next)
     (define-key search-map (kbd "M-%")    'highlight-symbol-query-replace)
     
-    (define-key search-map (kbd "O")     'bmz/occur-at-point)
+    (define-key search-map (kbd "O")     'occur-at-point)
 
-    (define-key search-map (kbd "M-o")   'bmz/multi-occur-in-this-mode)
-    (define-key search-map (kbd "M-O")   'bmz/multi-occur-at-point)
+    (define-key search-map (kbd "M-o")   'multi-occur-in-this-mode)
+    (define-key search-map (kbd "M-O")   'multi-occur-at-point)
 
     (define-key search-map (kbd "g")     'nil)
-    (define-key search-map (kbd "G")     'bmz/grep-symbol-at-point-same-ext)
-    (define-key search-map (kbd "gg")    'bmz/grep-symbol-at-point-same-ext)
-    (define-key search-map (kbd "gG")    'bmz/grep-symbol-at-point)
+    (define-key search-map (kbd "G")     'grep-symbol-at-point-same-ext)
+    (define-key search-map (kbd "gg")    'grep-symbol-at-point-same-ext)
+    (define-key search-map (kbd "gG")    'grep-symbol-at-point)
     (define-key search-map (kbd "g SPC") 'grep)
     (define-key search-map (kbd "gr")    'rgrep)
     (define-key search-map (kbd "gl")    'lgrep)
 
-    (define-key search-map (kbd "aa")    'bmz/ack-at-point-in-same-type-files)
-    (define-key search-map (kbd "aA")    'bmz/ack-at-point-in-all-files)
+    (define-key search-map (kbd "aa")    'ack-at-point-in-same-type-files)
+    (define-key search-map (kbd "aA")    'ack-at-point-in-all-files)
     (define-key search-map (kbd "a SPC") 'ack)
-    (define-key search-map (kbd "A")    'bmz/ack-at-point-in-same-type-files)
+    (define-key search-map (kbd "A")    'ack-at-point-in-same-type-files)
     
     ;; (define-key search-map (kbd "f") 'find-function-at-point)
     ;; (define-key search-map (kbd "v") 'find-variable-at-point)
@@ -307,8 +307,8 @@ Launches default browser and opens the doc's url."
 ;; other keys
 ;;(define-key global-map (kbd "<C-f3>") 'isearch-repeat-forward)
 ;;(define-key global-map (kbd "<S-f3>") 'isearch-repeat-backward)
-(define-key global-map (kbd "<C-f3>")   'bmz/search-selection-forward)
-(define-key global-map (kbd "<S-f3>")   'bmz/search-selection-backward)
+(define-key global-map (kbd "<C-f3>")   'search-selection-forward)
+(define-key global-map (kbd "<S-f3>")   'search-selection-backward)
 
 
 
