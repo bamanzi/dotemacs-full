@@ -300,7 +300,9 @@
 ;; it suport all org-mode links, including url, file, man, info, date,
 ;; http://orgmode.org/manual/External-links.htm
 ;; use mouse or `org-open-at-point' to open link
-(idle-require 'org-link-minor-mode)
+(if (and (require 'org-compat nil t)
+         (fboundp 'org-decompose-region))  ;;seems org > 7.3 needed
+    (idle-require 'org-link-minor-mode))
 (eval-after-load "org-link-minor-mode"
   `(progn
      (remove-hook 'find-file-hook 'goto-address-mode)
