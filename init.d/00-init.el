@@ -1,22 +1,7 @@
-(server-start)
 
 (setq message-log-max 1000)
 
 (fset 'yes-or-no-p 'y-or-n-p)
-
-(add-to-list 'exec-path "~/.emacs.d/bin")
-(add-to-list 'exec-path "~/local/bin")
-(setenv "PATH" (concat "~/.emacs.d/bin" path-separator
-                       "~/bin" path-separator
-                       (getenv "PATH")))
-
-(if (>= emacs-major-version 24)
-    (add-to-list 'custom-theme-load-path "~/.emacs.d/themes"))
-
-(unless (fboundp 'idle-require)
-  (defun idle-require (feature)
-    (require feature nil t)))
-
 
 ;; disable VC, to improve library loading speed (if in vc dir)
 (ignore-errors
