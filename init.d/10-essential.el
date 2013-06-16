@@ -3,8 +3,8 @@
       menu-prompting t) ;;NOTE: set `menu-prompting' to nil would cause mode menu not poping up
                                         ; when clicking on mode line
 
-(if (fboundp 'tool-bar-mode)
-    (tool-bar-mode -1))
+;;(if (fboundp 'tool-bar-mode)
+;;    (tool-bar-mode -1))
 (if (fboundp 'scroll-bar-mode)
     (scroll-bar-mode -1))
 
@@ -127,14 +127,17 @@
       "A color theme based on Tango Palette colors." t)
     )
 
+(defun bmz/init-frame ()
+  (interactive)
+  (run-hook-with-args 'after-make-frame-functions
+                      (selected-frame))))
+  
 ;;put face-adjusting code to hook `after-make-frame-functions'
 ;;then use this to call them
-;;(global-set-key (kbd "<f12> <f12>")
-(run-with-idle-timer 3 nil                
-                #'(lambda ()
-                    (interactive)
-                    (run-hook-with-args 'after-make-frame-functions
-                                        (selected-frame))))
+(global-set-key (kbd "<f12> <f12>") 'bmz/init-frame)
+                
+(run-with-idle-timer 3 nil 'bmz/init-frame)
+
 
 ;;** point History
 

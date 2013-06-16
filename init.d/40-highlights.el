@@ -309,7 +309,7 @@
      (add-hook 'find-file-hook 'org-link-minor-mode)))
 
 
-;;** misc
+;;** indent
 ;;*** higlight-indentation
 ;;very useful for indentation sensit
 (autoload 'highlight-indentation "highlight-indentation"
@@ -323,7 +323,13 @@
 
 (global-set-key (kbd "<f10> hi") 'highlight-indentation-mode)
 
+;;*** indent-guide
+(autoload 'indent-guide-mode "indent-guide"
+  "Undocumented." t)
 
+
+
+;;** misc
 ;;*** fixme-mode 
 (autoload 'fixme-mode "fixme-mode"
   "A minor mode for making FIXME and other warnings stand out" t)

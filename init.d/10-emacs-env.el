@@ -35,6 +35,8 @@
       (message "try to execute `%s'" command)
       (call-interactively command))))
 
+(global-set-key (kbd "M-X") 'load-and-execute)
+
 
 ;;** some debugging tricks
 ;; let `message' and `error' print where it comes from
