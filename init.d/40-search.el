@@ -124,6 +124,16 @@ If ARG given, search recursively."
   (interactive "P")
   (ack-at-point nil arg))
 
+;;** grin
+(autoload 'grin "grin"
+  "Use `grin' command for grepping text across files." t)
+(autoload 'grind "grin"
+  "Use `grind' command for find files." t)
+
+(define-key search-map "gg" 'grin)
+(define-key search-map "gd" 'grind)
+
+
 ;;** hidesearch
 (autoload 'hidesearch "hidesearch"
   "Incrementally show only lines in file based on what user types." t)
