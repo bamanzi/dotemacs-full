@@ -130,7 +130,7 @@
 (defun bmz/init-frame ()
   (interactive)
   (run-hook-with-args 'after-make-frame-functions
-                      (selected-frame))))
+                      (selected-frame)))
   
 ;;put face-adjusting code to hook `after-make-frame-functions'
 ;;then use this to call them
